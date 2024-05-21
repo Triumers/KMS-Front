@@ -33,11 +33,12 @@
             </div>
             <div>
                 <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`" :aria-controls="`#authorList`">
-                    참여자
+                    <p>참여자</p>                    
                 </div>
 
                 <div class="collapse" id="authorList">
                     <p class="author" v-for="participant in post.participants" :key="participant.id">
+                        <b-avatar variant="info" :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
                         {{ participant.name }}
                     </p>
                 </div>
