@@ -1,9 +1,9 @@
 <template>
-    <form @submit.prevent="submitPost">
+    <form @submit.prevent="submitPost" @keydown.enter.prevent>
         <div>
             <p id="title"> 위키 작성 </p>
             <div>
-                <button id="save-btn" type="submit" @click="savePost">게시글 작성</button>
+                <button id="save-btn" type="submit" @click="savePost">작성 완료</button>
             </div>
         </div>
         <div>
@@ -11,8 +11,9 @@
             <input type="text" id="title" v-model="postForm.title">
         </div>
         <div>
-            <label for="hashtags">태그를 입력 후, 엔터를 눌러주세요.</label>
-            <b-form-tags input-id="tags-basic" v-model="postForm.tags"></b-form-tags>
+            <label for="hashtags">태그를 입력 후, 스페이스 바를 눌러주세요.</label>
+            <b-form-tags input-id="tags-separators" v-model="postForm.tags" separator=" ,;"
+                placeholder="Enter new tags separated by space" @tag-state="onTagState" no-add-on-enter></b-form-tags>
             <p class="mt-2">Value: {{ postForm.tags }}</p>
         </div>
 
@@ -47,7 +48,7 @@ const postForm = ref({
 })
 
 async function savePost() {
-    
+
     console.log(postForm.value);
 
     if (originId) {
@@ -90,6 +91,7 @@ async function saveModifyPost() {
     }
 }
 
+
 const setPost = () => {
     postForm.value = {
         title: post.value.title,
@@ -122,13 +124,89 @@ async function getPostById() {
     }
 }
 
-const post = ref(
-    {
+const post = ref({
+    "id": 2,
+    "title": "자바의 기본 문법 수정\r\n",
+    "content": "수정 내용",
+    "createdAt": "2021-11-08T11:44:30.327959",
+    "author": {
         "id": 2,
-        "title": "자바의 기본 문법 수정",
-        "content": "자바 수정",
-        "createdAt": "2021-11-08T11:44:30.327959",
-        "author": {
+        "email": "test1",
+        "name": "테스트1",
+        "profileImg": "test1.jpg",
+        "role": "ROLE_NORMAL",
+        "startDate": null,
+        "endDate": null,
+        "phoneNumber": null,
+        "teamId": 2,
+        "positionId": 2,
+        "rankId": 2
+    },
+    "originId": 1,
+    "recentId": null,
+    "tabRelationId": 1,
+    "categoryId": null,
+    "tags": [
+        "개발", "tag1", "tag2", "tag6", "tag7", "tag8"
+    ],
+    "history": [
+        {
+            "id": 1,
+            "title": "자바의 기본 문법",
+            "content": "자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다.",
+            "createdAt": "2021-11-08T11:44:30.327959",
+            "author": {
+                "id": 1,
+                "email": "admin",
+                "name": "관리자",
+                "profileImg": null,
+                "role": "ROLE_ADMIN",
+                "startDate": "2024-05-17",
+                "endDate": null,
+                "phoneNumber": null,
+                "teamId": 1,
+                "positionId": 1,
+                "rankId": 1
+            },
+            "originId": null,
+            "recentId": 2,
+            "tabRelationId": 1,
+            "categoryId": null,
+            "tags": [
+                "개발", "tag1", "tag2", "tag3", "tag4", "tag5"
+            ],
+            "history": null,
+            "participants": null
+        },
+        {
+            "id": 2,
+            "title": "자바의 기본 문법 수정\r\n",
+            "content": "수정 내용",
+            "createdAt": "2021-11-08T11:44:30.327959",
+            "author": {
+                "id": 2,
+                "email": "test1",
+                "name": "테스트1",
+                "profileImg": "test1.jpg",
+                "role": "ROLE_NORMAL",
+                "startDate": null,
+                "endDate": null,
+                "phoneNumber": null,
+                "teamId": 2,
+                "positionId": 2,
+                "rankId": 2
+            },
+            "originId": 1,
+            "recentId": null,
+            "tabRelationId": 1,
+            "categoryId": null,
+            "tags": [],
+            "history": null,
+            "participants": null
+        }
+    ],
+    "participants": [
+        {
             "id": 1,
             "email": "admin",
             "name": "관리자",
@@ -141,16 +219,22 @@ const post = ref(
             "positionId": 1,
             "rankId": 1
         },
-        "originId": 1,
-        "recentId": null,
-        "tabRelationId": 1,
-        "categoryId": null,
-        "tags": [
-            "개발", "tag1", "tag2", "tag8", "tag7", "tag6"
-        ],
-        "history": null
-    }
-)
+        {
+            "id": 2,
+            "email": "test1",
+            "name": "테스트1",
+            "profileImg": "test1.jpg",
+            "role": "ROLE_NORMAL",
+            "startDate": null,
+            "endDate": null,
+            "phoneNumber": null,
+            "teamId": 2,
+            "positionId": 2,
+            "rankId": 2
+        }
+    ]
+});
+
 </script>
 
 <style></style>
