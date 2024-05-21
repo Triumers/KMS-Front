@@ -18,7 +18,8 @@
     </div>
 
     <div class="postList-div">
-        <div class="post" v-for="post in postList" :key="post.id" @click="postDetail(post.originId ? post.originId : post.id)">
+        <div class="post" v-for="post in postList" :key="post.id"
+            @click="postDetail(post.originId ? post.originId : post.id)">
             <div>
                 <div class="title">
                     <p>{{ post.title }}</p>
@@ -28,7 +29,7 @@
             <div class="tags">
                 <p>
                     <span v-for="tag in post.tags" :key="tag.id">
-                        #{{ tag.name }}
+                        #{{ tag }}
                     </span>&nbsp;
                 </p>
             </div>
@@ -67,66 +68,58 @@ async function getPostList() {
 
 const postList = ref([
     {
-        "id" : 2,
-        "title": "modifyTitle",
-        "content": "newContent",
+        "id": 1,
+        "title": "자바의 기본 문법",
+        "content": "자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다.",
         "createdAt": "2021-11-08T11:44:30.327959",
-        "originId": 1,
-        "authorId": 1,
+        "author": {
+            "id": 1,
+            "email": "admin",
+            "name": "관리자",
+            "profileImg": null,
+            "role": "ROLE_ADMIN",
+            "startDate": "2024-05-17",
+            "endDate": null,
+            "phoneNumber": null,
+            "teamId": 1,
+            "positionId": 1,
+            "rankId": 1
+        },
+        "originId": null,
+        "recentId": 2,
         "tabRelationId": 1,
+        "categoryId": null,
         "tags": [
-            {
-                "id": 21,
-                "name": "tag1"
-            },
-            {
-                "id": 22,
-                "name": "tag2"
-            },
-            {
-                "id": 23,
-                "name": "tag3"
-            },
-            {
-                "id": 24,
-                "name": "tag4"
-            },
-            {
-                "id": 25,
-                "name": "tag5"
-            }
-        ]
+            "개발", "tag1", "tag2", "tag3", "tag4", "tag5"
+        ],
+        "history": null
     },
     {
-        "id" : 1,
-        "title": "modifyTitle",
-        "content": "newContent",
+        "id": 2,
+        "title": "자바의 기본 문법 수정",
+        "content": "자바 수정",
         "createdAt": "2021-11-08T11:44:30.327959",
-        "originId": null,
-        "authorId": 1,
+        "author": {
+            "id": 1,
+            "email": "admin",
+            "name": "관리자",
+            "profileImg": null,
+            "role": "ROLE_ADMIN",
+            "startDate": "2024-05-17",
+            "endDate": null,
+            "phoneNumber": null,
+            "teamId": 1,
+            "positionId": 1,
+            "rankId": 1
+        },
+        "originId": 1,
+        "recentId": null,
         "tabRelationId": 1,
+        "categoryId": null,
         "tags": [
-            {
-                "id": 21,
-                "name": "tag1"
-            },
-            {
-                "id": 22,
-                "name": "tag2"
-            },
-            {
-                "id": 23,
-                "name": "tag3"
-            },
-            {
-                "id": 24,
-                "name": "tag4"
-            },
-            {
-                "id": 25,
-                "name": "tag5"
-            }
-        ]
+            "개발", "tag1", "tag2", "tag8", "tag7", "tag6"
+        ],
+        "history": null
     }
 ]);
 

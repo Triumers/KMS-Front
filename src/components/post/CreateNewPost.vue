@@ -125,34 +125,30 @@ async function getPostById() {
 const post = ref(
     {
         "id": 2,
-        "title": "modifyTitle",
-        "content": "newContent",
+        "title": "자바의 기본 문법 수정",
+        "content": "자바 수정",
         "createdAt": "2021-11-08T11:44:30.327959",
+        "author": {
+            "id": 1,
+            "email": "admin",
+            "name": "관리자",
+            "profileImg": null,
+            "role": "ROLE_ADMIN",
+            "startDate": "2024-05-17",
+            "endDate": null,
+            "phoneNumber": null,
+            "teamId": 1,
+            "positionId": 1,
+            "rankId": 1
+        },
         "originId": 1,
-        "authorId": 1,
+        "recentId": null,
         "tabRelationId": 1,
+        "categoryId": null,
         "tags": [
-            {
-                "id": 21,
-                "name": "tag1"
-            },
-            {
-                "id": 22,
-                "name": "tag2"
-            },
-            {
-                "id": 23,
-                "name": "tag3"
-            },
-            {
-                "id": 24,
-                "name": "tag4"
-            },
-            {
-                "id": 25,
-                "name": "tag5"
-            }
-        ]
+            "개발", "tag1", "tag2", "tag8", "tag7", "tag6"
+        ],
+        "history": null
     }
 )
 </script>
