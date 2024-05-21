@@ -18,17 +18,16 @@
     </div>
 
     <div class="postList-div">
-        <!-- originId가 존재하면 parameter -> originId -->
-        <div class="post" v-for="post in postList" :key="post.id" @click="postDetail(post.id)">
+        <div class="post" v-for="post in postList" :key="post.id" @click="postDetail(post.originId ? post.originId : post.id)">
             <div>
                 <div class="title">
                     <p>{{ post.title }}</p>
                 </div>
-                <p class="date">{{ post.createdAt }}</p>
+                <p class="date">{{ post.createdAt.split("T")[0] }}</p>
             </div>
-            <div class="hashtag">
+            <div class="tags">
                 <p>
-                    <span v-for="tag in post.tags" :key="tag. id">
+                    <span v-for="tag in post.tags" :key="tag.id">
                         #{{ tag.name }}
                     </span>&nbsp;
                 </p>
@@ -38,10 +37,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 
+const router = useRouter();
 const tabId = useRoute().params.id;
+
+const postDetail = (postId) => {
+    router.push(`/tab/detail/${postId}`);
+};
+
+async function getPostList() {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.post('http://localhost:5000/post/tab', { tabRelationId: tabId });
+            postList.value = response.data;
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("게시글을 불러올 수 없습니다.");
+    } finally {
+    }
+}
+
 
 const postList = ref([
     {
@@ -108,9 +130,6 @@ const postList = ref([
     }
 ]);
 
-const postDetail = (postId) => {
-    console.log(postId);
-};
 
 </script>
 
