@@ -11,9 +11,11 @@
             <input type="text" id="title" v-model="postForm.title">
         </div>
         <div>
-            <label for="hashtags">해시태그 (쉼표로 구분):</label>
-            <input type="text" id="hashtags" v-model="postForm.tags">
+            <label for="hashtags">태그를 입력 후, 엔터를 눌러주세요.</label>
+            <b-form-tags input-id="tags-basic" v-model="postForm.tags"></b-form-tags>
+            <p class="mt-2">Value: {{ postForm.tags }}</p>
         </div>
+
         <div>
             <label for="content">내용(html 형식으로 작성):</label>
             <textarea id="content" v-model="postForm.content"></textarea>
@@ -23,6 +25,7 @@
         <p>AI chat</p>
         <div>검증/검색/맞춤법 등등</div>
     </div>
+
 </template>
 
 <script setup>
@@ -30,6 +33,9 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
+const value = ref(['apple', 'orange']);
+
+const router = useRouter();
 const currentRoute = useRoute();
 
 const tabId = currentRoute.params.id;
@@ -38,11 +44,12 @@ const postForm = ref({
     title: '',
     content: '',
     tags: [],
-    tabRelationId : tabId,
-    originId : originId
+    tabRelationId: tabId,
+    originId: originId
 })
 
-async function savePost(){
+
+async function savePost() {
     if (originId) {
         console.log("MODIFY");
         router.push(`/tab/detail/${originId}`);
@@ -55,8 +62,8 @@ const setPost = () => {
         title: post.value.title,
         content: post.value.content,
         tags: post.value.tags,
-        tabRelationId : tabId,
-        originId : originId
+        tabRelationId: tabId,
+        originId: originId
     };
 }
 
