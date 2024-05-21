@@ -33,8 +33,6 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
-const value = ref(['apple', 'orange']);
-
 const router = useRouter();
 const currentRoute = useRoute();
 
@@ -48,13 +46,48 @@ const postForm = ref({
     originId: originId
 })
 
-
 async function savePost() {
+    
+    console.log(postForm.value);
+
     if (originId) {
         console.log("MODIFY");
+        // await saveModifyPost();
         router.push(`/tab/detail/${originId}`);
     }
-    console.log(postForm.value);
+    else {
+        // await saveNewPost();
+        router.push(`/tab/detail/${originId}`);
+    }
+}
+
+async function saveNewPost() {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.get(`http://localhost:5000/post/regist`, { newPost: postForm.value });
+            originId.value = response.data.id;
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("게시글 저장에 실패했습니다.");
+    }
+}
+
+async function saveModifyPost() {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            await axios.get(`http://localhost:5000/post/modify`, { modifyPost: postForm.value });
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("게시글 저장에 실패했습니다.");
+    }
 }
 
 const setPost = () => {
