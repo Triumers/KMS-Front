@@ -26,21 +26,95 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 
-const tabId = useRoute().params.id;
-console.log(tabId);
+const currentRoute = useRoute();
 
-const savePost = () => {
-    console.log(postForm.value);
-}
-
+const tabId = currentRoute.params.id;
+const originId = currentRoute.query.post;
 const postForm = ref({
     title: '',
     content: '',
-    tags: []
+    tags: [],
+    tabRelationId : tabId,
+    originId : originId
 })
+
+async function savePost(){
+    if (originId) {
+        console.log("MODIFY");
+        router.push(`/tab/detail/${originId}`);
+    }
+    console.log(postForm.value);
+}
+
+const setPost = () => {
+    postForm.value = {
+        title: post.value.title,
+        content: post.value.content,
+        tags: post.value.tags,
+        tabRelationId : tabId,
+        originId : originId
+    };
+}
+
+onMounted(() => {
+    if (originId) {
+        setPost();
+    }
+});
+
+async function getPostById() {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.post(`http://localhost:5000/post/${originId}`);
+            post.value = response.data;
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("게시글을 불러올 수 없습니다.");
+    } finally {
+    }
+}
+
+const post = ref(
+    {
+        "id": 2,
+        "title": "modifyTitle",
+        "content": "newContent",
+        "createdAt": "2021-11-08T11:44:30.327959",
+        "originId": 1,
+        "authorId": 1,
+        "tabRelationId": 1,
+        "tags": [
+            {
+                "id": 21,
+                "name": "tag1"
+            },
+            {
+                "id": 22,
+                "name": "tag2"
+            },
+            {
+                "id": 23,
+                "name": "tag3"
+            },
+            {
+                "id": 24,
+                "name": "tag4"
+            },
+            {
+                "id": 25,
+                "name": "tag5"
+            }
+        ]
+    }
+)
 </script>
 
 <style></style>
