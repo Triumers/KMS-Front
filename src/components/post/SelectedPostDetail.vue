@@ -12,6 +12,8 @@
             </div>
             <div id="export">내보내기</div>
             <div id="modify-btn" @click="modifyPost(post.originId ? post.originId : post.id)">수정</div>
+            <div v-if="isAuthorized" id="delete-btn" @click="deletePost(post.originId ? post.originId : post.id)">삭제
+            </div>
         </div>
     </div>
     <div id="post-container">
@@ -32,13 +34,15 @@
                 </div>
             </div>
             <div>
-                <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`" :aria-controls="`#authorList`">
-                    <p>참여자</p>                    
+                <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`"
+                    :aria-controls="`#authorList`">
+                    <p>참여자</p>
                 </div>
 
                 <div class="collapse" id="authorList">
                     <p class="author" v-for="participant in post.participants" :key="participant.id">
-                        <b-avatar variant="info" :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+                        <b-avatar variant="info"
+                            :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
                         {{ participant.name }}
                     </p>
                 </div>
@@ -54,14 +58,32 @@ import axios from 'axios';
 
 const router = useRouter();
 const postId = useRoute().params.id;
+const isAuthorized = true;
 
 const modifyPost = (postId) => {
     router.push({
         path: `/tab/${post.value.tabRelationId}/new`,
         query: {
-            post : postId
+            post: postId
         }
     })
+}
+
+async function deletePost(postId) {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            // const response = await axios.post(`http://localhost:5000/post/delete/${postId}`);
+
+            router.push(`/tab/${post.value.tabRelationId}`);
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("게시글을 불러올 수 없습니다.");
+    } finally {
+    }
 }
 
 const convertToDate = (date) => {
@@ -78,6 +100,8 @@ async function getPostById() {
             axios.defaults.headers.common['Authorization'] = token;
             const response = await axios.post(`http://localhost:5000/post/${postId}`);
             post.value = response.data;
+
+            isAuthorized.value = (await axios.post(`http://localhost:5000/post/isAuthor/${postId}`)).data;
         } else {
             alert("잘못된 접근입니다.");
         }
@@ -87,7 +111,6 @@ async function getPostById() {
     }
 }
 
-const authors = ref(["author1", "author2", "author3", "author4", "author5"]);
 const post = ref({
     "id": 2,
     "title": "자바의 기본 문법 수정\r\n",
@@ -111,8 +134,8 @@ const post = ref({
     "tabRelationId": 1,
     "categoryId": null,
     "tags": [
-            "개발", "tag1", "tag2", "tag6", "tag7", "tag8"
-        ],
+        "개발", "tag1", "tag2", "tag6", "tag7", "tag8"
+    ],
     "history": [
         {
             "id": 1,
