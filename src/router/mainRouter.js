@@ -6,7 +6,7 @@ import PostView from '@/views/PostView.vue';
 import PostListView from "@/components/post/SelectedPostList.vue";
 import PostDetailView from "@/components/post/SelectedPostDetail.vue";
 import PostWriterView from "@/components/post/CreateNewPost.vue";
-
+import GeneralWriterView from "@/components/post/CreateNewGeneralPost.vue";
 
 
 const router = createRouter({
@@ -31,6 +31,10 @@ const router = createRouter({
                 {
                     path: '/tab/:id/new',
                     component: PostWriterView
+                },
+                {
+                    path: '/tab/meeting/new',
+                    component: GeneralWriterView
                 }
             ]
         }

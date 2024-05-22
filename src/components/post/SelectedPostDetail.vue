@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p id="title"> {{ post.title }} </p>
+        <h1 id="title"> {{ post.title }} </h1>
         <div>
             <div class="translate">
                 <select id="condition">
@@ -16,6 +16,7 @@
             </div>
         </div>
     </div>
+    <hr>
     <div id="post-container">
         <div id="content" v-html="post.content"></div>
         <div id="post-info">
@@ -39,7 +40,7 @@
             <div>
                 <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`"
                     :aria-controls="`#authorList`">
-                    <p>참여자</p>
+                    <p>작성자</p>
                 </div>
 
                 <div class="collapse" id="authorList">
@@ -94,9 +95,9 @@
                                         </div>
                                     </b-list-group-item>
                                 </template>
-
                             </b-list-group>
                         </div>
+
                     </div>
                 </div>
             </div>
