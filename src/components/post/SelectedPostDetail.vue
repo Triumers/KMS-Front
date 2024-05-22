@@ -23,7 +23,10 @@
                 <p>최종 수정일</p>
                 <p> {{ convertToDate(post.createdAt) }}</p>
             </div>
-            <div>
+
+            <button class="btn btn-primary" data-bs-target="#historyModal" data-bs-toggle="modal">변경 히스토리 확인</button>
+
+            <div id="tag-div">
                 <p>태그</p>
                 <div class="hashtag">
                     <p>
@@ -42,13 +45,65 @@
                 <div class="collapse" id="authorList">
                     <p class="author" v-for="participant in post.participants" :key="participant.id">
                         <b-avatar variant="info"
-                            :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
-                        {{ participant.name }}
+                            :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'">
+                        </b-avatar>
+                        &nbsp;{{ participant.name }}&nbsp;
                     </p>
                 </div>
             </div>
         </div>
+
+
+        <!-- 히스토리 모달창 -->
+        <div class="modal fade" id="historyModal" aria-hidden="true" aria-labelledby="modalToggleLabel" tabindex="-1">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="" id="modalToggleLabel">변경 히스토리 확인</h3>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" v-if="historyPost">
+                        <div class="history" id="historyContent">
+
+                            <h4 id="title"> {{ historyPost.title }} </h4>
+                            <small> {{ convertToDate(historyPost.createdAt) }}</small>
+                            <b-button variant="outline-dark" @click="restorePost()">버전 복원하기</b-button>
+                            <div id="tag-div">
+                                    <div class="hashtag">
+                                        <p>
+                                            <span v-for="tag in historyPost.tags" :key="tag.id">
+                                                #{{ tag }}
+                                            </span>&nbsp;
+                                        </p>
+                                    </div>
+                            </div>
+                            <div id="content" v-html="historyPost.content"></div>
+                        </div>
+
+                        <div class="history" id="historyList">
+                            <b-list-group>
+                                <template v-for="history in post.history" :key="history.id">
+                                    <b-list-group-item button @click="setHistoryContent(history)">
+                                        <div>
+                                            <p><h3>
+                                                 <b-avatar variant="info"
+                                                    :src="history.author.profileImg ? history.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+                                                <span> &nbsp;{{ history.author.name }}&nbsp; </span>
+                                            </h3></p>
+                                            <small>{{ convertToDate(history.createdAt) }}</small>
+                                        </div>
+                                    </b-list-group-item>
+                                </template>
+
+                            </b-list-group>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+
 </template>
 
 <script setup>
@@ -59,6 +114,12 @@ import axios from 'axios';
 const router = useRouter();
 const postId = useRoute().params.id;
 const isAuthorized = true;
+const historyPost = ref(null);
+
+onMounted(() => {
+    setHistoryContent(post.value.history[0]);
+});
+
 
 const modifyPost = (postId) => {
     router.push({
@@ -67,6 +128,19 @@ const modifyPost = (postId) => {
             post: postId
         }
     })
+}
+
+async function restorePost(){
+
+    if(confirm("선택한 버전으로 복원하시겠습니까?")){
+        historyPost.value.id = null;
+        //await saveModifyPost(historyPost.value);
+        location.reload(true);
+	}
+}
+
+const setHistoryContent = (selectPost) => {
+    historyPost.value = selectPost;
 }
 
 async function deletePost(postId) {
@@ -108,6 +182,21 @@ async function getPostById() {
     } catch (error) {
         alert("게시글을 불러올 수 없습니다.");
     } finally {
+    }
+}
+
+
+async function saveModifyPost(historyPost) {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            await axios.get(`http://localhost:5000/post/modify`, { modifyPost: historyPost });
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("게시글 저장에 실패했습니다.");
     }
 }
 
@@ -187,7 +276,7 @@ const post = ref({
             "recentId": null,
             "tabRelationId": 1,
             "categoryId": null,
-            "tags": [],
+            "tags": ["개발", "tag1", "tag2", "tag6", "tag7", "tag8"],
             "history": null,
             "participants": null
         }
