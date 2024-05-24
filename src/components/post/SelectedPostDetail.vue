@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="top">
         <h1 id="title"> {{ post.title }} </h1>
         <div>
             <div class="translate">
@@ -10,10 +10,18 @@
                     <option value="ch">중국어</option>
                 </select>
             </div>
-            <div id="export">내보내기</div>
-            <div id="modify-btn" @click="modifyPost(post.originId ? post.originId : post.id)">수정</div>
-            <div v-if="isAuthorized" id="delete-btn" @click="deletePost(post.originId ? post.originId : post.id)">삭제
-            </div>
+
+            <b-dropdown size="lg" variant="link" toggle-class="text-decoration-none" no-caret>
+                <template #button-content>
+                    <span class="material-icons">more horiz</span>
+                </template>
+                <b-dropdown-item id="export">내보내기</b-dropdown-item>
+                <b-dropdown-item id="modify-btn"
+                    @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
+                <b-dropdown-item v-if="isAuthorized" id="delete-btn"
+                    @click="deletePost(post.originId ? post.originId : post.id)">삭제</b-dropdown-item>
+            </b-dropdown>
+
         </div>
     </div>
     <hr>
@@ -22,10 +30,15 @@
         <div id="post-info">
             <div>
                 <p>최종 수정일</p>
-                <p> {{ convertToDate(post.createdAt) }}</p>
+                <p> 
+                    <span>{{ convertToDate(post.createdAt) }} &nbsp;</span>
+                <span v-b-tooltip.hover title="게시글 히스토리 확인" data-bs-target="#historyModal" data-bs-toggle="modal">
+                    <span class="material-icons">history</span>
+                </span>
+            </p>
             </div>
 
-            <button class="btn btn-primary" data-bs-target="#historyModal" data-bs-toggle="modal">변경 히스토리 확인</button>
+
 
             <div id="tag-div">
                 <p>태그</p>
@@ -37,10 +50,13 @@
                     </p>
                 </div>
             </div>
+
             <div>
                 <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`"
                     :aria-controls="`#authorList`">
-                    <p>작성자</p>
+                    <p>참여자
+                        <>
+                    </p>
                 </div>
 
                 <div class="collapse" id="authorList">
@@ -70,13 +86,13 @@
                             <small> {{ convertToDate(historyPost.createdAt) }}</small>
                             <b-button variant="outline-dark" @click="restorePost()">버전 복원하기</b-button>
                             <div id="tag-div">
-                                    <div class="hashtag">
-                                        <p>
-                                            <span v-for="tag in historyPost.tags" :key="tag.id">
-                                                #{{ tag }}
-                                            </span>&nbsp;
-                                        </p>
-                                    </div>
+                                <div class="hashtag">
+                                    <p>
+                                        <span v-for="tag in historyPost.tags" :key="tag.id">
+                                            #{{ tag }}
+                                        </span>&nbsp;
+                                    </p>
+                                </div>
                             </div>
                             <div id="content" v-html="historyPost.content"></div>
                         </div>
@@ -86,11 +102,13 @@
                                 <template v-for="history in post.history" :key="history.id">
                                     <b-list-group-item button @click="setHistoryContent(history)">
                                         <div>
-                                            <p><h3>
-                                                 <b-avatar variant="info"
+                                            <p>
+                                            <h3>
+                                                <b-avatar variant="info"
                                                     :src="history.author.profileImg ? history.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
                                                 <span> &nbsp;{{ history.author.name }}&nbsp; </span>
-                                            </h3></p>
+                                            </h3>
+                                            </p>
                                             <small>{{ convertToDate(history.createdAt) }}</small>
                                         </div>
                                     </b-list-group-item>
@@ -131,13 +149,13 @@ const modifyPost = (postId) => {
     })
 }
 
-async function restorePost(){
+async function restorePost() {
 
-    if(confirm("선택한 버전으로 복원하시겠습니까?")){
+    if (confirm("선택한 버전으로 복원하시겠습니까?")) {
         historyPost.value.id = null;
         //await saveModifyPost(historyPost.value);
         location.reload(true);
-	}
+    }
 }
 
 const setHistoryContent = (selectPost) => {
@@ -314,4 +332,21 @@ const post = ref({
 
 </script>
 
-<style></style>
+<style>
+#post-container{
+    float: left;
+    display: flex;
+    justify-content: left;
+}
+
+#content{
+    display: inline-block;
+}
+
+#post-info{
+    float: right;
+}
+
+
+
+</style>

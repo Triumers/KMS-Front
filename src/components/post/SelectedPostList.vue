@@ -1,5 +1,5 @@
 <template>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
 
     <div>
         <p id="tab-name"> 탭 이름 </p>
