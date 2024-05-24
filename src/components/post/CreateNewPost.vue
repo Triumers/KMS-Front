@@ -14,7 +14,6 @@
             <label for="hashtags">태그를 입력 후, 스페이스 바를 눌러주세요.</label>
             <b-form-tags input-id="tags-separators" v-model="postForm.tags" separator=" ,;"
                 placeholder="Enter new tags separated by space" @tag-state="onTagState" no-add-on-enter></b-form-tags>
-            <p class="mt-2">Value: {{ postForm.tags }}</p>
         </div>
 
         <div>

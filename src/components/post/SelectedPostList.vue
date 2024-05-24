@@ -9,12 +9,18 @@
     <hr>
 
     <div class="search">
-        <select id="condition">
-            <option value="name">이름</option>
-            <option value="address">태그</option>
+        <select id="condition" v-model="search.type">
+            <option value="title">제목</option>
+            <option value="keyword">내용</option>
+            <option value="tag">태그</option>
         </select>
-        <input type="text" id="input-search" />
-        <button id="search-post">검색</button>
+        <p>{{ search.type }}</p>
+        <template v-if="search.type == 'tag'">
+            <b-form-tags input-id="tags-separators" v-model="search.tags" separator=" ,;"
+                placeholder="Enter new tags separated by space" @tag-state="onTagState" no-add-on-enter></b-form-tags>
+        </template>
+        <input v-else type="text" id="input-search" v-model="search.word"/>
+        <button id="search-post" @click="searchPost">검색</button>
     </div>
 
     <div class="postList-div">
@@ -44,10 +50,35 @@ import axios from 'axios';
 
 const router = useRouter();
 const tabId = useRoute().params.id;
+const search = ref({
+    tabRelationId : tabId,
+    type : 'title',
+    word : '',
+    title: null,
+    keyword: null,
+    tags: []
+});
 
 const postDetail = (postId) => {
     router.push(`/tab/detail/${postId}`);
 };
+
+async function searchPost(){
+    
+    switch(type){
+        case 'title':
+            search.value.title = search.value.word;
+            break;
+        case 'keyword':
+            search.value.keyword = search.value.word;
+            break;
+    }
+
+    if(type != "tag" || search.value.tags.length <= 0)
+        tags = null;
+    
+    await getPostList();
+}
 
 async function getPostList() {
     try {
