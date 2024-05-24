@@ -1,4 +1,6 @@
 <template>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <div>
         <p id="tab-name"> 탭 이름 </p>
         <p id="write-btn">
@@ -27,14 +29,26 @@
         <div class="post" v-for="post in postList" :key="post.id"
             @click="postDetail(post.originId ? post.originId : post.id)">
             <div>
-                <div class="title">
-                    <p>{{ post.title }}</p>
+                <b-avatar variant="info" :src="post.author.profileImg ? post.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+                <div>
+                    <p class="author"> {{ post.author.name }} </p>
+                    <p class="date"> {{ convertToDate(post.createdAt) }}</p>
+                    </div>
                 </div>
-                <p class="date">{{ post.createdAt.split("T")[0] }}</p>
+            <div>
+                <div class="title">
+                    <h5>{{ post.title }}</h5>
+                </div>
+                <div class="content-preview">
+                    {{ post.content }}
+                    </div>
             </div>
-            <div class="tags">
-                <p>
-                    <span v-for="tag in post.tags" :key="tag.id">
+            <div>
+                <p class="like">
+                    <span class="material-icons">favorite</span>
+                    {{ post.likeCnt }}</p>
+                <p class="tags">
+                    <span class="tag" v-for="tag in post.tags" :key="tag.id">
                         #{{ tag }}
                     </span>&nbsp;
                 </p>
@@ -96,12 +110,18 @@ async function getPostList() {
     }
 }
 
+const convertToDate = (date) => {
+    const dateSplit = date.split("T");
+    dateSplit[1] = dateSplit[1].split(".")[0];
+
+    return dateSplit[0] + " " + dateSplit[1];
+};
 
 const postList = ref([
     {
         "id": 1,
         "title": "자바의 기본 문법",
-        "content": "자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다.",
+        "content": "자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다. 자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다. 자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다.",
         "createdAt": "2021-11-08T11:44:30.327959",
         "author": {
             "id": 1,
@@ -123,7 +143,8 @@ const postList = ref([
         "tags": [
             "개발", "tag1", "tag2", "tag3", "tag4", "tag5"
         ],
-        "history": null
+        "history": null,
+        "likeCnt": 3
     },
     {
         "id": 2,
@@ -150,11 +171,20 @@ const postList = ref([
         "tags": [
             "개발", "tag1", "tag2", "tag8", "tag7", "tag6"
         ],
-        "history": null
+        "history": null,
+        "likeCnt": 3
     }
 ]);
 
 
 </script>
 
-<style></style>
+<style>
+.content-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 두 줄을 표시하고 넘어가면 말줄임표 표시 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
