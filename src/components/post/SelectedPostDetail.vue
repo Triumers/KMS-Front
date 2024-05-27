@@ -1,10 +1,9 @@
 <template>
     <div id="top">
         <h1 id="title"> {{ post.title }} </h1>
-        <div>
+        <div id="etc">
             <div class="translate">
                 <select id="condition">
-                    <option disabled value="">번역</option>
                     <option value="en">영어</option>
                     <option value="jp">일본어</option>
                     <option value="ch">중국어</option>
@@ -31,7 +30,7 @@
         <div id="content" v-html="post.content"></div>
         <div id="post-info">
             <div>
-                <p>최종 수정일</p>
+                <p><strong>최종 수정일</strong></p>
                 <p>
                     <span>{{ convertToDate(post.createdAt) }} &nbsp;</span>
                     <template v-if="!general">
@@ -44,11 +43,11 @@
             </div>
 
             <div id="tag-div">
-                <p>태그</p>
+                <p><strong>태그</strong></p>
                 <div class="hashtag">
                     <p>
-                        <span v-for="tag in post.tags" :key="tag.id">
-                            #{{ tag }}
+                        <span class="tag" v-for="tag in post.tags" :key="tag.id">
+                            <b-badge>#{{ tag }}</b-badge>
                         </span>&nbsp;
                     </p>
                 </div>
@@ -57,7 +56,7 @@
             <div>
                 <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`"
                     :aria-controls="`#authorList`">
-                    <p>참여자 ▽</p>
+                    <p><strong>참여자 ▽</strong></p>
                 </div>
 
                 <div class="collapse" id="authorList">
@@ -70,7 +69,7 @@
                 </div>
             </div>
         </div>
-
+    </div>
 
         <!-- 히스토리 모달창 -->
         <div class="modal fade" id="historyModal" aria-hidden="true" aria-labelledby="modalToggleLabel" tabindex="-1">
@@ -89,8 +88,8 @@
                             <div id="tag-div">
                                 <div class="hashtag">
                                     <p>
-                                        <span v-for="tag in historyPost.tags" :key="tag.id">
-                                            #{{ tag }}
+                                        <span class="tag" v-for="tag in historyPost.tags" :key="tag.id">
+                                            <b-badge>#{{ tag }}</b-badge>
                                         </span>&nbsp;
                                     </p>
                                 </div>
@@ -121,7 +120,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
 
 </template>
@@ -345,20 +343,26 @@ const post = ref({
 </script>
 
 <style>
-#post-container{
-    float: left;
+#post-container, #top, .modal-body{
     display: flex;
-    justify-content: left;
-}
-
-#content{
-    display: inline-block;
+    justify-content: space-between;
 }
 
 #post-info{
-    float: right;
+    max-width: 300px;
+    padding-right: 20px;
 }
 
+#historyList{
+    min-width: 500px;
+}
 
+#etc{
+    display: flex;
+}
+
+.tag{
+    margin-left: 5px; 
+}
 
 </style>
