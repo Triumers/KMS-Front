@@ -33,7 +33,7 @@ const router = createRouter({
                     component: PostWriterView
                 },
                 {
-                    path: '/tab/meeting/new',
+                    path: '/tab/:id/general/new',
                     component: GeneralWriterView
                 }
             ]

@@ -3,7 +3,7 @@
     <div>
         <p id="tab-name">{{ tabName }}</p>
         <p id="write-btn">
-        <div>글쓰기 버튼</div>
+        <div @click="createNewPost()">글쓰기 버튼</div>
         </p>
     </div>
 
@@ -84,8 +84,20 @@ const postDetail = (postId) => {
     })
 };
 
+const createNewPost = () => {
+    let createPath = `/tab/${tabId}`;
+
+    if(isGeneral()){
+        createPath += "/general"
+    }
+
+    router.push({
+        path: createPath + "/new"
+    });
+};
+
 const isGeneral = () => {
-    const generalList = ["강연&컨퍼런스", "모집"];
+    const generalList = ["모집"];
 
     return generalList.includes(tabName);
 }
@@ -112,7 +124,7 @@ async function getTabName() {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://localhost:5000/tab/${tabId.value}`);
+            const response = await axios.post(`http://localhost:5000/tab/${tabId}`);
             tab.name.value = response.data;
         } else {
             alert("잘못된 접근입니다.");

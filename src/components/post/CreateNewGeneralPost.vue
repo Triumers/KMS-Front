@@ -11,13 +11,7 @@
             <input type="text" id="title" v-model="postForm.title">
         </div>
         <div>
-            <b-form-select v-if="type == 'meeting'" v-model="postForm.tags" :options="options"></b-form-select>
-            <div v-else-if="type == 'event'">
-            <label for="hashtags">태그를 입력 후, 스페이스 바를 눌러주세요.</label>
-            <b-form-tags input-id="tags-separators" v-model="postForm.tags" separator=" ,;"
-                placeholder="Enter new tags separated by space" @tag-state="onTagState" no-add-on-enter></b-form-tags>
-            <p class="mt-2">Value: {{ postForm.tags }}</p>
-            </div>
+            <b-form-select v-model="postForm.tags[0]" :options="options"></b-form-select>
         </div>
 
         <div>
@@ -38,7 +32,6 @@ const currentRoute = useRoute();
 
 const tabId = currentRoute.params.id;
 const originId = currentRoute.query.post;
-const type = currentRoute.query.type;
 
 const postForm = ref({
     id: null,
@@ -86,6 +79,7 @@ const setPost = () => {
 }
 
 onMounted(() => {
+    postForm.value.tags = ["스터디 모집"];
     if (originId) {
         setPost();
     }

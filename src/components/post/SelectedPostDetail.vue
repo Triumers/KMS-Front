@@ -147,7 +147,7 @@ onMounted(() => {
 
 const modifyPost = (postId) => {
 
-    const modifyPath = `/tab/${post.value.tabRelationId}`;
+    let modifyPath = `/tab/${post.value.tabRelationId}`;
 
     if(general){
         modifyPath += "/general"
