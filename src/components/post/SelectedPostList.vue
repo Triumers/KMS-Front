@@ -64,7 +64,7 @@ import axios from 'axios';
 const router = useRouter();
 
 const tabId = useRoute().params.id;
-const tabName = "tab";
+const tabName = "모집";
 
 const search = ref({
     tabRelationId : tabId,
@@ -76,7 +76,6 @@ const search = ref({
 });
 
 const postDetail = (postId) => {
-
     router.push({
         path: `/tab/detail/${postId}`,
         query: {
@@ -87,11 +86,8 @@ const postDetail = (postId) => {
 
 const isGeneral = () => {
     const generalList = ["강연&컨퍼런스", "모집"];
-    
-    if(tabName.value in generalList) {
-        return true;
-    }
-    return false;
+
+    return generalList.includes(tabName);
 }
 
 async function searchPost(){

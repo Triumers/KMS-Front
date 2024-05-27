@@ -34,7 +34,7 @@
                 <p>최종 수정일</p>
                 <p>
                     <span>{{ convertToDate(post.createdAt) }} &nbsp;</span>
-                    <template v-if="general == false">
+                    <template v-if="!general">
                         <span v-b-tooltip.hover title="게시글 히스토리 확인" data-bs-target="#historyModal"
                             data-bs-toggle="modal">
                             <span class="material-icons">history</span>
@@ -132,8 +132,10 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
-const postId = useRoute().params.id;
-const general = useRoute().query.general;
+
+const currentRoute = useRoute(); 
+const postId = currentRoute.params.id;
+const general = (currentRoute.query.general == "true");
 
 const isAuthorized = true;
 const historyPost = ref(null);
