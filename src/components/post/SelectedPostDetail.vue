@@ -16,7 +16,9 @@
                     <span class="material-icons">more horiz</span>
                 </template>
                 <b-dropdown-item id="export">내보내기</b-dropdown-item>
-                <b-dropdown-item id="modify-btn"
+                <b-dropdown-item v-if="!general" id="modify-btn"
+                    @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
+                <b-dropdown-item v-else-if="general&&isAuthorized" id="modify-btn"
                     @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
                 <b-dropdown-item v-if="isAuthorized" id="delete-btn"
                     @click="deletePost(post.originId ? post.originId : post.id)">삭제</b-dropdown-item>
@@ -30,15 +32,16 @@
         <div id="post-info">
             <div>
                 <p>최종 수정일</p>
-                <p> 
+                <p>
                     <span>{{ convertToDate(post.createdAt) }} &nbsp;</span>
-                <span v-b-tooltip.hover title="게시글 히스토리 확인" data-bs-target="#historyModal" data-bs-toggle="modal">
-                    <span class="material-icons">history</span>
-                </span>
-            </p>
+                    <template v-if="general == false">
+                        <span v-b-tooltip.hover title="게시글 히스토리 확인" data-bs-target="#historyModal"
+                            data-bs-toggle="modal">
+                            <span class="material-icons">history</span>
+                        </span>
+                    </template>
+                </p>
             </div>
-
-
 
             <div id="tag-div">
                 <p>태그</p>
@@ -54,9 +57,7 @@
             <div>
                 <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`"
                     :aria-controls="`#authorList`">
-                    <p>참여자
-                        <>
-                    </p>
+                    <p>참여자 ▽</p>
                 </div>
 
                 <div class="collapse" id="authorList">
@@ -132,6 +133,8 @@ import axios from 'axios';
 
 const router = useRouter();
 const postId = useRoute().params.id;
+const general = useRoute().query.general;
+
 const isAuthorized = true;
 const historyPost = ref(null);
 
@@ -141,12 +144,19 @@ onMounted(() => {
 
 
 const modifyPost = (postId) => {
+
+    const modifyPath = `/tab/${post.value.tabRelationId}`;
+
+    if(general){
+        modifyPath += "/general"
+    }
+
     router.push({
-        path: `/tab/${post.value.tabRelationId}/new`,
+        path: modifyPath + "/new",
         query: {
             post: postId
         }
-    })
+    });
 }
 
 async function restorePost() {

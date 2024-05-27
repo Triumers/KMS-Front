@@ -1,8 +1,7 @@
 <template>
     
-
     <div>
-        <p id="tab-name"> 탭 이름 </p>
+        <p id="tab-name">{{ tabName }}</p>
         <p id="write-btn">
         <div>글쓰기 버튼</div>
         </p>
@@ -63,7 +62,10 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
+
 const tabId = useRoute().params.id;
+const tabName = "tab";
+
 const search = ref({
     tabRelationId : tabId,
     type : 'title',
@@ -74,8 +76,23 @@ const search = ref({
 });
 
 const postDetail = (postId) => {
-    router.push(`/tab/detail/${postId}`);
+
+    router.push({
+        path: `/tab/detail/${postId}`,
+        query: {
+            general: isGeneral()
+        }
+    })
 };
+
+const isGeneral = () => {
+    const generalList = ["강연&컨퍼런스", "모집"];
+    
+    if(tabName.value in generalList) {
+        return true;
+    }
+    return false;
+}
 
 async function searchPost(){
     
@@ -94,12 +111,28 @@ async function searchPost(){
     await getPostList();
 }
 
+async function getTabName() {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.post(`http://localhost:5000/tab/${tabId.value}`);
+            tab.name.value = response.data;
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("탭 이름을 불러올 수 없습니다.");
+    } finally {
+    }
+}
+
 async function getPostList() {
     try {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post('http://localhost:5000/post/tab', { tabRelationId: tabId });
+            const response = await axios.post('http://localhost:5000/post/tab', { tabRelationId: tabId.value });
             postList.value = response.data;
         } else {
             alert("잘못된 접근입니다.");
