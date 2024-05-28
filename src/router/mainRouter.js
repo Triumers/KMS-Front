@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 import MainView from '@/views/MainView.vue';
 
@@ -7,7 +7,9 @@ import PostListView from "@/components/post/SelectedPostList.vue";
 import PostDetailView from "@/components/post/SelectedPostDetail.vue";
 import PostWriterView from "@/components/post/CreateNewPost.vue";
 import GeneralWriterView from "@/components/post/CreateNewGeneralPost.vue";
-
+import CreateQuiz from '@/components/quiz/CreateQuiz.vue';
+import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
+import QuizView from '@/views/QuizView.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -21,20 +23,34 @@ const router = createRouter({
             component: PostView,
             children:[
                 {
-                    path: '/tab/:id',
+                    path: ':id',
                     component: PostListView
                 },
                 {
-                    path: '/tab/detail/:id',
+                    path: 'detail/:id',
                     component: PostDetailView
                 },
                 {
-                    path: '/tab/:id/new',
+                    path: ':id/new',
                     component: PostWriterView
                 },
                 {
-                    path: '/tab/:id/general/new',
+                    path: 'meeting/new',
                     component: GeneralWriterView
+                }
+            ]
+        },
+        {
+            path: '/quiz',
+            component: QuizView,
+            children: [
+                {
+                    path: 'new',
+                    component: CreateQuiz
+                },
+                {
+                    path: ':id',
+                    component: TakeQuiz
                 }
             ]
         }
