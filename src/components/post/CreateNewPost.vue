@@ -153,8 +153,6 @@ async function requestToAI(event) {
     requestAI.innerHTML = type;
     document.getElementById('ai-content').appendChild(requestAI);
 
-
-    createResponseMsg(postForm.value.content);
     try {
         const token = localStorage.getItem('token');
         if (token) {
