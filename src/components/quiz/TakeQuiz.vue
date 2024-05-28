@@ -5,12 +5,7 @@
       <p>{{ index + 1 }}. {{ question.text }}</p>
       <div v-for="(option, optionIndex) in question.options" :key="optionIndex">
         <label>
-          <input
-            type="radio"
-            :name="'question-' + index"
-            :value="option"
-            v-model="userAnswers[index]"
-          />
+          <input type="radio" :name="'question-' + index" :value="option" v-model="userAnswers[index]" />
           {{ option }}
         </label>
       </div>
