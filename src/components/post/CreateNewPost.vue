@@ -22,8 +22,21 @@
         </div>
     </form>
     <div id="ai-chat">
-        <p>AI chat</p>
-        <div>검증/검색/맞춤법 등등</div>
+        <div>
+                <div class="ai" data-bs-toggle="collapse" :data-bs-target="`#aiChat`"
+                    :aria-controls="`#aiChat`">
+                    <p>AI chat</p>
+                </div>
+
+                <div class="collapse" id="aiChat">
+                    <div id="ai-content"> 내용 들어갈 창 </div>
+                    <p>
+                        <span @click="requestToAI('enhancement')">글 업그레이드</span>
+                        <span @click="requestToAI('validation')">내용 검증</span>
+                        <span @click="requestToAI('grammar')">맞춤법 검사</span>
+                    </p>
+                </div>
+            </div>
     </div>
 
 </template>
@@ -38,6 +51,7 @@ const currentRoute = useRoute();
 
 const tabId = currentRoute.params.id;
 const originId = currentRoute.query.post;
+
 const postForm = ref({
     title: '',
     content: '',
@@ -45,6 +59,10 @@ const postForm = ref({
     tabRelationId: tabId,
     originId: originId
 })
+
+const aiForm = ref({
+    content: ''
+});
 
 async function savePost() {
 
@@ -87,6 +105,26 @@ async function saveModifyPost() {
         }
     } catch (error) {
         alert("게시글 저장에 실패했습니다.");
+    }
+}
+
+async function requestToAI(type) {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.get(`http://localhost:5000/post/ai`, { request:{
+                type: type,
+                content: postForm.value.content
+            } });
+
+            aiForm.value.content = response.data.content;
+
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("요청에 실패했습니다.");
     }
 }
 

@@ -1,60 +1,66 @@
 <template>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <div>
-        <p id="tab-name"> 탭 이름 </p>
+        <h3 id="tab-name">{{ tabName }}</h3>
         <p id="write-btn">
-        <div>글쓰기 버튼</div>
+            <b-button variant="light" @click="createNewPost()">글쓰기 버튼</b-button>
         </p>
     </div>
 
     <hr>
 
-    <div class="search">
-        <select id="condition" v-model="search.type">
-            <option value="title">제목</option>
-            <option value="keyword">내용</option>
-            <option value="tag">태그</option>
-        </select>
-        <p>{{ search.type }}</p>
+    <b-input-group class="search">
+        <template #prepend>
+            <b-form-select v-model="search.type" id="condition">
+                <b-form-select-option value="title">제목</b-form-select-option>
+                <b-form-select-option value="keyword">내용</b-form-select-option>
+                <b-form-select-option value="tag">태그</b-form-select-option>
+            </b-form-select>
+        </template>
+
         <template v-if="search.type == 'tag'">
             <b-form-tags input-id="tags-separators" v-model="search.tags" separator=" ,;"
                 placeholder="Enter new tags separated by space" @tag-state="onTagState" no-add-on-enter></b-form-tags>
         </template>
-        <input v-else type="text" id="input-search" v-model="search.word"/>
-        <button id="search-post" @click="searchPost">검색</button>
-    </div>
+        <b-form-input v-else type="text" id="input-search" v-model="search.word"></b-form-input>
+        <b-button variant="light" id="search-post" @click="searchPost">검색</b-button>
+    </b-input-group>
 
     <div class="postList-div">
-        <div class="post" v-for="post in postList" :key="post.id"
-            @click="postDetail(post.originId ? post.originId : post.id)">
-            <div>
-                <b-avatar variant="info" :src="post.author.profileImg ? post.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
-                <div>
-                    <p class="author"> {{ post.author.name }} </p>
-                    <p class="date"> {{ convertToDate(post.createdAt) }}</p>
+        <div class="row row-cols-1 row-cols-1 row-cols-md-2">
+            <div class="col" v-for="post in postList" :key="post.id"
+                @click="postDetail(post.originId ? post.originId : post.id)">
+                <div class="card">
+                    <div class="card-body">
+                        <div id="top-info">
+                            <b-avatar variant="info" size="4rem" id="profile-img"
+                                :src="post.author.profileImg ? post.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+                            <div id="author-date">
+                                <h5 class="author"> {{ post.author.name }} </h5>
+                                <p class="date"><small class="text-muted"> {{ convertToDate(post.createdAt) }}</small>
+                                </p>
+                            </div>
+                        </div>
+                        <h5 class="card-title">{{post.title}}</h5>
+                        <div class="content-preview">{{ post.content }}</div>
+                        <b-card-img src="https://picsum.photos/1000/400/?image=85" rounded alt="Image" bottom></b-card-img>
+                        <div class="d-flex justify-content-between align-items-center">
+                                <p class="like">
+                                    <span class="material-icons">favorite</span>
+                                    {{ post.likeCnt }}
+                                </p>
+                                <p class="tags">
+                                    <span class="tag" v-for="tag in post.tags" :key="tag.id">
+                                        <b-badge>#{{ tag }}</b-badge>
+                                    </span>&nbsp;
+                                </p>
+                        </div>
                     </div>
                 </div>
-            <div>
-                <div class="title">
-                    <h5>{{ post.title }}</h5>
-                </div>
-                <div class="content-preview">
-                    {{ post.content }}
-                    </div>
-            </div>
-            <div>
-                <p class="like">
-                    <span class="material-icons">favorite</span>
-                    {{ post.likeCnt }}</p>
-                <p class="tags">
-                    <span class="tag" v-for="tag in post.tags" :key="tag.id">
-                        #{{ tag }}
-                    </span>&nbsp;
-                </p>
             </div>
         </div>
     </div>
+
 </template>
 
 <script setup>
@@ -63,7 +69,10 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
+
 const tabId = useRoute().params.id;
+const tabName = "모집";
+
 const search = ref({
     tabRelationId : tabId,
     type : 'title',
@@ -74,8 +83,31 @@ const search = ref({
 });
 
 const postDetail = (postId) => {
-    router.push(`/tab/detail/${postId}`);
+    router.push({
+        path: `/tab/detail/${postId}`,
+        query: {
+            general: isGeneral()
+        }
+    })
 };
+
+const createNewPost = () => {
+    let createPath = `/tab/${tabId}`;
+
+    if(isGeneral()){
+        createPath += "/general"
+    }
+
+    router.push({
+        path: createPath + "/new"
+    });
+};
+
+const isGeneral = () => {
+    const generalList = ["모집"];
+
+    return generalList.includes(tabName);
+}
 
 async function searchPost(){
     
@@ -94,12 +126,28 @@ async function searchPost(){
     await getPostList();
 }
 
+async function getTabName() {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.post(`http://localhost:5000/tab/${tabId}`);
+            tab.name.value = response.data;
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("탭 이름을 불러올 수 없습니다.");
+    } finally {
+    }
+}
+
 async function getPostList() {
     try {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post('http://localhost:5000/post/tab', { tabRelationId: tabId });
+            const response = await axios.post('http://localhost:5000/post/tab', { tabRelationId: tabId.value });
             postList.value = response.data;
         } else {
             alert("잘못된 접근입니다.");
@@ -186,5 +234,16 @@ const postList = ref([
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-height: 50px;
 }
+
+#profile-img{
+    float: left;
+}
+
+.tag{
+    margin-left: 5px; 
+}
+
+
 </style>
