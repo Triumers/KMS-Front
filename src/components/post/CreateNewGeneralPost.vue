@@ -1,22 +1,28 @@
 <template>
-    <form @submit.prevent="submitPost" @keydown.enter.prevent>
-        <div>
-            <p id="title"> 게시글 작성 </p>
+    <form id="general-container" @submit.prevent="submitPost" @keydown.enter.prevent>
+        <div id="top">
+            <h3 id="title"><strong>게시글 작성</strong> </h3>
             <div>
-                <button id="save-btn" type="submit" @click="savePost">작성 완료</button>
+                <button id="save-btn" type="submit" class="btn btn-light" @click="savePost">작성 완료</button>
             </div>
         </div>
-        <div>
-            <label for="title">제목:</label>
-            <input type="text" id="title" v-model="postForm.title">
+        <hr>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="title" v-model="postForm.title" placeholder="제목을 입력해주세요.">
+            <label for="title">제목</label>
         </div>
+
         <div>
             <b-form-select v-model="postForm.tags[0]" :options="options"></b-form-select>
         </div>
 
-        <div>
-            <label for="content">내용(html 형식으로 작성):</label>
-            <textarea id="content" v-model="postForm.content"></textarea>
+        <div id="content" class="form-floating mb-3">
+            <b-form-textarea id="content-text" class="form-control" placeholder="내용을 입력해주세요." v-model="postForm.content"
+                no-resize></b-form-textarea>
+            <label for="content-text">
+                내용 (html 형식으로 작성)
+            </label>
         </div>
     </form>
 
@@ -214,4 +220,12 @@ const post = ref({
 
 </script>
 
-<style></style>
+<style>
+#general-container {
+    margin: 20px;
+}
+
+#content{
+    margin-top: 15px;
+}
+</style>
