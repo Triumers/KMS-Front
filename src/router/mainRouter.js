@@ -11,6 +11,13 @@ import CreateQuiz from '@/components/quiz/CreateQuiz.vue';
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 import QuizView from '@/views/QuizView.vue';
 
+import Wiki from '@/views/Wiki.vue';
+import Workspace from '@/views/Workspace.vue';
+import Group from '@/views/Group.vue';
+import Study from '@/views/Study.vue';
+import Organization from '@/views/Organization.vue';
+import OfficeLife from '@/views/OfficeLife.vue';
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -21,7 +28,7 @@ const router = createRouter({
         {
             path: '/tab',
             component: PostView,
-            children:[
+            children: [
                 {
                     path: ':id',
                     component: PostListView
@@ -53,6 +60,32 @@ const router = createRouter({
                     component: TakeQuiz
                 }
             ]
+        },
+        {
+            path: '/wiki',
+            component: Wiki
+        },
+        {
+            path: '/workspace',
+            component: Workspace
+        },
+        {
+            path: '/group',
+            component: Group,
+            children: [
+                {
+                    path: 'study',
+                    component: Study
+                },
+                {
+                    path: 'organization',
+                    component: Organization
+                }
+            ]
+        },
+        {
+            path: '/office-life',
+            component: OfficeLife
         }
     ]
 });
