@@ -29,7 +29,7 @@
                         <span><b-button variant="outline-secondary" data-bs-toggle="modal"
                                 data-bs-target="#preview">미리보기</b-button></span>
 
-                    <!-- 미리보기 모달창 -->
+                        <!-- 미리보기 모달창 -->
                     <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" aria-labelledby="previewLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -105,15 +105,12 @@ const originId = currentRoute.query.post;
 const fileInput = ref(null);
 const postForm = ref({
     title: '',
+    postImg: null,
     content: '',
     tags: [],
     tabRelationId: tabId,
     originId: originId
 })
-
-const aiForm = ref({
-    content: ''
-});
 
 function openFileDialog(event) {
     event.preventDefault();
@@ -132,9 +129,12 @@ async function uploadFile(event) {
         }
     });
 
-    const fileUrl = response.data.url;
+    const fileUrl = response.data;
     const isImage = file.type.startsWith('image/');
-    const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}">` : `<a href="${fileUrl}">${file.name}</a>`;
+    const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
+    if (isImage && postForm.value.postImg == null) {
+        postForm.value.postImg = fileUrl;
+    }
 
     insertAtCursor(urlToInsert);
 
@@ -153,10 +153,12 @@ async function uploadFile(event) {
     //                 }
     //             });
 
-    //             const fileUrl = response.data.url;
-    //             const isImage = file.type.startsWith('image/');
-    //             const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}">` : `<a href="${fileUrl}">${file.name}</a>`;
-
+    // const fileUrl = response.data;
+    // const isImage = file.type.startsWith('image/');
+    // const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
+    // if(isImage && postForm.value.postImg == null) {
+    //     postForm.value.postImg = fileUrl;
+    // }
     //             insertAtCursor(urlToInsert);
     //         } else {
     //             alert("잘못된 접근입니다.");
