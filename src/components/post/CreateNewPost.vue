@@ -20,19 +20,21 @@
 
                     <div class="form-floating mb-3">
                         <b-form-tags id="tags" class="form-control" input-id="tags-separators" v-model="postForm.tags"
-                            separator=" ,;" placeholder="태그 입력 후, 스페이스 바를 눌러주세요." @tag-state="onTagState"
+                            separator=" ,;" placeholder="태그 입력 후, 스페이스 바를 눌러주세요."
                             no-add-on-enter></b-form-tags>
                         <label for="tags">태그</label>
                     </div>
 
+                    <small>※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
                     <div id="content" class="form-floating mb-3">
                         <b-form-textarea id="content-text" class="form-control" placeholder="내용을 입력해주세요."
-                            v-model="postForm.content" no-resize></b-form-textarea>
-                        <label for="content-text">
-                            내용 (html 형식으로 작성)
-                        </label>
+                            v-model="postForm.content" no-resize @contextmenu.prevent="openFileDialog" @keydown.stop></b-form-textarea>
+                            <label for="content-text">
+                                내용 (html 형식으로 작성)
+                            </label>
+                            <input type="file" ref="fileInput" @change="uploadFile" style="display: none;" />
+                        </div>
                     </div>
-                </div>
 
                 <div id="ai-chat">
                     <div>
@@ -74,6 +76,7 @@ const currentRoute = useRoute();
 const tabId = currentRoute.params.id;
 const originId = currentRoute.query.post;
 
+const fileInput = ref(null);
 const postForm = ref({
     title: '',
     content: '',
@@ -85,6 +88,72 @@ const postForm = ref({
 const aiForm = ref({
     content: ''
 });
+
+function openFileDialog(event) {
+    event.preventDefault();
+    fileInput.value.click();
+}
+
+async function uploadFile(event) {
+    const file = event.target.files[0];
+
+    const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await axios.post('http://localhost:5000/post/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                const fileUrl = response.data.url;
+                const isImage = file.type.startsWith('image/');
+                const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}">` : `<a href="${fileUrl}">${file.name}</a>`;
+
+                insertAtCursor(urlToInsert);
+
+
+    // if (file) {
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append('file', file);
+
+    //         const token = localStorage.getItem('token');
+    //         if (token) {
+    //             axios.defaults.headers.common['Authorization'] = token;
+    //             const response = await axios.post('http://localhost:5000/post/upload', formData, {
+    //                 headers: {
+    //                     'Content-Type': 'multipart/form-data'
+    //                 }
+    //             });
+
+    //             const fileUrl = response.data.url;
+    //             const isImage = file.type.startsWith('image/');
+    //             const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}">` : `<a href="${fileUrl}">${file.name}</a>`;
+
+    //             insertAtCursor(urlToInsert);
+    //         } else {
+    //             alert("잘못된 접근입니다.");
+    //         }
+    //     } catch (error) {
+    //         alert("파일 업로드에 실패했습니다.");
+    //     }
+    // }
+}
+
+function insertAtCursor(text) {
+    const textarea = document.getElementById('content-text');
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+    const beforeValue = textarea.value.substring(0, startPos);
+    const afterValue = textarea.value.substring(endPos, textarea.value.length);
+
+    postForm.value.content = beforeValue + text + afterValue;
+    textarea.selectionStart = startPos + text.length;
+    textarea.selectionEnd = startPos + text.length;
+    textarea.focus();
+}
+
 
 async function savePost() {
 
