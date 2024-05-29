@@ -12,7 +12,7 @@
       </div>
       <b-dropdown size="lg" variant="link" toggle-class="text-decoration-none" no-caret>
         <template #button-content>
-          <span class="material-icons">more horiz</span>
+            <span class="material-icons" style="color: black;">more_horiz</span>
         </template>
         <b-dropdown-item id="export"  @click="generatePDF">PDF 내보내기</b-dropdown-item>
         <b-dropdown-item v-if="!general" id="modify-btn"
@@ -33,7 +33,8 @@
         <p>
           <span>{{ convertToDate(post.createdAt) }} &nbsp;</span>
           <template v-if="!general">
-            <span class="material-icons" data-bs-toggle="tooltip" title="게시글 히스토리 확인" @click="openHistoryModal">
+            <span class="material-icons" data-bs-target="#historyModal"
+                            data-bs-toggle="modal">
               history
             </span>
           </template>
@@ -350,7 +351,7 @@ async function saveModifyPost(historyPost) {
 
 const generatePDF = () => {
   
-  html2pdf().from(createPdfHtml()).save();
+  html2pdf().from(createPdfHtml()).set({ filename: `${post.value.title.trim()}.pdf` }).save();
 
   function createPdfHtml(){
     const pdfContent = `
@@ -379,9 +380,6 @@ const closeQuizModal = () => {
   showQuizModal.value = false;
 };
 
-const openHistoryModal = () => {
-  $('#historyModal').modal('show');
-};
 </script>
 
 <style>
@@ -407,5 +405,9 @@ const openHistoryModal = () => {
 
 .tag {
   margin-left: 5px;
+}
+
+.history{
+    overflow-y: auto;
 }
 </style>
