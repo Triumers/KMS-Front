@@ -42,32 +42,94 @@ const router = createRouter({
                     component: PostWriterView
                 },
                 {
-                    path: 'meeting/new',
+                    path: 'general/new',
                     component: GeneralWriterView
                 }
             ]
         },
         {
-            path: '/quiz',
-            component: QuizView,
+            path: '/wiki',
+            component: Wiki,
             children: [
                 {
-                    path: 'new',
-                    component: CreateQuiz
+                    path: 'posts',
+                    component: PostView,
+                    children: [
+                        {
+                            path: ':id',
+                            component: PostListView
+                        },
+                        {
+                            path: 'detail/:id',
+                            component: PostDetailView
+                        },
+                        {
+                            path: ':id/new',
+                            component: PostWriterView
+                        },
+                        {
+                            path: 'general/new',
+                            component: GeneralWriterView
+                        }
+                    ]
                 },
                 {
-                    path: ':id',
-                    component: TakeQuiz
+                    path: 'quiz',
+                    component: QuizView,
+                    children: [
+                        {
+                            path: 'new',
+                            component: CreateQuiz
+                        },
+                        {
+                            path: ':id',
+                            component: TakeQuiz
+                        }
+                    ]
                 }
             ]
         },
         {
-            path: '/wiki',
-            component: Wiki
-        },
-        {
             path: '/workspace',
-            component: Workspace
+            component: Workspace,
+            children: [
+                {
+                    path: 'posts',
+                    component: PostView,
+                    children: [
+                        {
+                            path: ':id',
+                            component: PostListView
+                        },
+                        {
+                            path: 'detail/:id',
+                            component: PostDetailView
+                        },
+                        {
+                            path: ':id/new',
+                            component: PostWriterView
+                        },
+                        {
+                            path: 'general/new',
+                            component: GeneralWriterView
+                        }
+                    ]
+                },
+                {
+                    path: 'quiz',
+                    component: QuizView,
+                    children: [
+                        {
+                            path: 'new',
+                            component: CreateQuiz
+                        },
+                        {
+                            path: ':id',
+                            component: TakeQuiz
+                        }
+                    ]
+                }
+            ]
         },
         {
             path: '/group',
@@ -75,17 +137,131 @@ const router = createRouter({
             children: [
                 {
                     path: 'study',
-                    component: Study
+                    component: Study,
+                    children: [
+                        {
+                            path: 'posts',
+                            component: PostView,
+                            children: [
+                                {
+                                    path: ':id',
+                                    component: PostListView
+                                },
+                                {
+                                    path: 'detail/:id',
+                                    component: PostDetailView
+                                },
+                                {
+                                    path: ':id/new',
+                                    component: PostWriterView
+                                },
+                                {
+                                    path: 'general/new',
+                                    component: GeneralWriterView
+                                }
+                            ]
+                        },
+                        {
+                            path: 'quiz',
+                            component: QuizView,
+                            children: [
+                                {
+                                    path: 'new',
+                                    component: CreateQuiz
+                                },
+                                {
+                                    path: ':id',
+                                    component: TakeQuiz
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
                     path: 'organization',
-                    component: Organization
+                    component: Organization,
+                    children: [
+                        {
+                            path: 'posts',
+                            component: PostView,
+                            children: [
+                                {
+                                    path: ':id',
+                                    component: PostListView
+                                },
+                                {
+                                    path: 'detail/:id',
+                                    component: PostDetailView
+                                },
+                                {
+                                    path: ':id/new',
+                                    component: PostWriterView
+                                },
+                                {
+                                    path: 'general/new',
+                                    component: GeneralWriterView
+                                }
+                            ]
+                        },
+                        {
+                            path: 'quiz',
+                            component: QuizView,
+                            children: [
+                                {
+                                    path: 'new',
+                                    component: CreateQuiz
+                                },
+                                {
+                                    path: ':id',
+                                    component: TakeQuiz
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
         {
             path: '/office-life',
-            component: OfficeLife
+            component: OfficeLife,
+            children: [
+                {
+                    path: 'posts',
+                    component: PostView,
+                    children: [
+                        {
+                            path: ':id',
+                            component: PostListView
+                        },
+                        {
+                            path: 'detail/:id',
+                            component: PostDetailView
+                        },
+                        {
+                            path: ':id/new',
+                            component: PostWriterView
+                        },
+                        {
+                            path: 'general/new',
+                            component: GeneralWriterView
+                        }
+                    ]
+                },
+                {
+                    path: 'quiz',
+                    component: QuizView,
+                    children: [
+                        {
+                            path: 'new',
+                            component: CreateQuiz
+                        },
+                        {
+                            path: ':id',
+                            component: TakeQuiz
+                        }
+                    ]
+                }
+            ]
         }
     ]
 });
