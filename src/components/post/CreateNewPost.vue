@@ -20,17 +20,45 @@
 
                     <div class="form-floating mb-3">
                         <b-form-tags id="tags" class="form-control" input-id="tags-separators" v-model="postForm.tags"
-                            separator=" ,;" placeholder="태그 입력 후, 스페이스 바를 눌러주세요." @tag-state="onTagState"
-                            no-add-on-enter></b-form-tags>
+                            separator=" ,;" placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter></b-form-tags>
                         <label for="tags">태그</label>
                     </div>
 
+                    <p id="content-info">
+                        <small>※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
+                        <span><b-button variant="outline-secondary" data-bs-toggle="modal"
+                                data-bs-target="#preview">미리보기</b-button></span>
+
+                        <!-- 미리보기 모달창 -->
+                    <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="previewLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="previewLabel">미리보기</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" v-html="postForm.content">
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </p>
+
                     <div id="content" class="form-floating mb-3">
                         <b-form-textarea id="content-text" class="form-control" placeholder="내용을 입력해주세요."
-                            v-model="postForm.content" no-resize></b-form-textarea>
+                            v-model="postForm.content" no-resize @contextmenu.prevent="openFileDialog"
+                            @keydown.stop></b-form-textarea>
                         <label for="content-text">
                             내용 (html 형식으로 작성)
                         </label>
+                        <input type="file" ref="fileInput" @change="uploadFile" style="display: none;" />
                     </div>
                 </div>
 
@@ -74,17 +102,85 @@ const currentRoute = useRoute();
 const tabId = currentRoute.params.id;
 const originId = currentRoute.query.post;
 
+const fileInput = ref(null);
 const postForm = ref({
     title: '',
+    postImg: null,
     content: '',
     tags: [],
     tabRelationId: tabId,
     originId: originId
 })
 
-const aiForm = ref({
-    content: ''
-});
+function openFileDialog(event) {
+    event.preventDefault();
+    fileInput.value.click();
+}
+
+async function uploadFile(event) {
+    const file = event.target.files[0];
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axios.post('http://localhost:5000/post/upload', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+
+    const fileUrl = response.data;
+    const isImage = file.type.startsWith('image/');
+    const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
+    if (isImage && postForm.value.postImg == null) {
+        postForm.value.postImg = fileUrl;
+    }
+
+    insertAtCursor(urlToInsert);
+
+
+    // if (file) {
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append('file', file);
+
+    //         const token = localStorage.getItem('token');
+    //         if (token) {
+    //             axios.defaults.headers.common['Authorization'] = token;
+    //             const response = await axios.post('http://localhost:5000/post/upload', formData, {
+    //                 headers: {
+    //                     'Content-Type': 'multipart/form-data'
+    //                 }
+    //             });
+
+    // const fileUrl = response.data;
+    // const isImage = file.type.startsWith('image/');
+    // const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
+    // if(isImage && postForm.value.postImg == null) {
+    //     postForm.value.postImg = fileUrl;
+    // }
+    //             insertAtCursor(urlToInsert);
+    //         } else {
+    //             alert("잘못된 접근입니다.");
+    //         }
+    //     } catch (error) {
+    //         alert("파일 업로드에 실패했습니다.");
+    //     }
+    // }
+}
+
+function insertAtCursor(text) {
+    const textarea = document.getElementById('content-text');
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+    const beforeValue = textarea.value.substring(0, startPos);
+    const afterValue = textarea.value.substring(endPos, textarea.value.length);
+
+    postForm.value.content = beforeValue + text + afterValue;
+    textarea.selectionStart = startPos + text.length;
+    textarea.selectionEnd = startPos + text.length;
+    textarea.focus();
+}
 
 async function savePost() {
 
@@ -336,7 +432,8 @@ const post = ref({
 
 <style>
 #top,
-#main {
+#main,
+#content-info {
     display: flex;
     justify-content: space-between;
 }
