@@ -3,6 +3,7 @@ import './assets/main.css';
 // npm install vue bootstrap bootstrap-vue-3
 // npm install axios
 // npm install vue-router@next
+// npm install html2pdf.js
 
 import { createApp } from 'vue';
 import router from './router/mainRouter.js';
