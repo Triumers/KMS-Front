@@ -1,44 +1,66 @@
 <template>
-    <form @submit.prevent="submitPost" @keydown.enter.prevent>
-        <div>
-            <p id="title"> 위키 작성 </p>
-            <div>
-                <button id="save-btn" type="submit" @click="savePost">작성 완료</button>
-            </div>
-        </div>
-        <div>
-            <label for="title">제목:</label>
-            <input type="text" id="title" v-model="postForm.title">
-        </div>
-        <div>
-            <label for="hashtags">태그를 입력 후, 스페이스 바를 눌러주세요.</label>
-            <b-form-tags input-id="tags-separators" v-model="postForm.tags" separator=" ,;"
-                placeholder="Enter new tags separated by space" @tag-state="onTagState" no-add-on-enter></b-form-tags>
-        </div>
-
-        <div>
-            <label for="content">내용(html 형식으로 작성):</label>
-            <textarea id="content" v-model="postForm.content"></textarea>
-        </div>
-    </form>
-    <div id="ai-chat">
-        <div>
-                <div class="ai" data-bs-toggle="collapse" :data-bs-target="`#aiChat`"
-                    :aria-controls="`#aiChat`">
-                    <p>AI chat</p>
-                </div>
-
-                <div class="collapse" id="aiChat">
-                    <div id="ai-content"> 내용 들어갈 창 </div>
-                    <p>
-                        <span @click="requestToAI('enhancement')">글 업그레이드</span>
-                        <span @click="requestToAI('validation')">내용 검증</span>
-                        <span @click="requestToAI('grammar')">맞춤법 검사</span>
-                    </p>
+    <div id="container">
+        <form @submit.prevent="submitPost" @keydown.enter.prevent>
+            <div id="top">
+                <h3 id="title"><strong>게시글 작성</strong> </h3>
+                <div>
+                    <button id="save-btn" type="submit" class="btn btn-light" @click="savePost">작성 완료</button>
                 </div>
             </div>
+            <hr>
+
+            <div id="main">
+                <div id="main-content">
+
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="title" v-model="postForm.title"
+                            placeholder="제목을 입력해주세요.">
+                        <label for="title">제목</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <b-form-tags id="tags" class="form-control" input-id="tags-separators" v-model="postForm.tags"
+                            separator=" ,;" placeholder="태그 입력 후, 스페이스 바를 눌러주세요." @tag-state="onTagState"
+                            no-add-on-enter></b-form-tags>
+                        <label for="tags">태그</label>
+                    </div>
+
+                    <div id="content" class="form-floating mb-3">
+                        <b-form-textarea id="content-text" class="form-control" placeholder="내용을 입력해주세요."
+                            v-model="postForm.content" no-resize></b-form-textarea>
+                        <label for="content-text">
+                            내용 (html 형식으로 작성)
+                        </label>
+                    </div>
+                </div>
+
+                <div id="ai-chat">
+                    <div>
+                        <div class="ai" data-bs-toggle="collapse" :data-bs-target="`#aiChat`"
+                            :aria-controls="`#aiChat`">
+                            <h5>AI CHAT ▽</h5>
+                        </div>
+                        <hr>
+
+                        <div class="collapse" id="aiChat">
+                            <p>
+                                <b-badge class="ai-menu" @click="requestToAI($event)">글 업그레이드</b-badge>
+                                <b-badge class="ai-menu" @click="requestToAI($event)">내용 검증</b-badge>
+                                <b-badge class="ai-menu" @click="requestToAI($event)">맞춤법 검사</b-badge>
+                            </p>
+                            <div id="ai-content" class="card">
+                                <p><span class="material-icons">info</span>&nbsp;<small>응답 메시지 박스 클릭 시, 내용 복사</small>
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
     </div>
-
 </template>
 
 <script setup>
@@ -108,17 +130,42 @@ async function saveModifyPost() {
     }
 }
 
-async function requestToAI(type) {
+
+function responseMsgClick() {
+    const divContent = this.textContent;
+    navigator.clipboard.writeText(divContent)
+        .then(() => {
+            alert("복사 되었습니다.")
+            console.log('복사 완료');
+        })
+        .catch(err => {
+            console.error('복사 실패:', err);
+        });
+}
+
+async function requestToAI(event) {
+
+    const aiType = { '글 업그레이드': 'enhancement', '내용 검증': 'validation', '맞춤법 검사': 'grammar' };
+    const type = event.target.textContent;
+
+    const requestAI = document.createElement('p');
+    requestAI.className = 'alert alert-light';
+    requestAI.innerHTML = type;
+    document.getElementById('ai-content').appendChild(requestAI);
+
     try {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.get(`http://localhost:5000/post/ai`, { request:{
-                type: type,
-                content: postForm.value.content
-            } });
+            const response = await axios.get(`http://localhost:5000/post/ai`, {
+                request: {
+                    type: aiType[type],
+                    content: postForm.value.content
+                }
+            });
 
-            aiForm.value.content = response.data.content;
+            const responseContent = response.data.content;
+            createResponseMsg(responseContent);
 
         } else {
             alert("잘못된 접근입니다.");
@@ -126,6 +173,19 @@ async function requestToAI(type) {
     } catch (error) {
         alert("요청에 실패했습니다.");
     }
+
+    function createResponseMsg(content) {
+        const responseAI = document.createElement('p');
+        responseAI.addEventListener('click', responseMsgClick);
+        responseAI.className = 'alert alert-primary';
+        responseAI.setAttribute('data-bs-toggle', 'tooltip'); // 툴팁 토글 속성 추가
+        responseAI.setAttribute('title', '클릭 시, 내용 복사'); // 툴팁 제목 추가
+        responseAI.innerHTML = content;
+
+        document.getElementById('ai-content').appendChild(responseAI);
+    }
+
+
 }
 
 
@@ -274,4 +334,45 @@ const post = ref({
 
 </script>
 
-<style></style>
+<style>
+#top,
+#main {
+    display: flex;
+    justify-content: space-between;
+}
+
+#container {
+    margin: 20px;
+}
+
+#main-content {
+    width: 100%;
+    height: 100%;
+    padding-right: 20px;
+}
+
+#ai-chat {
+    max-width: 300px;
+    min-width: 300px;
+}
+
+#ai-content {
+    height: 500px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.ai-menu {
+    margin-left: 5px;
+}
+
+
+.form-floating {
+    height: fit-content;
+}
+
+#content-text {
+    width: 100%;
+    min-height: 450px;
+}
+</style>
