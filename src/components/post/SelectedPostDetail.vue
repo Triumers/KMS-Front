@@ -40,6 +40,7 @@
           </template>
         </p>
       </div>
+      <hr>
       <div id="tag-div">
         <p><strong>태그</strong></p>
         <div class="hashtag">
@@ -50,11 +51,12 @@
           </p>
         </div>
       </div>
+      <hr>
       <div>
         <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`" :aria-controls="`#authorList`">
           <p><strong>참여자 ▽</strong></p>
         </div>
-        <div class="collapse" id="authorList">
+        <div class="show" id="authorList">
           <p class="author" v-for="participant in post.participants" :key="participant.id">
             <b-avatar variant="info"
               :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'">
