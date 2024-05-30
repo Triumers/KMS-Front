@@ -34,14 +34,10 @@ const tabId = currentRoute.params.id;
 const originId = currentRoute.query.post;
 
 const docsForm = ref({
-    id: null,
     title: '',
-    postImg: null,
     content: '',
-    tags: [],
     tabRelationId: tabId,
-    originId: originId,
-    categoryId: 2
+    categoryId: 1
 })
 
 async function uploadDocs(event) {
@@ -96,7 +92,12 @@ async function saveNewPost() {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.get(`http://localhost:5000/post/regist`, { newPost: postForm.value });
+            const response = await axios.post(`http://localhost:5000/post/regist`, {
+                title: postForm.value.title,
+                content: postForm.value.content,
+                tabRelationId: postForm.value.tabId,
+                categoryId: postForm.value
+            });
             originId.value = response.data.id;
         } else {
             alert("잘못된 접근입니다.");

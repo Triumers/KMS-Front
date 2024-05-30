@@ -190,7 +190,7 @@ const router = createRouter({
                     component: PostDetailView
                 },
                 {
-                    path: ':id/new',
+                    path: '/new',
                     component: PostWriterView
                 },
                 {
