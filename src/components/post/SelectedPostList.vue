@@ -91,11 +91,17 @@ onMounted(() => {
 
 const postDetail = (postId) => {
 
-const firstSegment = currentRoute.path.split('/')[1];
+    const segments = currentRoute.path.split('/');
+
+    let detailPath = segments[1];
+
+    if (segments.length > 2 && segments[2] === "organization") {
+        detailPath = `${detailPath}/${segments[2]}`;
+    }
 
     router.push({
-        path: `/${firstSegment}/detail/${postId}`
-    })
+        path: `/${detailPath}/detail/${postId}`
+    });
 };
 
 const createNew = () => {
