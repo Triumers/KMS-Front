@@ -3,7 +3,7 @@
     <div id="top">
         <h3 id="tab-name">Docs</h3>
         <p id="write-btn">
-            <b-button variant="light" @click="createNewDocs()">업로드</b-button>
+            <b-button variant="light" @click="createNew()">업로드</b-button>
         </p>
     </div>
 
@@ -11,7 +11,7 @@
 
     <b-input-group class="search">
         <template #prepend>
-            <b-form-select v-model="search.type" id="condition">
+            <b-form-select id="condition">
                 <b-form-select-option value="title">제목</b-form-select-option>
             </b-form-select>
         </template>
@@ -32,7 +32,12 @@
             <tbody>
                 <tr v-for="post in postList" :key="post.id">
                     <td><strong>{{ post.title }}</strong></td>
-                    <td><a :href="post.content.split(' : ')[2]">{{ post.content.split(' : ')[0] }}</a></td>
+                    <td>
+                        <a :href="post.content.split(' : ')[2]" style="color: black; text-decoration: none;">
+                            <span class="material-icons">attach_file</span>
+                            {{ post.content.split(' : ')[0] }}
+                        </a>
+                    </td>
                     <td>{{ post.content.split(' : ')[1] }}</td>
                     <td>{{ convertToDate(post.createdAt) }}</td>
                 </tr>
@@ -48,60 +53,62 @@ import axios from 'axios';
 
 const router = useRouter();
 
-const tabId = useRoute().params.id;
-
+const tabId = 1; //useRoute().params.id;
+const postList = ref([]);
 const search = ref({
     tabRelationId: tabId,
-    type: 'title',
+    categoryId: 1,
     word: '',
-    title: null,
-    keyword: null,
-    tags: []
+    title: null
 });
 
-const createNewDocs = () => {
-    router.push({
-        path: "new"
-    });
+onMounted(() => {
+    getPostList();
+});
+
+const createNew = () => {
+    const currentPath = router.currentRoute.value.path;
+    const newPath = `${currentPath}/new`;
+    router.push(newPath);
 };
 
 async function searchPost() {
-
     search.value.title = search.value.word;
     await getPostList();
 }
 
-async function getTabName() {
+async function getPostList() {
     try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://localhost:5000/tab/${tabId}`);
-            tab.name.value = response.data;
-        } else {
-            alert("잘못된 접근입니다.");
-        }
+        const response = await axios.post('http://localhost:5000/post/tab', {
+            tabRelationId: search.value.tabRelationId,
+            categoryId: search.value.categoryId,
+            title: search.value.title
+        });
+        postList.value = response.data.content;
     } catch (error) {
-        alert("탭 이름을 불러올 수 없습니다.");
-    } finally {
+        console.error("게시글을 불러올 수 없습니다.", error);
     }
 }
 
-async function getPostList() {
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post('http://localhost:5000/post/tab', { tabRelationId: tabId.value });
-            postList.value = response.data;
-        } else {
-            alert("잘못된 접근입니다.");
-        }
-    } catch (error) {
-        alert("게시글을 불러올 수 없습니다.");
-    } finally {
-    }
-}
+// async function getPostList() {
+//     try {
+//         const token = localStorage.getItem('token');
+//         if (token) {
+//             axios.defaults.headers.common['Authorization'] = token;
+// const response = await axios.post('http://localhost:5000/post/tab', {
+//     tabRelationId: search.value.tabRelationId,
+//     categoryId: search.value.categoryId,
+//     title: search.value.title
+// });
+//             postList.value = response.data.content;
+//         } else {
+//             alert("잘못된 접근입니다.");
+//         }
+//     } catch (error) {
+//         alert("게시글을 불러올 수 없습니다.");
+//     } finally {
+//     }
+// }
 
 const convertToDate = (date) => {
     const dateSplit = date.split("T");
@@ -109,66 +116,6 @@ const convertToDate = (date) => {
 
     return dateSplit[0] + " " + dateSplit[1];
 };
-
-const postList = ref([
-    {
-        "id": 1,
-        "title": "자바의 기본 문법",
-        "content": "파일이름 : 타입 : https://picsum.photos/1000/400/?image=85",
-        "createdAt": "2021-11-08T11:44:30.327959",
-        "author": {
-            "id": 1,
-            "email": "admin",
-            "name": "관리자",
-            "profileImg": null,
-            "role": "ROLE_ADMIN",
-            "startDate": "2024-05-17",
-            "endDate": null,
-            "phoneNumber": null,
-            "teamId": 1,
-            "positionId": 1,
-            "rankId": 1
-        },
-        "originId": null,
-        "recentId": 2,
-        "tabRelationId": 1,
-        "categoryId": null,
-        "tags": [
-            "개발", "tag1", "tag2", "tag3", "tag4", "tag5"
-        ],
-        "history": null,
-        "likeCnt": 3
-    },
-    {
-        "id": 2,
-        "title": "자바의 기본 문법 수정",
-        "content": "파일이름 : 타입 : https://picsum.photos/1000/400/?image=85",
-        "createdAt": "2021-11-08T11:44:30.327959",
-        "author": {
-            "id": 1,
-            "email": "admin",
-            "name": "관리자",
-            "profileImg": null,
-            "role": "ROLE_ADMIN",
-            "startDate": "2024-05-17",
-            "endDate": null,
-            "phoneNumber": null,
-            "teamId": 1,
-            "positionId": 1,
-            "rankId": 1
-        },
-        "originId": 1,
-        "recentId": null,
-        "tabRelationId": 1,
-        "categoryId": null,
-        "tags": [
-            "개발", "tag1", "tag2", "tag8", "tag7", "tag6"
-        ],
-        "history": null,
-        "likeCnt": 3
-    }
-]);
-
 
 </script>
 
@@ -191,7 +138,7 @@ const postList = ref([
     margin-left: 5px;
 }
 
-#top{
+#top {
     display: flex;
     justify-content: space-between;
 }

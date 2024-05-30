@@ -35,15 +35,14 @@ const router = createRouter({
             children: [
                 {
                     path: '',
-                    component: PostListView
-                }
-                ,
+                    component: PostListView,
+                },
                 {
                     path: 'detail/:id',
                     component: PostDetailView
                 },
                 {
-                    path: 'wiki/new',
+                    path: 'new',
                     component: PostWriterView
                 },
                 {
@@ -191,7 +190,7 @@ const router = createRouter({
                     component: PostDetailView
                 },
                 {
-                    path: ':id/new',
+                    path: '/new',
                     component: PostWriterView
                 },
                 {
