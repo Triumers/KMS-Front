@@ -1,9 +1,8 @@
 <template>
-
     <div id="top">
         <h3 id="tab-name">{{ tabName }}</h3>
         <p id="write-btn">
-            <b-button variant="light" @click="createNewPost()">글쓰기 버튼</b-button>
+            <b-button variant="light" @click="createNew()">글쓰기 버튼</b-button>
         </p>
     </div>
 
@@ -41,13 +40,13 @@
                                 </p>
                             </div>
                         </div>
-                        <h5 class="card-title">{{post.title}}</h5>
+                        <h5 class="card-title"><strong>{{post.title}}</strong></h5>
                         <div class="content-preview">{{ post.content }}</div>
                         <b-card-img src="https://picsum.photos/1000/400/?image=85" rounded alt="Image" bottom></b-card-img>
                         <div class="d-flex justify-content-between align-items-center">
                                 <p class="like">
                                     <span class="material-icons">favorite</span>
-                                    {{ post.likeCnt }}
+                                    {{ post.likeList.length }}
                                 </p>
                                 <p class="tags">
                                     <span class="tag" v-for="tag in post.tags" :key="tag.id">
@@ -71,52 +70,49 @@ import axios from 'axios';
 const router = useRouter();
 const currentRoute = useRoute();
 
-const tabId = useRoute().params.id;
-const tabName = "wiki";
+const tabId = 1; // useRoute().params.id;
+const tabName = ref(null);
 
+const postList = ref(null);
 const search = ref({
-    tabRelationId : tabId,
+    tabRelationId : 1,
+    categoryId : null,
     type : 'title',
     word : '',
     title: null,
     keyword: null,
-    tags: []
+    tags: null
+});
+
+onMounted(() => {
+    getTabName();
+   getPostList();
 });
 
 const postDetail = (postId) => {
 
-    
-const firstSegment = currentRoute.path.split('/')[1];
+    const segments = currentRoute.path.split('/');
 
-    router.push({
-        path: `/${firstSegment}/detail/${postId}`,
-        query: {
-            general: isGeneral()
-        }
-    })
-};
+    let detailPath = segments[1];
 
-const createNewPost = () => {
-    let createPath = `/tab/${tabId}`;
-
-    if(isGeneral()){
-        createPath += "/general"
+    if (segments.length > 2 && segments[2] === "organization") {
+        detailPath = `${detailPath}/${segments[2]}`;
     }
 
     router.push({
-        path: "wiki/new"
+        path: `/${detailPath}/detail/${postId}`
     });
 };
 
-const isGeneral = () => {
-    const generalList = ["모집"];
-
-    return generalList.includes(tabName);
-}
+const createNew = () => {
+    const currentPath = router.currentRoute.value.path;
+    const newPath = `${currentPath}/new`; 
+    router.push(newPath); 
+};
 
 async function searchPost(){
     
-    switch(type){
+    switch(search.value.type){
         case 'title':
             search.value.title = search.value.word;
             break;
@@ -125,43 +121,74 @@ async function searchPost(){
             break;
     }
 
-    if(type != "tag" || search.value.tags.length <= 0)
+    if(search.value.type != "tag" || search.value.tags.length <= 0)
         tags = null;
     
     await getPostList();
 }
 
 async function getTabName() {
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://localhost:5000/tab/${tabId}`);
-            tab.name.value = response.data;
-        } else {
-            alert("잘못된 접근입니다.");
-        }
-    } catch (error) {
-        alert("탭 이름을 불러올 수 없습니다.");
-    } finally {
-    }
+    const response = await axios.get(`http://localhost:5000/tab/name/${tabId}`);
+    tabName.value = response.data;
+
+    // try {
+    //     const token = localStorage.getItem('token');
+    //     if (token) {
+    //         axios.defaults.headers.common['Authorization'] = token;
+    // const response = await axios.get(`http://localhost:5000/tab/name/${tabId}`);
+    //         tabName.value = response.data;
+    //     } else {
+    //         alert("잘못된 접근입니다.");
+    //     }
+    // } catch (error) {
+    //     alert("탭 이름을 불러올 수 없습니다.");
+    // } finally {
+    // }
 }
+
+const pageable = {
+    page: 0,
+    size: 10
+};
 
 async function getPostList() {
     try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post('http://localhost:5000/post/tab', { tabRelationId: tabId.value });
-            postList.value = response.data;
-        } else {
-            alert("잘못된 접근입니다.");
-        }
+        const response = await axios.post('http://localhost:5000/post/tab', {
+            tabRelationId: search.value.tabRelationId,
+            categoryId: search.value.categoryId,
+            title: search.value.title,
+            keyword: search.value.keyword,
+            tags: search.value.tags
+        });
+        postList.value = response.data.content;
     } catch (error) {
-        alert("게시글을 불러올 수 없습니다.");
-    } finally {
+        console.error("게시글을 불러올 수 없습니다.", error);
     }
 }
+
+
+// async function getPostList() {
+
+//     try {
+//         const token = localStorage.getItem('token');
+//         if (token) {
+//             axios.defaults.headers.common['Authorization'] = token;
+//             const response = await axios.post('http://localhost:5000/post/tab', {
+//                 tabRelationId: search.value.tabRelationId,
+//                 categoryId: search.value.categoryId,
+//                 title: search.value.title,
+//                 keyword: search.value.keyword,
+//                 tags: search.value.tags
+//             });
+//             postList.value = response.data.content;
+//         } else {
+//             alert("잘못된 접근입니다.");
+//         }
+//     } catch (error) {
+//         alert("게시글을 불러올 수 없습니다.");
+//     } finally {
+//     }
+// }
 
 const convertToDate = (date) => {
     const dateSplit = date.split("T");
@@ -170,64 +197,7 @@ const convertToDate = (date) => {
     return dateSplit[0] + " " + dateSplit[1];
 };
 
-const postList = ref([
-    {
-        "id": 1,
-        "title": "자바의 기본 문법",
-        "content": "자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다. 자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다. 자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다.",
-        "createdAt": "2021-11-08T11:44:30.327959",
-        "author": {
-            "id": 1,
-            "email": "admin",
-            "name": "관리자",
-            "profileImg": null,
-            "role": "ROLE_ADMIN",
-            "startDate": "2024-05-17",
-            "endDate": null,
-            "phoneNumber": null,
-            "teamId": 1,
-            "positionId": 1,
-            "rankId": 1
-        },
-        "originId": null,
-        "recentId": 2,
-        "tabRelationId": 1,
-        "categoryId": null,
-        "tags": [
-            "개발", "tag1", "tag2", "tag3", "tag4", "tag5"
-        ],
-        "history": null,
-        "likeCnt": 3
-    },
-    {
-        "id": 2,
-        "title": "자바의 기본 문법 수정",
-        "content": "자바 수정",
-        "createdAt": "2021-11-08T11:44:30.327959",
-        "author": {
-            "id": 1,
-            "email": "admin",
-            "name": "관리자",
-            "profileImg": null,
-            "role": "ROLE_ADMIN",
-            "startDate": "2024-05-17",
-            "endDate": null,
-            "phoneNumber": null,
-            "teamId": 1,
-            "positionId": 1,
-            "rankId": 1
-        },
-        "originId": 1,
-        "recentId": null,
-        "tabRelationId": 1,
-        "categoryId": null,
-        "tags": [
-            "개발", "tag1", "tag2", "tag8", "tag7", "tag6"
-        ],
-        "history": null,
-        "likeCnt": 3
-    }
-]);
+
 
 
 </script>
