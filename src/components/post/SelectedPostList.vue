@@ -46,7 +46,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                                 <p class="like">
                                     <span class="material-icons">favorite</span>
-                                    {{ post.likeCnt }}
+                                    {{ post.likeList.length }}
                                 </p>
                                 <p class="tags">
                                     <span class="tag" v-for="tag in post.tags" :key="tag.id">
