@@ -1,126 +1,122 @@
 <template>
-    <div id="container">
-  <div id="top">
-    <h1 id="title"> {{ post.title }} </h1>
-    <div id="etc">
-      <div class="translate">
-        <select id="condition">
-          <option value="en">영어</option>
-          <option value="jp">일본어</option>
-          <option value="ch">중국어</option>
-        </select>
-      </div>
-      <b-dropdown size="lg" variant="link" toggle-class="text-decoration-none" no-caret>
-        <template #button-content>
+  <div id="container">
+    <div id="top">
+      <h1 id="title"> {{ post.title }} </h1>
+      <div id="etc">
+        <div class="translate">
+          <select id="condition">
+            <option value="en">영어</option>
+            <option value="jp">일본어</option>
+            <option value="ch">중국어</option>
+          </select>
+        </div>
+        <b-dropdown size="lg" variant="link" toggle-class="text-decoration-none" no-caret>
+          <template #button-content>
             <span class="material-icons" style="color: black;">more_horiz</span>
-        </template>
-        <b-dropdown-item id="export"  @click="generatePDF">PDF 내보내기</b-dropdown-item>
-        <b-dropdown-item v-if="!general" id="modify-btn"
-          @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
-        <b-dropdown-item v-else-if="general && isAuthorized" id="modify-btn"
-          @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
-        <b-dropdown-item v-if="isAuthorized" id="delete-btn"
-          @click="deletePost(post.originId ? post.originId : post.id)">삭제</b-dropdown-item>
-      </b-dropdown>
-    </div>
-  </div>
-  <hr>
-  <div id="post-container">
-    <div id="content" v-html="post.content"></div>
-    <div id="post-info">
-      <div>
-        <p><strong>최종 수정일</strong></p>
-        <p>
-          <span>{{ convertToDate(post.createdAt) }} &nbsp;</span>
-          <template v-if="!general">
-            <span class="material-icons" data-bs-target="#historyModal"
-                            data-bs-toggle="modal">
-              history
-            </span>
           </template>
-        </p>
+          <b-dropdown-item id="export" @click="generatePDF">PDF 내보내기</b-dropdown-item>
+          <b-dropdown-item v-if="!general" id="modify-btn"
+            @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
+          <b-dropdown-item v-else-if="general && isAuthorized" id="modify-btn"
+            @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
+          <b-dropdown-item v-if="isAuthorized" id="delete-btn"
+            @click="deletePost(post.originId ? post.originId : post.id)">삭제</b-dropdown-item>
+        </b-dropdown>
       </div>
-      <hr>
-      <div id="tag-div">
-        <p><strong>태그</strong></p>
-        <div class="hashtag">
+    </div>
+    <hr>
+    <div id="post-container">
+      <div id="content" v-html="post.content"></div>
+      <div id="post-info">
+        <div>
+          <p><strong>최종 수정일</strong></p>
           <p>
-            <span class="tag" v-for="tag in post.tags" :key="tag.id">
-              <b-badge>#{{ tag }}</b-badge>
-            </span>&nbsp;
+            <span>{{ convertToDate(post.createdAt) }} &nbsp;</span>
+            <template v-if="!general">
+              <span class="material-icons" data-bs-target="#historyModal" data-bs-toggle="modal">
+                history
+              </span>
+            </template>
           </p>
         </div>
-      </div>
-      <hr>
-      <div>
-        <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`" :aria-controls="`#authorList`">
-          <p><strong>참여자 ▽</strong></p>
+        <hr>
+        <div id="tag-div">
+          <p><strong>태그</strong></p>
+          <div class="hashtag">
+            <p>
+              <span class="tag" v-for="tag in post.tags" :key="tag.id">
+                <b-badge>#{{ tag }}</b-badge>
+              </span>&nbsp;
+            </p>
+          </div>
         </div>
-        <div class="show" id="authorList">
-          <p class="author" v-for="participant in post.participants" :key="participant.id">
-            <b-avatar variant="info"
-              :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'">
-            </b-avatar>
-            &nbsp;{{ participant.name }}&nbsp;
-          </p>
+        <hr>
+        <div>
+          <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`" :aria-controls="`#authorList`">
+            <p><strong>참여자 ▽</strong></p>
+          </div>
+          <div class="show" id="authorList">
+            <p class="author" v-for="participant in post.participants" :key="participant.id">
+              <b-avatar variant="info"
+                :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+              &nbsp;{{ participant.name }}&nbsp;
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div>
-    <button @click="openQuizModal">퀴즈 풀기</button>
-    <Modal :isVisible="showQuizModal" @close="closeQuizModal">
-      <TakeQuiz :quizId="selectedQuizId" :isVisible="showQuizModal" />
-    </Modal>
-  </div>
+    <!-- 퀴즈 모달창 -->
+    <div v-if="isQuizAvailable" id="quiz-container">
+      <TakeQuiz :quizId="selectedQuizId" />
+    </div>
 
-  <!-- 히스토리 모달창 -->
-  <div class="modal fade" id="historyModal" aria-hidden="true" aria-labelledby="modalToggleLabel" tabindex="-1">
-    <div class="modal-dialog modal-fullscreen">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="" id="modalToggleLabel">변경 히스토리 확인</h3>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" v-if="historyPost">
-          <div class="history" id="historyContent">
-            <h4 id="title"> {{ historyPost.title }} </h4>
-            <small> {{ convertToDate(historyPost.createdAt) }}</small>
-            <b-button variant="outline-dark" @click="restorePost()">버전 복원하기</b-button>
-            <div id="tag-div">
-              <div class="hashtag">
-                <p>
-                  <span class="tag" v-for="tag in historyPost.tags" :key="tag.id">
-                    <b-badge>#{{ tag }}</b-badge>
-                  </span>&nbsp;
-                </p>
+    <!-- 히스토리 모달창 -->
+    <div class="modal fade" id="historyModal" aria-hidden="true" aria-labelledby="modalToggleLabel" tabindex="-1">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="" id="modalToggleLabel">변경 히스토리 확인</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" v-if="historyPost">
+            <div class="history" id="historyContent">
+              <h4 id="title"> {{ historyPost.title }} </h4>
+              <small> {{ convertToDate(historyPost.createdAt) }}</small>
+              <b-button variant="outline-dark" @click="restorePost()">버전 복원하기</b-button>
+              <div id="tag-div">
+                <div class="hashtag">
+                  <p>
+                    <span class="tag" v-for="tag in historyPost.tags" :key="tag.id">
+                      <b-badge>#{{ tag }}</b-badge>
+                    </span>&nbsp;
+                  </p>
+                </div>
               </div>
+              <div id="content" v-html="historyPost.content"></div>
             </div>
-            <div id="content" v-html="historyPost.content"></div>
-          </div>
-          <div class="history" id="historyList">
-            <b-list-group>
-              <template v-for="history in post.history" :key="history.id">
-                <b-list-group-item button @click="setHistoryContent(history)">
-                  <div>
-                    <p>
-                    <h3>
-                      <b-avatar variant="info"
-                        :src="history.author.profileImg ? history.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
-                      <span> &nbsp;{{ history.author.name }}&nbsp; </span>
-                    </h3>
-                    </p>
-                    <small>{{ convertToDate(history.createdAt) }}</small>
-                  </div>
-                </b-list-group-item>
-              </template>
-            </b-list-group>
+            <div class="history" id="historyList">
+              <b-list-group>
+                <template v-for="history in post.history" :key="history.id">
+                  <b-list-group-item button @click="setHistoryContent(history)">
+                    <div>
+                      <p>
+                      <h3>
+                        <b-avatar variant="info"
+                          :src="history.author.profileImg ? history.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+                        <span> &nbsp;{{ history.author.name }}&nbsp; </span>
+                      </h3>
+                      </p>
+                      <small>{{ convertToDate(history.createdAt) }}</small>
+                    </div>
+                  </b-list-group-item>
+                </template>
+              </b-list-group>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
   </div>
 </template>
@@ -131,7 +127,6 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import html2pdf from 'html2pdf.js';
 
-import Modal from '@/components/common/Modal.vue';
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 
 const router = useRouter();
@@ -141,8 +136,8 @@ const general = (currentRoute.query.general == "true");
 
 const isAuthorized = true;
 const historyPost = ref(null);
-const showQuizModal = ref(false);
-const selectedQuizId = ref("1");
+const selectedQuizId = ref(null);
+const isQuizAvailable = ref(false);
 
 const post = ref({
   id: 2,
@@ -241,7 +236,9 @@ const post = ref({
   participants: [
     {
       id: 1,
+      name: "홍길동",
       email: "admin",
+      profileImg: "https://placekitten.com/300/300",
       name: "관리자",
       profileImg: null,
       role: "ROLE_ADMIN",
@@ -254,9 +251,9 @@ const post = ref({
     },
     {
       id: 2,
+      name: "김영희",
       email: "test1",
-      name: "테스트1",
-      profileImg: "test1.jpg",
+      profileImg: "https://placekitten.com/300/300",
       role: "ROLE_NORMAL",
       startDate: null,
       endDate: null,
@@ -265,8 +262,7 @@ const post = ref({
       positionId: 2,
       rankId: 2
     }
-  ],
-  hasQuiz: true
+  ]
 });
 
 onMounted(() => {
@@ -352,10 +348,10 @@ async function saveModifyPost(historyPost) {
 }
 
 const generatePDF = () => {
-  
+
   html2pdf().from(createPdfHtml()).set({ filename: `${post.value.title.trim()}.pdf` }).save();
 
-  function createPdfHtml(){
+  function createPdfHtml() {
     const pdfContent = `
     <div style="padding:20px">
     <h3>${post.value.title}</h3>
@@ -369,19 +365,29 @@ const generatePDF = () => {
     <div>${post.value.content}</div>
     </div>
   `;
-  return pdfContent;
+    return pdfContent;
   }
 };
 
-
-const openQuizModal = () => {
-  showQuizModal.value = true;
+// Quiz Modal Visibility
+const checkQuizVisibility = async () => {
+  try {
+    const response = await axios.get(`/quiz/exist?postId=${postId}`);
+    if (response.status == 200) {
+      isQuizAvailable.value = true;
+      selectedQuizId.value = response.data.id;
+    } else {
+      isQuizAvailable.value = false;
+    }
+  } catch (error) {
+    console.error('Failed to fetch quiz visibility:', error);
+    isQuizAvailable.value = false;
+  }
 };
 
-const closeQuizModal = () => {
-  showQuizModal.value = false;
-};
-
+onMounted(async () => {
+  await checkQuizVisibility();
+});
 </script>
 
 <style>
@@ -409,7 +415,72 @@ const closeQuizModal = () => {
   margin-left: 5px;
 }
 
-.history{
-    overflow-y: auto;
+.history {
+  overflow-y: auto;
+}
+
+#container {
+  width: 80%;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+
+#top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#title {
+  margin: 0;
+  font-size: 2em;
+}
+
+#etc {
+  display: flex;
+  align-items: center;
+}
+
+#condition {
+  margin-right: 20px;
+}
+
+#post-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+#content {
+  width: 70%;
+}
+
+#post-info {
+  width: 25%;
+}
+
+#tag-div {
+  margin-top: 20px;
+}
+
+.authors {
+  cursor: pointer;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+}
+
+.material-icons {
+  cursor: pointer;
+}
+
+.material-icons:hover {
+  color: grey;
+}
+
+#quiz-container {
+  margin-top: 20px;
 }
 </style>
