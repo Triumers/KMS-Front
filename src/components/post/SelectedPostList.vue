@@ -40,7 +40,7 @@
                                 </p>
                             </div>
                         </div>
-                        <h5 class="card-title">{{post.title}}</h5>
+                        <h5 class="card-title"><strong>{{post.title}}</strong></h5>
                         <div class="content-preview">{{ post.content }}</div>
                         <b-card-img src="https://picsum.photos/1000/400/?image=85" rounded alt="Image" bottom></b-card-img>
                         <div class="d-flex justify-content-between align-items-center">
