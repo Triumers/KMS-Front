@@ -185,11 +185,10 @@ async function getPostList() {
 // }
 
 const convertToDate = (date) => {
-    // const dateSplit = date.split("T");
-    // dateSplit[1] = dateSplit[1].split(".")[0];
+    const dateSplit = date.split("T");
+    dateSplit[1] = dateSplit[1].split(".")[0];
 
-    // return dateSplit[0] + " " + dateSplit[1];
-    return date;
+    return dateSplit[0] + " " + dateSplit[1];
 };
 
 
