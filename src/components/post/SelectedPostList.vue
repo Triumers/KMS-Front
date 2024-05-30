@@ -1,6 +1,6 @@
 <template>
 
-    <div>
+    <div id="top">
         <h3 id="tab-name">{{ tabName }}</h3>
         <p id="write-btn">
             <b-button variant="light" @click="createNewPost()">글쓰기 버튼</b-button>
@@ -69,9 +69,10 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
+const currentRoute = useRoute();
 
 const tabId = useRoute().params.id;
-const tabName = "모집";
+const tabName = "wiki";
 
 const search = ref({
     tabRelationId : tabId,
@@ -83,8 +84,12 @@ const search = ref({
 });
 
 const postDetail = (postId) => {
+
+    
+const firstSegment = currentRoute.path.split('/')[1];
+
     router.push({
-        path: `/tab/detail/${postId}`,
+        path: `/${firstSegment}/detail/${postId}`,
         query: {
             general: isGeneral()
         }
@@ -99,7 +104,7 @@ const createNewPost = () => {
     }
 
     router.push({
-        path: createPath + "/new"
+        path: "wiki/new"
     });
 };
 
@@ -245,5 +250,9 @@ const postList = ref([
     margin-left: 5px; 
 }
 
+#top{
+    display: flex;
+    justify-content: space-between;
+}
 
 </style>

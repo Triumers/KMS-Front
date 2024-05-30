@@ -274,12 +274,12 @@ onMounted(() => {
 });
 
 const modifyPost = (postId) => {
-  let modifyPath = `/tab/${post.value.tabRelationId}`;
+  let modifyPath = `/workspace/${post.value.tabRelationId}`;
   if (general) {
     modifyPath += "/general";
   }
   router.push({
-    path: modifyPath + "/new",
+    path: "new",
     query: {
       post: postId
     }
