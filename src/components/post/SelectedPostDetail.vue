@@ -15,9 +15,12 @@
             <span class="material-icons" style="color: black;">more_horiz</span>
           </template>
           <b-dropdown-item id="export" @click="generatePDF">PDF 내보내기</b-dropdown-item>
-          <b-dropdown-item v-if="!general" id="modify-btn" @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
-          <b-dropdown-item v-else-if="general && isAuthorized" id="modify-btn" @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
-          <b-dropdown-item v-if="isAuthorized" id="delete-btn" @click="deletePost(post.originId ? post.originId : post.id)">삭제</b-dropdown-item>
+          <b-dropdown-item v-if="!general" id="modify-btn"
+            @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
+          <b-dropdown-item v-else-if="general && isAuthorized" id="modify-btn"
+            @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
+          <b-dropdown-item v-if="isAuthorized" id="delete-btn"
+            @click="deletePost(post.originId ? post.originId : post.id)">삭제</b-dropdown-item>
         </b-dropdown>
       </div>
     </div>
@@ -54,7 +57,8 @@
           </div>
           <div class="show" id="authorList">
             <p class="author" v-for="participant in post.participants" :key="participant.id">
-              <b-avatar variant="info" :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+              <b-avatar variant="info"
+                :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
               &nbsp;{{ participant.name }}&nbsp;
             </p>
           </div>
@@ -64,7 +68,7 @@
 
     <!-- 퀴즈 모달창 -->
     <div v-if="isQuizAvailable" id="quiz-container">
-      <TakeQuiz :quizId="selectedQuizId"/>
+      <TakeQuiz :quizId="selectedQuizId" />
     </div>
 
     <!-- 히스토리 모달창 -->
@@ -98,7 +102,8 @@
                     <div>
                       <p>
                       <h3>
-                        <b-avatar variant="info" :src="history.author.profileImg ? history.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+                        <b-avatar variant="info"
+                          :src="history.author.profileImg ? history.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
                         <span> &nbsp;{{ history.author.name }}&nbsp; </span>
                       </h3>
                       </p>
@@ -343,10 +348,10 @@ async function saveModifyPost(historyPost) {
 }
 
 const generatePDF = () => {
-  
+
   html2pdf().from(createPdfHtml()).set({ filename: `${post.value.title.trim()}.pdf` }).save();
 
-  function createPdfHtml(){
+  function createPdfHtml() {
     const pdfContent = `
     <div style="padding:20px">
     <h3>${post.value.title}</h3>
@@ -360,7 +365,7 @@ const generatePDF = () => {
     <div>${post.value.content}</div>
     </div>
   `;
-  return pdfContent;
+    return pdfContent;
   }
 };
 
@@ -371,7 +376,6 @@ const checkQuizVisibility = async () => {
     if (response.status == 200) {
       isQuizAvailable.value = true;
       selectedQuizId.value = response.data.id;
-      
     } else {
       isQuizAvailable.value = false;
     }
@@ -411,10 +415,9 @@ onMounted(async () => {
   margin-left: 5px;
 }
 
-.history{
-    overflow-y: auto;
+.history {
+  overflow-y: auto;
 }
-/* // ---- */
 
 #container {
   width: 80%;
