@@ -217,6 +217,10 @@
     border-radius: 4px;
     cursor: pointer;
   }
+
+  .delete-button:hover {
+  background-color: #d32f2f;
+}
   
   .board-info {
     display: flex;
@@ -287,6 +291,10 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.submit-button:hover {
+  background-color: #1976d2;
+}
   
   .comment-section {
     margin-top: 40px;
@@ -356,6 +364,10 @@
     background-color: #ccc;
     cursor: not-allowed;
   }
+
+  .pagination-button:hover:not(:disabled) {
+  background-color: #388e3c;
+}
   
   .pagination-info {
     margin: 0 10px;
