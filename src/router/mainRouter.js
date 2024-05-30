@@ -36,17 +36,14 @@ const router = createRouter({
                 {
                     path: '',
                     component: PostListView
-                },
-                {
-                    path: ':id',
-                    component: PostListView
-                },
+                }
+                ,
                 {
                     path: 'detail/:id',
                     component: PostDetailView
                 },
                 {
-                    path: ':id/new',
+                    path: 'wiki/new',
                     component: PostWriterView
                 },
                 {
@@ -116,19 +113,15 @@ const router = createRouter({
             component: Group,
             children: [
                 {
-                    path: 'study',
+                    path: 'study', // 추후 ':id'로 변경
                     component: Study,
                     children: [
                         {
-                            path: '', // 추후 ':id'로 변경
+                            path: '', 
                             component: PostListView
                         },
                         {
-                            path: 'detail/:id',
-                            component: PostDetailView
-                        },
-                        {
-                            path: ':id/new',
+                            path: 'new',
                             component: PostWriterView
                         },
                         {
@@ -146,6 +139,10 @@ const router = createRouter({
                             ]
                         }
                     ]
+                },
+                {
+                    path: 'detail/:id',
+                    component: PostDetailView
                 },
                 {
                     path: 'organization',

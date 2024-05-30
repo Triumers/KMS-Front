@@ -69,9 +69,10 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
+const currentRoute = useRoute();
 
 const tabId = useRoute().params.id;
-const tabName = "모집";
+const tabName = "wiki";
 
 const search = ref({
     tabRelationId : tabId,
@@ -83,8 +84,12 @@ const search = ref({
 });
 
 const postDetail = (postId) => {
+
+    
+const firstSegment = currentRoute.path.split('/')[1];
+
     router.push({
-        path: `/tab/detail/${postId}`,
+        path: `/${firstSegment}/detail/${postId}`,
         query: {
             general: isGeneral()
         }
@@ -99,7 +104,7 @@ const createNewPost = () => {
     }
 
     router.push({
-        path: createPath + "/new"
+        path: "wiki/new"
     });
 };
 
