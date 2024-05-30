@@ -521,7 +521,7 @@ const checkQuizVisibility = async () => {
 }
 
 #content {
-  width: 70%;
+  width: 100%;
 }
 
 #post-info {

@@ -26,10 +26,18 @@
 
                     <p id="content-info">
                         <small>※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
+
+                    <div>
                         <span><b-button variant="outline-secondary" data-bs-toggle="modal"
                                 data-bs-target="#preview">미리보기</b-button></span>
+                        <span>
+                            <b-button variant="outline-info" @click="aiToggle = !aiToggle">AI
+                                CHAT</b-button>
+                        </span>
+                    </div>
 
-                        <!-- 미리보기 모달창 -->
+
+                    <!-- 미리보기 모달창 -->
                     <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" aria-labelledby="previewLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -51,7 +59,7 @@
                     </div>
                     </p>
 
-                    <div id="content" class="form-floating mb-3">
+                    <div id="content" class="form-floating">
                         <b-form-textarea id="content-text" class="form-control" placeholder="내용을 입력해주세요."
                             v-model="postForm.content" no-resize @contextmenu.prevent="openFileDialog"
                             @keydown.stop></b-form-textarea>
@@ -62,25 +70,17 @@
                     </div>
                 </div>
 
-                <div id="ai-chat">
-                    <div>
-                        <div class="ai" data-bs-toggle="collapse" :data-bs-target="`#aiChat`"
-                            :aria-controls="`#aiChat`">
-                            <h5>AI CHAT ▽</h5>
-                        </div>
-                        <hr>
-
-                        <div class="collapse" id="aiChat">
-                            <p>
-                                <b-badge class="ai-menu" @click="requestToAI($event)">글 업그레이드</b-badge>
-                                <b-badge class="ai-menu" @click="requestToAI($event)">내용 검증</b-badge>
-                                <b-badge class="ai-menu" @click="requestToAI($event)">맞춤법 교정</b-badge>
+                <div id="ai-chat" v-if="aiToggle">
+                    <div id="aiChat">
+                        <p>
+                            <b-badge class="ai-menu" @click="requestToAI($event)">글 업그레이드</b-badge>
+                            <b-badge class="ai-menu" @click="requestToAI($event)">내용 검증</b-badge>
+                            <b-badge class="ai-menu" @click="requestToAI($event)">맞춤법 교정</b-badge>
+                        </p>
+                        <div id="ai-content" class="card">
+                            <p><span class="material-icons">info</span>&nbsp;<small>응답 메시지 박스 클릭 시, 내용 복사</small>
                             </p>
-                            <div id="ai-content" class="card">
-                                <p><span class="material-icons">info</span>&nbsp;<small>응답 메시지 박스 클릭 시, 내용 복사</small>
-                                </p>
 
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,6 +102,7 @@ const currentRoute = useRoute();
 const tabId = currentRoute.params.id;
 const originId = currentRoute.query.post;
 const post = ref(null);
+const aiToggle = ref(false);
 
 const fileInput = ref(null);
 const postForm = ref({
@@ -119,7 +120,7 @@ onMounted(() => {
     }
 });
 
-async function setPost(){
+async function setPost() {
 
     await getPostById(originId);
     postForm.value = {
@@ -281,12 +282,12 @@ async function requestToAI(event) {
     document.getElementById('ai-content').appendChild(requestAI);
 
     const response = await axios.post(`http://localhost:5000/post/ai`, {
-                    type: aiType[type],
-                    content: postForm.value.content
-            });
+        type: aiType[type],
+        content: postForm.value.content
+    });
 
-            const responseContent = response.data;
-            createResponseMsg(responseContent);
+    const responseContent = response.data;
+    createResponseMsg(responseContent);
 
     // try {
     //     const token = localStorage.getItem('token');
@@ -322,7 +323,7 @@ async function requestToAI(event) {
 async function getPostById(originId) {
 
     const response = await axios.get(`http://localhost:5000/post/find/${originId}`);
-            post.value = response.data;
+    post.value = response.data;
 
     // try {
     //     const token = localStorage.getItem('token');
@@ -379,7 +380,6 @@ async function getPostById(originId) {
 }
 
 #content-text {
-    width: 100%;
     min-height: 450px;
 }
 </style>
