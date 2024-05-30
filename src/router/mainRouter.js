@@ -7,6 +7,9 @@ import PostListView from "@/components/post/SelectedPostList.vue";
 import PostDetailView from "@/components/post/SelectedPostDetail.vue";
 import PostWriterView from "@/components/post/CreateNewPost.vue";
 import GeneralWriterView from "@/components/post/CreateNewGeneralPost.vue";
+import DocsWriterView from "@/components/post/CreateNewDocs.vue";
+import DocsListView from "@/components/post/SelectedDocsList.vue";
+
 import CreateQuiz from '@/components/quiz/CreateQuiz.vue';
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 import QuizView from '@/views/QuizView.vue';
@@ -44,6 +47,14 @@ const router = createRouter({
                 {
                     path: 'general/new',
                     component: GeneralWriterView
+                },
+                {
+                    path: 'docs/new',
+                    component: DocsWriterView
+                },
+                {
+                    path: 'docs',
+                    component: DocsListView
                 }
             ]
         },

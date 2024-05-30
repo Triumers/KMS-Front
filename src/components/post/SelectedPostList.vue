@@ -1,6 +1,6 @@
 <template>
 
-    <div>
+    <div id="top">
         <h3 id="tab-name">{{ tabName }}</h3>
         <p id="write-btn">
             <b-button variant="light" @click="createNewPost()">글쓰기 버튼</b-button>
@@ -245,5 +245,9 @@ const postList = ref([
     margin-left: 5px; 
 }
 
+#top{
+    display: flex;
+    justify-content: space-between;
+}
 
 </style>
