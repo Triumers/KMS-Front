@@ -87,6 +87,10 @@
   border-radius: 4px;
   cursor: pointer;
  }
+
+ .submit-button:hover {
+  background-color: #388e3c;
+}
  
  .form-group {
   margin-bottom: 20px;
@@ -99,6 +103,10 @@
   border-bottom: 1px solid #ccc;
   font-size: 16px;
  }
+
+ .form-input:hover {
+  border-color: #888;
+}
  
  .nickname-input {
   color: #888;
@@ -113,4 +121,8 @@
   font-size: 16px;
   resize: vertical;
  }
+
+ .form-textarea:hover {
+  border-color: #888;
+}
  </style>
