@@ -1,185 +1,153 @@
 <template>
-    <div class="container">
-      <div class="board-detail">
-        <div class="board-header">
-          <h2 class="board-title">{{ anonymousBoard.title }}</h2>
-          <div class="board-actions">
-            <button @click="deleteAnonymousBoard" v-if="isAdmin" class="delete-button">삭제</button>
-          </div>
-        </div>
-        <div class="board-info">
-          <span class="board-author">{{ anonymousBoard.nickname }}</span>
-          <span class="board-date">{{ formatDateTime(anonymousBoard.createdDate) }}</span>
-        </div>
-        <div class="board-content">
-          <p>{{ anonymousBoard.content }}</p>
+  <div class="container">
+    <div class="board-detail">
+      <div class="board-header">
+        <h2 class="board-title">{{ anonymousBoard.title }}</h2>
+        <hr class="title-separator" />
+        <div class="board-actions">
+          <button @click="deleteAnonymousBoard" v-if="isAdmin" class="delete-button">삭제</button>
         </div>
       </div>
-      <hr />
-      <div class="comment-form">
-        <h3 class="comment-form-title">댓글 작성</h3>
-        <input type="text" v-model="newComment.nickname" placeholder="닉네임" class="comment-nickname-input" />
-        <div class="comment-input-wrapper">
-          <textarea v-model="newComment.content" placeholder="댓글을 입력하세요" class="comment-input"></textarea>
-          <button @click="saveAnonymousBoardComment" class="submit-button">작성</button>
-        </div>
+      <div class="board-info">
+        <span class="board-author">{{ anonymousBoard.nickname }}</span>
+        <span class="board-date">{{ formatDateTime(anonymousBoard.createdDate) }}</span>
       </div>
-      <div class="comment-section">
-        <h3 class="comment-title">댓글 목록</h3>
-        <ul class="comment-list">
-          <li v-for="comment in anonymousBoardCommentList" :key="comment.id" class="comment-item">
-            <div class="comment-info">
-              <span class="comment-author">{{ comment.nickname }}</span>
-              <span class="comment-date">{{ formatDateTime(comment.createdDate) }}</span>
-            </div>
-            <p class="comment-content">{{ comment.content }}</p>
-            <hr class="comment-divider" />
-          </li>
-        </ul>
-        <div class="comment-pagination">
-          <button @click="previousPage" :disabled="currentPage === 1" class="pagination-button">이전</button>
-          <span class="pagination-info">{{ currentPage }} / {{ totalPages }}</span>
-          <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-button">다음</button>
-        </div>
+      <div class="board-content">
+        <p>{{ anonymousBoard.content }}</p>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted, computed } from 'vue';
-  // import axios from 'axios';
-  import { useRoute, useRouter } from 'vue-router';
-  
-  const route = useRoute();
-  const router = useRouter();
-  const anonymousBoard = ref({});
-  const anonymousBoardCommentList = ref([]);
-  const currentPage = ref(1);
-  const pageSize = ref(10);
-  const totalCount = ref(0);
-  const newComment = ref({
-    content: '',
-    nickname: '익명',
-  });
-  const isAdmin = ref(false); // 관리자 여부를 확인하는 변수
-  
-  const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
-  
-  // 더미 데이터 생성
-  const dummyBoard = {
-    id: 1,
-    nickname: '익명',
-    title: '제목',
-    content: '내용',
-    createdDate: '2023-06-10T11:00:00',
-    macAddress: 'AA:BB:CC:DD:EE:FF',
-  };
-  
-  const dummyComments = [
-    {
-      id: 1,
-      nickname: '익명',
-      content: '댓글 내용 1',
-      createdDate: '2023-06-10T12:00:00',
-      macAddress: 'AA:BB:CC:DD:EE:FF',
-      anonymousBoardId: 1,
-    },
-    {
-      id: 2,
-      nickname: '익명',
-      content: '댓글 내용 2',
-      createdDate: '2023-06-10T13:00:00',
-      macAddress: '11:22:33:44:55:66',
-      anonymousBoardId: 1,
-    },
-    // ... (더미 댓글 데이터 추가) ...
-  ];
-  
-  onMounted(() => {
-    // 더미 데이터 할당
-    anonymousBoard.value = dummyBoard;
-    anonymousBoardCommentList.value = dummyComments;
-    totalCount.value = dummyComments.length;
-  
-    // fetchAnonymousBoardById();
-    // fetchAnonymousBoardCommentList();
-    checkAdminRole(); // 관리자 여부 확인
-  });
-  
-  // async function fetchAnonymousBoardById() {
-  //   try {
-  //     const response = await axios.get(`/anonymous-board/${route.params.id}`);
-  //     anonymousBoard.value = response.data;
-  //   } catch (error) {
-  //     console.error('Failed to fetch anonymous board:', error);
-  //   }
-  // }
-  
-  // async function fetchAnonymousBoardCommentList() {
-  //   try {
-  //     const response = await axios.get(`/anonymous-board/${route.params.id}/comments?page=${currentPage.value - 1}&size=${pageSize.value}`);
-  //     anonymousBoardCommentList.value = response.data.content;
-  //     totalCount.value = response.data.totalElements;
-  //   } catch (error) {
-  //     console.error('Failed to fetch anonymous board comment list:', error);
-  //   }
-  // }
-  
-  // async function saveAnonymousBoardComment() {
-  //   try {
-  //     const response = await axios.post(`/anonymous-board/${route.params.id}/comments`, newComment.value);
-  //     newComment.value.content = '';
-  //     newComment.value.nickname = '익명';
-  //     fetchAnonymousBoardCommentList();
-  //   } catch (error) {
-  //     console.error('Failed to save anonymous board comment:', error);
-  //   }
-  // }
-  
-  // async function deleteAnonymousBoard() {
-  //   try {
-  //     await axios.delete(`/anonymous-board/${route.params.id}`);
-  //     router.push('/anonymous-board');
-  //   } catch (error) {
-  //     console.error('Failed to delete anonymous board:', error);
-  //   }
-  // }
-  
-  function formatDateTime(dateTimeString) {
-    const dateTime = new Date(dateTimeString);
-    const year = dateTime.getFullYear();
-    const month = padZero(dateTime.getMonth() + 1);
-    const day = padZero(dateTime.getDate());
-    const hours = padZero(dateTime.getHours());
-    const minutes = padZero(dateTime.getMinutes());
-    return `${year}/${month}/${day} ${hours}:${minutes}`;
+    <hr class="comment-separator" />
+    <div class="comment-form">
+      <h3 class="comment-form-title">댓글 작성</h3>
+      <input type="text" v-model="newComment.nickname" placeholder="닉네임" class="comment-nickname-input" />
+      <div class="comment-input-wrapper">
+        <textarea v-model="newComment.content" placeholder="댓글을 입력하세요" class="comment-input"></textarea>
+        <button @click="saveAnonymousBoardComment" class="submit-button">작성</button>
+      </div>
+    </div>
+    <div class="comment-section">
+      <h3 class="comment-title">댓글 목록</h3>
+      <hr class="comment-list-separator" />
+      <ul class="comment-list">
+        <li v-for="comment in anonymousBoardCommentList" :key="comment.id" class="comment-item">
+          <div class="comment-info">
+            <span class="comment-author">{{ comment.nickname }}</span>
+            <span class="comment-date">{{ formatDateTime(comment.createdDate) }}</span>
+          </div>
+          <p class="comment-content">{{ comment.content }}</p>
+          <hr class="comments-separator" />
+        </li>
+      </ul>
+      <div class="comment-pagination">
+        <button @click="previousPage" :disabled="currentPage === 1" class="pagination-button">&lt;</button>
+        <span class="pagination-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-button">&gt;</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import axios from 'axios';
+import { useRoute, useRouter } from 'vue-router';
+
+const route = useRoute();
+const router = useRouter();
+const anonymousBoard = ref({});
+const anonymousBoardCommentList = ref([]);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalCount = ref(0);
+const newComment = ref({
+  content: '',
+  nickname: '익명',
+});
+const isAdmin = ref(false);
+
+const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
+
+onMounted(() => {
+  fetchAnonymousBoardById();
+  fetchAnonymousBoardCommentList();
+  checkAdminRole();
+});
+
+async function fetchAnonymousBoardById() {
+  try {
+    const response = await axios.get(`http://localhost:9999/anonymous-board/${route.params.id}`);
+    anonymousBoard.value = response.data;
+  } catch (error) {
+    console.error('Failed to fetch anonymous board:', error);
   }
-  
-  function padZero(number) {
-    return number.toString().padStart(2, '0');
+}
+
+async function fetchAnonymousBoardCommentList() {
+  try {
+    const response = await axios.get(`http://localhost:9999/anonymous-board/${route.params.id}/comments?page=${currentPage.value - 1}&size=${pageSize.value}`);
+    anonymousBoardCommentList.value = response.data.content;
+    totalCount.value = response.data.totalElements;
+  } catch (error) {
+    console.error('Failed to fetch anonymous board comment list:', error);
   }
-  
-  function previousPage() {
-    if (currentPage.value > 1) {
-      currentPage.value--;
-      // fetchAnonymousBoardCommentList();
-    }
+}
+
+async function saveAnonymousBoardComment() {
+  try {
+    const response = await axios.post(`http://localhost:9999/anonymous-board/${route.params.id}/comments`, newComment.value);
+    newComment.value.content = '';
+    newComment.value.nickname = '익명';
+    fetchAnonymousBoardCommentList();
+  } catch (error) {
+    console.error('Failed to save anonymous board comment:', error);
   }
-  
-  function nextPage() {
-    if (currentPage.value < totalPages.value) {
-      currentPage.value++;
-      // fetchAnonymousBoardCommentList();
-    }
+}
+
+async function deleteAnonymousBoard() {
+  try {
+    await axios.delete(`http://localhost:9999/anonymous-board/${route.params.id}`);
+    router.push('/office-life/anonymous-board');
+  } catch (error) {
+    console.error('Failed to delete anonymous board:', error);
   }
-  
-  function checkAdminRole() {
-    // 관리자 여부를 확인하는 로직 추가
-    // 예: 로그인한 사용자의 역할을 확인하여 관리자인 경우 isAdmin을 true로 설정
-    // 실제 구현에서는 서버에서 사용자 정보를 가져와 확인해야 함
-    isAdmin.value = true; // 예시로 관리자로 설정
+}
+
+function formatDateTime(dateTimeString) {
+  const dateTime = new Date(dateTimeString);
+  const year = dateTime.getFullYear();
+  const month = padZero(dateTime.getMonth() + 1);
+  const day = padZero(dateTime.getDate());
+  const hours = padZero(dateTime.getHours());
+  const minutes = padZero(dateTime.getMinutes());
+  return `${year}/${month}/${day} ${hours}:${minutes}`;
+}
+
+function padZero(number) {
+  return number.toString().padStart(2, '0');
+}
+
+function previousPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    fetchAnonymousBoardCommentList();
   }
-  </script>
+}
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    fetchAnonymousBoardCommentList();
+  }
+}
+
+function checkAdminRole() {
+  // 관리자 여부를 확인하는 로직 추가
+  // 예: 로그인한 사용자의 역할을 확인하여 관리자인 경우 isAdmin을 true로 설정
+  // 실제 구현에서는 서버에서 사용자 정보를 가져와 확인해야 함
+  isAdmin.value = true; // 예시로 관리자로 설정
+}
+</script>
+
   
   <style scoped>
   .container {
@@ -187,6 +155,14 @@
     margin: 0 auto;
     padding: 20px;
   }
+
+  .title-separator {
+  border: none;
+  border-top: 2px solid #363333;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
   
   .board-detail {
     margin-bottom: 40px;
@@ -200,7 +176,7 @@
   }
   
   .board-title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
   }
   
@@ -244,6 +220,20 @@
     margin-bottom: 20px;
   }
   
+  .comment-separator {
+  border: none;
+  border-top: 2px solid #ccc;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.comment-list-separator {
+  border: none;
+  border-top: 2px solid #ccc;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
   .comment-form {
     margin-top: 40px;
     margin-bottom: 40px;
@@ -312,8 +302,8 @@
   }
   
   .comment-item {
-    padding: 10px;
-    margin-bottom: 20px;
+    /* padding: 10px; */
+    margin-bottom: 15px;
   }
   
   .comment-info {
@@ -342,34 +332,42 @@
   border-top: 2px solid #ccc;
   margin-top: 10px;
 }
+
+.comments-separator {
+  border: none;
+  border-top: 1px solid #b0b0b0;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
   
-  .comment-pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-  }
+.comment-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  padding: 5px 10px;
+  background-color: #f1f1f1;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
   
-  .pagination-button {
-    padding: 8px 16px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0 5px;
-  }
-  
-  .pagination-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
+.pagination-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
 
   .pagination-button:hover:not(:disabled) {
   background-color: #388e3c;
 }
   
-  .pagination-info {
-    margin: 0 10px;
-  }
+.pagination-info {
+  font-size: 14px;
+}
+
   </style>
