@@ -9,8 +9,8 @@
         <hr>
 
         <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="title" v-model="postForm.title" placeholder="제목을 입력해주세요.">
-            <label for="title">제목</label>
+            <input type="text" class="form-control" id="title-input" v-model="postForm.title" placeholder="제목을 입력해주세요.">
+            <label for="title-input">제목</label>
         </div>
 
         <div>

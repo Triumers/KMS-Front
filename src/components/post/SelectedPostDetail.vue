@@ -1,7 +1,7 @@
 <template>
   <div id="container">
     <div id="top">
-      
+
       <div id="title-info">
         <h1 id="title"> {{ post.title }} </h1>
 
@@ -281,33 +281,33 @@ const post = ref({
     }
   ],
   "likeList": [
-        {
-            "id": 1,
-            "email": "admin",
-            "name": "관리자",
-            "profileImg": null,
-            "role": "ROLE_ADMIN",
-            "startDate": "2024-05-17",
-            "endDate": null,
-            "phoneNumber": null,
-            "teamId": 1,
-            "positionId": 1,
-            "rankId": 1
-        },
-        {
-            "id": 2,
-            "email": "test1",
-            "name": "테스트1",
-            "profileImg": "test1.jpg",
-            "role": "ROLE_NORMAL",
-            "startDate": null,
-            "endDate": null,
-            "phoneNumber": null,
-            "teamId": 2,
-            "positionId": 2,
-            "rankId": 2
-        }
-    ]
+    {
+      "id": 1,
+      "email": "admin",
+      "name": "관리자",
+      "profileImg": null,
+      "role": "ROLE_ADMIN",
+      "startDate": "2024-05-17",
+      "endDate": null,
+      "phoneNumber": null,
+      "teamId": 1,
+      "positionId": 1,
+      "rankId": 1
+    },
+    {
+      "id": 2,
+      "email": "test1",
+      "name": "테스트1",
+      "profileImg": "test1.jpg",
+      "role": "ROLE_NORMAL",
+      "startDate": null,
+      "endDate": null,
+      "phoneNumber": null,
+      "teamId": 2,
+      "positionId": 2,
+      "rankId": 2
+    }
+  ]
 });
 
 
@@ -317,12 +317,16 @@ onMounted(async () => {
 });
 
 const modifyPost = (postId) => {
-  let modifyPath = `/workspace/${post.value.tabRelationId}`;
-  if (general) {
-    modifyPath += "/general";
+
+  const segments = currentRoute.path.split('/');
+  let detailPath = `${segments[1]}/${segments[2]}`;
+
+  if (segments.length > 3 && segments[2] === "organization") {
+    detailPath = `${detailPath}/${segments[3]}`;
   }
+
   router.push({
-    path: "new",
+    path: `/${detailPath}/new`,
     query: {
       post: postId
     }
@@ -552,7 +556,8 @@ const checkQuizVisibility = async () => {
 #quiz-container {
   margin-top: 20px;
 }
-li{
+
+li {
   margin: 5px;
 }
 </style>

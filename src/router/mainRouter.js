@@ -30,7 +30,7 @@ const router = createRouter({
         },
         
         {
-            path: '/wiki',
+            path: '/wiki/1',
             component: Wiki,
             children: [
                 {
@@ -144,7 +144,7 @@ const router = createRouter({
                     component: PostDetailView
                 },
                 {
-                    path: 'organization',
+                    path: 'organization/2',
                     component: Organization,
                     children: [
                         {
@@ -178,11 +178,11 @@ const router = createRouter({
             ]
         },
         {
-            path: '/office-life',
+            path: '/office-life/3',
             component: OfficeLife,
             children: [
                 {
-                    path: '',  // 추후 ':id'로 변경
+                    path: '',
                     component: PostListView
                 },
                 {
