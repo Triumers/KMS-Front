@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <li class="nav-item">
-      <router-link class="nav-link" to="/wiki">Wiki</router-link>
+      <router-link class="nav-link" to="/wiki/1">Wiki</router-link>
     </li>
     <li class="nav-item">
       <router-link class="nav-link" to="/workspace">Workspace</router-link>
@@ -16,12 +16,12 @@
           <router-link class="dropdown-item" to="/group/study">Study</router-link>
         </li>
         <li>
-          <router-link class="dropdown-item" to="/group/organization">Organization</router-link>
+          <router-link class="dropdown-item" to="/group/organization/2">Organization</router-link>
         </li>
       </ul>
     </li>
     <li class="nav-item">
-      <router-link class="nav-link" to="/office-life">Office Life</router-link>
+      <router-link class="nav-link" to="/office-life/3">Office Life</router-link>
     </li>
   </div>
 </template>

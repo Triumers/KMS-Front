@@ -2,7 +2,7 @@
     <div id="container">
         <form @submit.prevent="submitPost" @keydown.enter.prevent>
             <div id="top">
-                <h3 id="title"><strong>게시글 작성</strong> </h3>
+                <h3 id="top-title"><strong>게시글 작성</strong> </h3>
                 <div>
                     <button id="save-btn" type="submit" class="btn btn-light" @click="savePost">작성 완료</button>
                 </div>
@@ -13,9 +13,9 @@
                 <div id="main-content">
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="title" v-model="postForm.title"
+                        <input type="text" class="form-control" id="title-input" v-model="postForm.title"
                             placeholder="제목을 입력해주세요.">
-                        <label for="title">제목</label>
+                        <label for="title-input">제목</label>
                     </div>
 
                     <div class="form-floating mb-3">
