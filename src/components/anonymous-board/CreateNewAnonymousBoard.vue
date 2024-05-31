@@ -16,49 +16,41 @@
       </div>
     </div>
   </div>
- </template>
- 
- <script setup>
- import { ref } from 'vue';
- // import axios from 'axios';
- import { useRouter } from 'vue-router';
- 
- const router = useRouter();
- const title = ref('');
- const content = ref('');
- const nickname = ref('익명');
- 
- // 더미 데이터 생성
- const dummyResponse = {
-  data: {
-    id: 1,
-    title: '',
-    content: '',
-    nickname: '',
-    createdDate: '2023-06-10T10:00:00',
-    macAddress: 'AA:BB:CC:DD:EE:FF',
-  },
- };
- 
- // async function saveAnonymousBoard() {
- //   try {
- //     const response = await axios.post('/anonymous-board', {
- //       title: title.value,
- //       content: content.value,
- //       nickname: nickname.value,
- //     });
- //     router.push(`/anonymous-board/${response.data.id}`);
- //   } catch (error) {
- //     console.error('Failed to save anonymous board:', error);
- //   }
- // }
- 
- function saveAnonymousBoard() {
-  // 더미 데이터 사용
-  const response = dummyResponse;
-  router.push(`/office-life/anonymous-board/${response.data.id}`);
- }
- </script>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import axios from 'axios'; // axios 임포트
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const title = ref('');
+const content = ref('');
+const nickname = ref('익명');
+
+async function saveAnonymousBoard() {
+  try {
+    const response = await axios.post('http://localhost:9999/anonymous-board', { // 백엔드 API 엔드포인트로 수정
+      title: title.value,
+      content: content.value,
+      nickname: nickname.value,
+    });
+    router.push(`/office-life/anonymous-board/${response.data.id}`); // 상세 페이지 URL 수정
+  } catch (error) {
+    console.error('Failed to save anonymous board:', error);
+    // 에러 처리 로직 추가
+    if (error.response) {
+      if (error.response.status === 400) {
+        alert('제목과 내용을 입력해주세요.');
+      } else {
+        alert('게시글 작성에 실패했습니다.');
+      }
+    } else {
+      alert('네트워크 오류가 발생했습니다.');
+    }
+  }
+}
+</script>
  
  <style scoped>
  .container {
@@ -75,7 +67,7 @@
  }
  
  .form-title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
  }
  
