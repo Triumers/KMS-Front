@@ -35,7 +35,7 @@
   list-style-type: none;
   flex-direction: column;
   width: 200px;
-  background-color: #f8f9fa;
+  background-color: #042444;
   padding: 10px;
 }
 
@@ -43,7 +43,7 @@
   margin: 5px 0;
   padding: 10px;
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
 }
 
 .nav-item:hover {
