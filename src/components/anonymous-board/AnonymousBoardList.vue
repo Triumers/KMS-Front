@@ -37,7 +37,9 @@
             <span class="board-info">{{ formatNickname(board.nickname) }} | {{ formatDate(board.createdDate) }}</span>
           </div>
         </div>
-        <p class="board-content">{{ board.content.slice(0, 50) }}...</p>
+        <p class="board-content">
+          {{ board.content.length > 50 ? board.content.slice(0, 50) + '...' : board.content }}
+        </p>
         <span class="comment-count">댓글 {{ board.commentCount || 0 }}개</span>
       </div>
     </div>
