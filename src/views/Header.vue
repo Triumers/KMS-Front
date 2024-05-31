@@ -6,10 +6,10 @@
             </div>
         </div>
         <div class="header-center">
-            <input type="text" placeholder="Search..." class="search-input" />
+            <input type="text" placeholder="검색어를 입력하세요" class="search-input" />
         </div>
         <div class="header-right">
-            <!-- Other header right content -->
+            <!-- 프로필 예정 -->
         </div>
     </header>
 </template>
@@ -20,6 +20,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
+// path 추가 예정
 const navigateTo = (path) => {
     router.push({ path });
 };
