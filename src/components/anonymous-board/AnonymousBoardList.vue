@@ -12,11 +12,21 @@
           <option value="content">내용</option>
         </select>
       </div>
-      <input type="text" v-model="keyword" placeholder="검색어 입력" class="search-input"/>
+      <input
+        type="text"
+        v-model="keyword"
+        placeholder="검색어 입력"
+        class="search-input"
+      />
       <button @click="searchAnonymousBoards" class="search-button">검색</button>
     </div>
     <div class="board-list">
-      <div v-for="(board, index) in paginatedBoards" :key="board.id" class="board-item" @click="goToBoardDetail(board.id)">
+      <div
+        v-for="(board, index) in anonymousBoardList"
+        :key="board.id"
+        class="board-item"
+        @click="goToBoardDetail(board.id)"
+      >
         <div class="board-header">
           <span class="board-title">{{ board.title }}</span>
           <div class="board-info-container">
@@ -28,9 +38,21 @@
       </div>
     </div>
     <div class="pagination">
-      <button @click="previousPage" :disabled="currentPage === 1" class="pagination-button">이전</button>
+      <button
+        @click="previousPage"
+        :disabled="currentPage === 1"
+        class="pagination-button"
+      >
+        이전
+      </button>
       <span>{{ currentPage }} / {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-button">다음</button>
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="pagination-button"
+      >
+        다음
+      </button>
     </div>
   </div>
 </template>
@@ -38,6 +60,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter();
 const anonymousBoardList = ref([]);
@@ -49,76 +72,49 @@ const keyword = ref('');
 
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
 
-const paginatedBoards = computed(() => {
-  const startIndex = (currentPage.value - 1) * pageSize.value;
-  const endIndex = startIndex + pageSize.value;
-  return anonymousBoardList.value.slice(startIndex, endIndex);
-});
-
-// 더미 데이터 생성
-const dummyData = [
-  {
-    id: 1,
-    nickname: '익명',
-    title: '제목',
-    content: '내용',
-    createdDate: '2023-06-01T10:00:00',
-    macAddress: 'AA:BB:CC:DD:EE:FF',
-    commentCount: 5
-  },
-  {
-    id: 2,
-    nickname: '익명',
-    title: 'Qui ad consequat aute nisi officia nostrud id officia. Consectetur',
-    content: 'Qui ad consequat aute nisi officia nostrud id officia. Consectetur id nisi laborum non ipsum exercitation est voluptate. Minim elit occaecat est labore nostrud elit. Amet consectetur aliquip consequat mollit laborum esse quis officia. Minim non occaecat quis aute esse officia.',
-    createdDate: '2023-06-02T11:00:00',
-    macAddress: '11:22:33:44:55:66',
-    commentCount: 2
-  },
-  // ... (더미 데이터 추가) ...
-];
-
 onMounted(() => {
-  // 더미 데이터를 anonymousBoardList에 할당
-  anonymousBoardList.value = dummyData;
-  totalCount.value = dummyData.length;
+  fetchAnonymousBoardList();
 });
 
-// async function fetchAnonymousBoardList() {
-//   try {
-//     const response = await axios.get(`/anonymous-board?page=${currentPage.value - 1}&size=${pageSize.value}`);
-//     anonymousBoardList.value = response.data.content;
-//     totalCount.value = response.data.totalElements;
-//   } catch (error) {
-//     console.error('Failed to fetch anonymous board list:', error);
-//   }
-// }
+async function fetchAnonymousBoardList() {
+  try {
+    const response = await axios.get(
+      `http://localhost:9999/anonymous-board?page=${currentPage.value}&size=${pageSize.value}`
+    );
+    anonymousBoardList.value = response.data.content;
+    totalCount.value = response.data.totalElements;
+  } catch (error) {
+    console.error('Failed to fetch anonymous board list:', error);
+  }
+}
 
-// async function searchAnonymousBoards() {
-//   try {
-//     const encodedKeyword = encodeURIComponent(keyword.value);
-//     const response = await axios.get(`/anonymous-board/search?keyword=${encodedKeyword}&type=${searchType.value}&page=${currentPage.value - 1}&size=${pageSize.value}`);
-//     anonymousBoardList.value = response.data.content;
-//     totalCount.value = response.data.totalElements;
-//   } catch (error) {
-//     console.error('Failed to search anonymous boards:', error);
-//   }
-// }
+async function searchAnonymousBoards() {
+  try {
+    const encodedKeyword = encodeURIComponent(keyword.value);
+    const response = await axios.get(
+      `http://localhost:9999/anonymous-board/search?keyword=${encodedKeyword}&type=${searchType.value}&page=${currentPage.value}&size=${pageSize.value}`
+    );
+    anonymousBoardList.value = response.data.content;
+    totalCount.value = response.data.totalElements;
+  } catch (error) {
+    console.error('Failed to search anonymous boards:', error);
+  }
+}
 
-// async function fetchAnonymousBoardDetailWithComments(boardId) {
-//   try {
-//     const boardResponse = await axios.get(`/anonymous-board/${boardId}`);
-//     const commentResponse = await axios.get(`/anonymous-board/${boardId}/comments`);
+async function fetchAnonymousBoardDetailWithComments(boardId) {
+  try {
+    const boardResponse = await axios.get(`http://localhost:9999/anonymous-board/${boardId}`);
+    const commentResponse = await axios.get(`http://localhost:9999/anonymous-board/${boardId}/comments`);
 
-//     const board = boardResponse.data;
-//     board.commentCount = commentResponse.data.totalElements;
+    const board = boardResponse.data;
+    board.commentCount = commentResponse.data.totalElements;
 
-//     return board;
-//   } catch (error) {
-//     console.error('Failed to fetch anonymous board detail with comments:', error);
-//     throw error;
-//   }
-// }
+    return board;
+  } catch (error) {
+    console.error('Failed to fetch anonymous board detail with comments:', error);
+    throw error;
+  }
+}
 
 function goToWriteForm() {
   router.push('/office-life/anonymous-board/new');
@@ -149,14 +145,14 @@ function padZero(number) {
 function previousPage() {
   if (currentPage.value > 1) {
     currentPage.value--;
-    // fetchAnonymousBoardList();
+    fetchAnonymousBoardList();
   }
 }
 
 function nextPage() {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
-    // fetchAnonymousBoardList();
+    fetchAnonymousBoardList();
   }
 }
 </script>
