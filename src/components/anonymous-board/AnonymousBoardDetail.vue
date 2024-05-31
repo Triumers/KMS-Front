@@ -5,6 +5,7 @@
         <h2 class="board-title">{{ anonymousBoard.title }}</h2>
         <hr class="title-separator" />
         <div class="board-actions">
+          <button @click="goToBoardList" class="list-button">글 목록</button>
           <button @click="deleteAnonymousBoard" v-if="isAdmin" class="delete-button">삭제</button>
         </div>
       </div>
@@ -138,6 +139,10 @@ function nextPage() {
     currentPage.value++;
     fetchAnonymousBoardCommentList();
   }
+}
+
+function goToBoardList() {
+  router.push('/office-life/anonymous-board/list');
 }
 
 function checkAdminRole() {
@@ -368,6 +373,20 @@ function checkAdminRole() {
   
 .pagination-info {
   font-size: 14px;
+}
+
+.list-button {
+  padding: 8px 16px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.list-button:hover {
+  background-color: #1976d2;
 }
 
   </style>
