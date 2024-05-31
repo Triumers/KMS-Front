@@ -1,7 +1,24 @@
 <template>
   <div id="container">
     <div id="top">
-      <h1 id="title"> {{ post.title }} </h1>
+      
+      <div id="title-info">
+        <h1 id="title"> {{ post.title }} </h1>
+
+        <p class="like" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="material-icons">favorite</span>
+          {{ post.likeList.length }}
+        </p>
+
+        <ul class="dropdown-menu">
+          <li v-for="like in post.likeList">
+            <b-avatar variant="info" :src="like.profileImg ? like.profileImg : 'https://placekitten.com/300/300'">
+            </b-avatar>
+            &nbsp;{{ like.name }}&nbsp;
+          </li>
+        </ul>
+      </div>
+
       <div id="etc">
         <div class="translate">
           <select id="condition">
@@ -262,10 +279,40 @@ const post = ref({
       positionId: 2,
       rankId: 2
     }
-  ]
+  ],
+  "likeList": [
+        {
+            "id": 1,
+            "email": "admin",
+            "name": "관리자",
+            "profileImg": null,
+            "role": "ROLE_ADMIN",
+            "startDate": "2024-05-17",
+            "endDate": null,
+            "phoneNumber": null,
+            "teamId": 1,
+            "positionId": 1,
+            "rankId": 1
+        },
+        {
+            "id": 2,
+            "email": "test1",
+            "name": "테스트1",
+            "profileImg": "test1.jpg",
+            "role": "ROLE_NORMAL",
+            "startDate": null,
+            "endDate": null,
+            "phoneNumber": null,
+            "teamId": 2,
+            "positionId": 2,
+            "rankId": 2
+        }
+    ]
 });
 
-onMounted(() => {
+
+onMounted(async () => {
+  await checkQuizVisibility();
   setHistoryContent(post.value.history[0]);
 });
 
@@ -293,6 +340,30 @@ async function restorePost() {
 const setHistoryContent = (selectPost) => {
   historyPost.value = selectPost;
 };
+
+async function getAuthorized() {
+  const response = await axios.get(`http://localhost:5000/post/isAuthor/${originId}`);
+  isAuthorized.value = response.data;
+
+  const segments = currentRoute.path.split('/');
+  if (segments.length > 2 && segments[2] === "organization") {
+    general = true;
+  }
+
+  // try {
+  //     const token = localStorage.getItem('token');
+  //     if (token) {
+  //         axios.defaults.headers.common['Authorization'] = token;
+  // const response = await axios.get(`http://localhost:5000/tab/name/${tabId}`);
+  //         tabName.value = response.data;
+  //     } else {
+  //         alert("잘못된 접근입니다.");
+  //     }
+  // } catch (error) {
+  //     alert("탭 이름을 불러올 수 없습니다.");
+  // } finally {
+  // }
+}
 
 async function deletePost(postId) {
   try {
@@ -385,9 +456,7 @@ const checkQuizVisibility = async () => {
   }
 };
 
-onMounted(async () => {
-  await checkQuizVisibility();
-});
+
 </script>
 
 <style>
@@ -420,7 +489,7 @@ onMounted(async () => {
 }
 
 #container {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
   padding-top: 20px;
 }
@@ -452,7 +521,7 @@ onMounted(async () => {
 }
 
 #content {
-  width: 70%;
+  width: 100%;
 }
 
 #post-info {
@@ -482,5 +551,8 @@ onMounted(async () => {
 
 #quiz-container {
   margin-top: 20px;
+}
+li{
+  margin: 5px;
 }
 </style>
