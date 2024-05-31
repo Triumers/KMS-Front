@@ -12,7 +12,10 @@
             </button>
         </div>
         <div class="header-right">
-            <!-- 프로필 예정 -->
+            <button class="profile-button" @click="navigateToProfile">
+                <img src="@/assets/images/profile_image.png" alt="Profile" /> 
+                <!-- Employee의 image -->
+            </button>
         </div>
     </header>
 </template>
@@ -23,9 +26,12 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-// path 추가 예정
 const navigateTo = (path) => {
     router.push({ path });
+};
+
+const navigateToProfile = () => {
+    router.push({ path: '/profile' });
 };
 </script>
 
@@ -86,5 +92,27 @@ const navigateTo = (path) => {
     width: 25px;
     height: 25px;
     filter: invert(100%);
+}
+
+.profile-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.profile-button > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 </style>
