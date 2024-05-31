@@ -17,9 +17,13 @@
         v-model="keyword"
         placeholder="검색어 입력"
         class="search-input"
+        @keyup.enter="searchAnonymousBoards"
       />
       <button @click="searchAnonymousBoards" class="search-button">검색</button>
     </div>
+    <div class="search-result-count" v-if="showSearchResultCount">
+    검색 결과: {{ searchResultCount }}개
+  </div>
     <div class="board-list">
       <div
         v-for="(board, index) in anonymousBoardList"
@@ -69,6 +73,8 @@ const pageSize = ref(10);
 const totalCount = ref(0);
 const searchType = ref('titleAndContent');
 const keyword = ref('');
+const searchResultCount = ref(0);
+const showSearchResultCount = ref(false);
 
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
 
@@ -91,6 +97,7 @@ async function fetchAnonymousBoardList() {
       })
     );
     totalCount.value = response.data.totalElements;
+    showSearchResultCount.value = false; // 일반 게시물 목록 조회 시 검색 결과 개수 숨김
   } catch (error) {
     console.error('Failed to fetch anonymous board list:', error);
   }
@@ -104,6 +111,9 @@ async function searchAnonymousBoards() {
     );
     anonymousBoardList.value = response.data.content;
     totalCount.value = response.data.totalElements;
+    currentPage.value = 1;
+    searchResultCount.value = response.data.totalElements; // 검색 결과 개수 저장
+    showSearchResultCount.value = true; // 검색 결과 개수 표시
   } catch (error) {
     console.error('Failed to search anonymous boards:', error);
   }
@@ -344,5 +354,11 @@ function nextPage() {
   .board-content {
     padding: 0;
   }
+}
+
+.search-result-count {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #888;
 }
 </style>
