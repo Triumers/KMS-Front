@@ -34,7 +34,7 @@
           </div>
         </div>
         <p class="board-content">{{ board.content.slice(0, 50) }}...</p>
-        <span class="comment-count">댓글 {{ board.commentCount }}</span>
+        <span class="comment-count">댓글 {{ board.commentCount || 0 }}개</span>
       </div>
     </div>
     <div class="pagination">
@@ -81,7 +81,15 @@ async function fetchAnonymousBoardList() {
     const response = await axios.get(
       `http://localhost:9999/anonymous-board?page=${currentPage.value}&size=${pageSize.value}`
     );
-    anonymousBoardList.value = response.data.content;
+    anonymousBoardList.value = await Promise.all(
+      response.data.content.map(async (board) => {
+        const commentCountResponse = await axios.get(
+          `http://localhost:9999/anonymous-board/${board.id}/comments/count`
+        );
+        board.commentCount = commentCountResponse.data;
+        return board;
+      })
+    );
     totalCount.value = response.data.totalElements;
   } catch (error) {
     console.error('Failed to fetch anonymous board list:', error);
@@ -98,21 +106,6 @@ async function searchAnonymousBoards() {
     totalCount.value = response.data.totalElements;
   } catch (error) {
     console.error('Failed to search anonymous boards:', error);
-  }
-}
-
-async function fetchAnonymousBoardDetailWithComments(boardId) {
-  try {
-    const boardResponse = await axios.get(`http://localhost:9999/anonymous-board/${boardId}`);
-    const commentResponse = await axios.get(`http://localhost:9999/anonymous-board/${boardId}/comments`);
-
-    const board = boardResponse.data;
-    board.commentCount = commentResponse.data.totalElements;
-
-    return board;
-  } catch (error) {
-    console.error('Failed to fetch anonymous board detail with comments:', error);
-    throw error;
   }
 }
 
