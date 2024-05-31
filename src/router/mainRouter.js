@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import MainView from '@/views/MainView.vue';
+import SearchView from '@/views/SearchView.vue';
+import SearchAllListView from '@/components/post/SearchAllPostList.vue';
 
 import WorkspaceView from '@/views/WorkspaceView.vue';
 import PostListView from "@/components/post/SelectedPostList.vue";
@@ -25,10 +26,23 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            path: '/',
-            component: MainView
+            path: '',
+            component: PostListView
         },
-        
+        {
+            path: '/search',
+            component: SearchView,
+            children: [
+                {
+                    path: '',
+                    component: SearchAllListView,
+                },
+                {
+                    path: 'detail/:id',
+                    component: PostDetailView
+                }
+            ]
+        },
         {
             path: '/wiki/1',
             component: Wiki,
