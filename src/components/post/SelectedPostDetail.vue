@@ -120,7 +120,7 @@
                       <p>
                       <h3>
                         <b-avatar variant="info"
-                          :src="history.author.profileImg ? history.author.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+                          :src="history.author.profileImg ? history.author.profileImg : '@/assets/images/profile_image.png'"></b-avatar>
                         <span> &nbsp;{{ history.author.name }}&nbsp; </span>
                       </h3>
                       </p>

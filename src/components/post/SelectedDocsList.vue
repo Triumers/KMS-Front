@@ -26,6 +26,7 @@
                     <th scope="col">NAME</th>
                     <th scope="col">FILE</th>
                     <th scope="col">TYPE</th>
+                    <th scope="col">UPLOADER</th>
                     <th scope="col">DATE ADDED</th>
                 </tr>
             </thead>
@@ -39,6 +40,7 @@
                         </a>
                     </td>
                     <td>{{ post.content.split(' : ')[1] }}</td>
+                    <td>{{ post.author.name }}</td>
                     <td>{{ convertToDate(post.createdAt) }}</td>
                 </tr>
             </tbody>

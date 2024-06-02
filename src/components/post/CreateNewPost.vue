@@ -314,7 +314,7 @@ async function requestToAI(event) {
         responseAI.className = 'alert alert-primary';
         responseAI.setAttribute('data-bs-toggle', 'tooltip'); // 툴팁 토글 속성 추가
         responseAI.setAttribute('title', '클릭 시, 내용 복사'); // 툴팁 제목 추가
-        responseAI.innerHTML = content;
+        responseAI.innerText = content;
 
         document.getElementById('ai-content').appendChild(responseAI);
     }
