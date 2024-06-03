@@ -27,6 +27,8 @@ import Study from '@/views/Study.vue';
 import Organization from '@/views/Organization.vue';
 import OfficeLife from '@/views/OfficeLife.vue';
 
+import Login from '@/components/user/Login.vue';
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -243,7 +245,11 @@ const router = createRouter({
                             component: AnonymousBoardDetailView
                         }
                     ]
-                }
+                },
+                {
+                    path: '/login',
+                    component: Login
+                },
             ]
         }
     ]
