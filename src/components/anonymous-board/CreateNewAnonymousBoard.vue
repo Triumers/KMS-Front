@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="header">
+    <div class="header no-background no-shadow">
       <h2 class="form-title">글 작성</h2>
       <button type="submit" class="submit-button" @click="saveAnonymousBoard">작성</button>
     </div>
@@ -35,7 +35,7 @@ async function saveAnonymousBoard() {
       content: content.value,
       nickname: nickname.value,
     });
-    router.push(`/office-life/anonymous-board/${response.data.id}`); // 상세 페이지 URL 수정
+    router.push(`/office-life/3/anonymous-board/${response.data.id}`); // 상세 페이지 URL 수정
   } catch (error) {
     console.error('Failed to save anonymous board:', error);
     // 에러 처리 로직 추가
@@ -65,15 +65,23 @@ async function saveAnonymousBoard() {
   align-items: center;
   margin-bottom: 20px;
  }
+
+ .no-background {
+  background-color: transparent;
+}
+
+.no-shadow {
+  box-shadow: none;
+}
  
  .form-title {
-  font-size: 28px;
+  font-size: 35px;
   font-weight: bold;
  }
  
  .submit-button {
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: #042444;
   color: white;
   border: none;
   border-radius: 4px;
@@ -81,27 +89,33 @@ async function saveAnonymousBoard() {
  }
 
  .submit-button:hover {
-  background-color: #388e3c;
+  background-color: #0c5195;
 }
  
  .form-group {
   margin-bottom: 20px;
  }
- 
+
  .form-input {
   width: 100%;
   padding: 10px;
   border: none;
   border-bottom: 1px solid #ccc;
-  font-size: 16px;
+  font-size: 30px;
  }
+
+ .form-input::placeholder {
+  font-size: 30px;
+}
 
  .form-input:hover {
   border-color: #888;
 }
  
  .nickname-input {
+  width: 30%;
   color: #888;
+  font-size: 16px;
  }
  
  .form-textarea {

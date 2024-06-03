@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <div class="header">
+    <div class="header no-background no-shadow">
       <h2>익명 게시판</h2>
-      <button @click="goToWriteForm" class="write-button">글쓰기</button>
+      <button @click="goToWriteForm" class="write-button">글 쓰기</button>
     </div>
     <div class="search-box">
       <div class="search-type">
@@ -51,10 +51,10 @@
       >
         이전
       </button>
-      <span>{{ currentPage }} / {{ totalPages }}</span>
+      <span>{{ currentPage }} / {{ totalPages > 0 ? totalPages : 1 }}</span>
       <button
         @click="nextPage"
-        :disabled="currentPage === totalPages"
+        :disabled="currentPage === totalPages || totalPages === 0"
         class="pagination-button"
       >
         다음
@@ -78,7 +78,7 @@ const keyword = ref('');
 const searchResultCount = ref(0);
 const showSearchResultCount = ref(false);
 
-const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
+const totalPages = computed(() => (totalCount.value === 0 ? 1 : Math.ceil(totalCount.value / pageSize.value)));
 
 onMounted(() => {
   fetchAnonymousBoardList();
@@ -111,22 +111,29 @@ async function searchAnonymousBoards() {
     const response = await axios.get(
       `http://localhost:9999/anonymous-board/search?keyword=${encodedKeyword}&type=${searchType.value}&page=${currentPage.value}&size=${pageSize.value}`
     );
-    anonymousBoardList.value = response.data.content;
+    anonymousBoardList.value = await Promise.all(
+      response.data.content.map(async (board) => {
+        const commentCountResponse = await axios.get(
+          `http://localhost:9999/anonymous-board/${board.id}/comments/count`
+        );
+        board.commentCount = commentCountResponse.data;
+        return board;
+      })
+    );
     totalCount.value = response.data.totalElements;
-    currentPage.value = 1;
-    searchResultCount.value = response.data.totalElements; // 검색 결과 개수 저장
-    showSearchResultCount.value = true; // 검색 결과 개수 표시
+    searchResultCount.value = response.data.totalElements;
+    showSearchResultCount.value = true;
   } catch (error) {
     console.error('Failed to search anonymous boards:', error);
   }
 }
 
 function goToWriteForm() {
-  router.push('/office-life/anonymous-board/new');
+  router.push('/office-life/3/anonymous-board/new');
 }
 
 function goToBoardDetail(boardId) {
-  router.push(`/office-life/anonymous-board/${boardId}`);
+  router.push(`/office-life/3/anonymous-board/${boardId}`);
 }
 
 function formatNickname(nickname) {
@@ -150,14 +157,22 @@ function padZero(number) {
 function previousPage() {
   if (currentPage.value > 1) {
     currentPage.value--;
-    fetchAnonymousBoardList();
+    if (keyword.value) {
+      searchAnonymousBoards();
+    } else {
+      fetchAnonymousBoardList();
+    }
   }
 }
 
 function nextPage() {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
-    fetchAnonymousBoardList();
+    if (keyword.value) {
+      searchAnonymousBoards();
+    } else {
+      fetchAnonymousBoardList();
+    }
   }
 }
 </script>
@@ -176,10 +191,18 @@ function nextPage() {
   margin-bottom: 20px;
 }
 
+.no-background {
+  background-color: transparent;
+}
+
+.no-shadow {
+  box-shadow: none;
+}
+
 .write-button {
-  padding: 8px 16px;
+  padding: 10px 20px;  
   border-radius: 4px;
-  background-color: #2d42de;
+  background-color: #042444;
   color: white;
   border: none;
   cursor: pointer;
@@ -187,21 +210,23 @@ function nextPage() {
 }
 
 .write-button:hover {
-  background-color: #1b2cba;
+  background-color: #0c5195;
 }
 
 .search-box {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .search-type {
   margin-right: 10px;
+  flex: 1 1 100px;
 }
 
 .search-type-select {
-  padding: 10px 14px;  /* Increased padding */
+  padding: 10px 16px;  /* Increased padding */
   border-radius: 4px;
   border: 1px solid #ccc;
   font-size: 14px;
@@ -214,7 +239,8 @@ function nextPage() {
 
 .search-input {
   flex-grow: 1;
-  padding: 10px 14px;  /* Increased padding */
+  flex: 20 1 300px; 
+  padding: 10px;  /* Increased padding */
   border-radius: 4px;
   border: 1px solid #ccc;
   font-size: 14px;
@@ -226,18 +252,19 @@ function nextPage() {
 }
 
 .search-button {
-  padding: 10px 16px;  /* Increased padding */
+  padding: 10px 16px;  /* Increased padding to match input height */
   border-radius: 4px;
-  background-color: #2d42de;
+  background-color: #042444;
   color: white;
   border: none;
   cursor: pointer;
   margin-left: 10px;
   transition: background-color 0.2s;
+  flex: 1 1 100px; /* Ensure button doesn't shrink too much */
 }
 
 .search-button:hover {
-  background-color: #1b2cba;
+  background-color: #0c5195;
 }
 
 .board-list {
@@ -272,6 +299,7 @@ function nextPage() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 5px;
   max-width: 70%; /* Adjust as needed */
 }
 
@@ -289,6 +317,7 @@ function nextPage() {
 .comment-count {
   font-size: 12px;
   color: #888;
+  padding: 8px;
   margin-top: 5px; /* Added margin to move it down */
 }
 
@@ -298,7 +327,7 @@ function nextPage() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0 10px;
+  padding: 5px;
 }
 
 .pagination {
@@ -311,7 +340,7 @@ function nextPage() {
 .pagination-button {
   padding: 8px 16px;
   border-radius: 4px;
-  background-color: #4caf50;
+  background-color: #042444;
   color: white;
   border: none;
   cursor: pointer;
@@ -320,7 +349,7 @@ function nextPage() {
 }
 
 .pagination-button:hover:not(:disabled) {
-  background-color: #388e3c;
+  background-color: #0c5195;
 }
 
 .pagination-button:disabled {

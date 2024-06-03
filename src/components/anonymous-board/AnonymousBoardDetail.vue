@@ -142,7 +142,7 @@ function nextPage() {
 }
 
 function goToBoardList() {
-  router.push('/office-life/anonymous-board/list');
+  router.push('/office-life/3/anonymous-board/list');
 }
 
 function checkAdminRole() {
@@ -192,7 +192,7 @@ function checkAdminRole() {
   
   .delete-button {
     padding: 8px 16px;
-    background-color: #f44336;
+    background-color: #c9170b;
     color: white;
     border: none;
     border-radius: 4px;
@@ -280,7 +280,7 @@ function checkAdminRole() {
   .submit-button {
   padding: 10px 16px;
   height: 100px;
-  background-color: #2196f3;
+  background-color: #042444;
   color: white;
   border: none;
   border-radius: 4px;
@@ -288,7 +288,7 @@ function checkAdminRole() {
 }
 
 .submit-button:hover {
-  background-color: #1976d2;
+  background-color: #0c5195;
 }
   
   .comment-section {
@@ -368,7 +368,7 @@ function checkAdminRole() {
 }
 
   .pagination-button:hover:not(:disabled) {
-  background-color: #388e3c;
+  background-color: #042444;
 }
   
 .pagination-info {
@@ -377,7 +377,7 @@ function checkAdminRole() {
 
 .list-button {
   padding: 8px 16px;
-  background-color: #2196f3;
+  background-color: #042444;
   color: white;
   border: none;
   border-radius: 4px;
@@ -386,7 +386,7 @@ function checkAdminRole() {
 }
 
 .list-button:hover {
-  background-color: #1976d2;
+  background-color: #0c5195;
 }
 
   </style>
