@@ -49,7 +49,7 @@
         </div>
         <div class="approval-details">
           <div class="approver-container">
-            <span class="approver-label">결재자: </span>
+            <span class="approver-label">결재 요청자: </span>
             <span class="approver-name">{{ approval.approverName }}</span>
           </div>
           <div class="approval-status-container">
