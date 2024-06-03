@@ -7,7 +7,7 @@
 
         <p class="like" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="material-icons">favorite</span>
-          {{ post.likeList.length }}
+          &nbsp;<span>{{ post.likeList.length }}</span>
         </p>
 
         <ul class="dropdown-menu">
@@ -559,5 +559,11 @@ const checkQuizVisibility = async () => {
 
 li {
   margin: 5px;
+}
+
+.like{
+    display: flex;
+      align-items: center;
+      margin-top: 10px;
 }
 </style>

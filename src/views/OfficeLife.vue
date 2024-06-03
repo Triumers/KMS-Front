@@ -1,6 +1,5 @@
 <template>
     <div>
-      <h1>Office Life Page</h1>
       <RouterView/>
     </div>
   </template>
