@@ -35,7 +35,7 @@ const router = createRouter({
         {
             path: '',
             component: Wiki,
-            redirect: '/wiki/1'
+            redirect: '/wiki/:id'
         },
         {
             path: '/search',
@@ -56,7 +56,7 @@ const router = createRouter({
             component: Wiki,
             children: [
                 {
-                    path: '1',
+                    path: ':id',
                     component: PostListView,
                 },
                 {
@@ -170,7 +170,7 @@ const router = createRouter({
                     component: Organization,
                     children: [
                         {
-                            path: '2',
+                            path: ':id',
                             component: PostListView
                         },
                         {
@@ -200,7 +200,7 @@ const router = createRouter({
             ]
         },
         {
-            path: '/office-life/3',
+            path: '/office-life/:id',
             component: OfficeLife,
             children: [
                 {

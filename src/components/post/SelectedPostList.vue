@@ -74,12 +74,12 @@ import axios from 'axios';
 const router = useRouter();
 const currentRoute = useRoute();
 
-const tabId = 1; // useRoute().params.id;
+const tabId = currentRoute.params.id;
 const tabName = ref(null);
 
 const postList = ref(null);
 const search = ref({
-    tabRelationId: 1,
+    tabRelationId: tabId,
     categoryId: null,
     type: 'title',
     keyword: '',
@@ -88,10 +88,12 @@ const search = ref({
     tags: []
 });
 
-onMounted(() => {
-    getTabName();
-    getPostList();
-});
+onMounted(async() => {
+    
+        await getTabName(tabId);
+        await getPostList();
+    }
+);
 
 const postDetail = (postId) => {
 
@@ -140,23 +142,21 @@ async function searchPost() {
     await getPostList();
 }
 
-async function getTabName() {
-    const response = await axios.get(`http://localhost:5000/tab/name/${tabId}`);
-    tabName.value = response.data;
+async function getTabName(id) {
 
-    // try {
-    //     const token = localStorage.getItem('token');
-    //     if (token) {
-    //         axios.defaults.headers.common['Authorization'] = token;
-    // const response = await axios.get(`http://localhost:5000/tab/name/${tabId}`);
-    //         tabName.value = response.data;
-    //     } else {
-    //         alert("잘못된 접근입니다.");
-    //     }
-    // } catch (error) {
-    //     alert("탭 이름을 불러올 수 없습니다.");
-    // } finally {
-    // }
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+    const response = await axios.get(`http://localhost:5000/tab/name/${id}`);
+            tabName.value = response.data;
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("탭 이름을 불러올 수 없습니다.");
+    } finally {
+    }
 }
 
 const pageable = {
@@ -167,7 +167,7 @@ const pageable = {
 async function getPostList() {
     try {
         const response = await axios.post('http://localhost:5000/post/tab', {
-            tabRelationId: search.value.tabRelationId,
+            tabRelationId: tabId,
             categoryId: search.value.categoryId,
             title: search.value.title,
             content: search.value.content,
