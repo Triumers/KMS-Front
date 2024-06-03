@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
-                        <div class="content-preview">{{ post.content }}</div>
+                        <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
                         <b-card-img :src="post.postImg" rounded alt="Image" bottom></b-card-img>
                         <div class="d-flex justify-content-between align-items-center">
                             <p class="like">
@@ -112,6 +112,12 @@ const createNew = () => {
     const currentPath = router.currentRoute.value.path;
     const newPath = `${currentPath}/new`;
     router.push(newPath);
+};
+
+const stripHtmlTags = (html) => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || "";
 };
 
 async function searchPost() {
