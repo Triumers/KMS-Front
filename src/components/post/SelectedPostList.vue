@@ -97,10 +97,10 @@ const postDetail = (postId) => {
 
     const segments = currentRoute.path.split('/');
 
-    let detailPath = `${segments[1]}/${segments[2]}`;
+    let detailPath = `${segments[1]}`;
 
-    if (segments.length > 3 && segments[2] === "organization") {
-        detailPath = `${detailPath}/${segments[3]}`;
+    if (segments.length > 3 && segments[1] === "group") {
+        detailPath = `${detailPath}/${segments[2]}`;
     }
 
     router.push({
