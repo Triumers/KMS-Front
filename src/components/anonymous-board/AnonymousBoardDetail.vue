@@ -76,7 +76,7 @@ onMounted(() => {
 
 async function fetchAnonymousBoardById() {
   try {
-    const response = await axios.get(`http://localhost:9999/anonymous-board/${route.params.id}`);
+    const response = await axios.get(`http://localhost:5000/anonymous-board/${route.params.id}`);
     anonymousBoard.value = response.data;
   } catch (error) {
     console.error('Failed to fetch anonymous board:', error);
@@ -85,7 +85,7 @@ async function fetchAnonymousBoardById() {
 
 async function fetchAnonymousBoardCommentList() {
   try {
-    const response = await axios.get(`http://localhost:9999/anonymous-board/${route.params.id}/comments?page=${currentPage.value - 1}&size=${pageSize.value}`);
+    const response = await axios.get(`http://localhost:5000/anonymous-board/${route.params.id}/comments?page=${currentPage.value - 1}&size=${pageSize.value}`);
     anonymousBoardCommentList.value = response.data.content;
     totalCount.value = response.data.totalElements;
   } catch (error) {
@@ -95,7 +95,7 @@ async function fetchAnonymousBoardCommentList() {
 
 async function saveAnonymousBoardComment() {
   try {
-    const response = await axios.post(`http://localhost:9999/anonymous-board/${route.params.id}/comments`, newComment.value);
+    const response = await axios.post(`http://localhost:5000/anonymous-board/${route.params.id}/comments`, newComment.value);
     newComment.value.content = '';
     newComment.value.nickname = '익명';
     fetchAnonymousBoardCommentList();
@@ -106,7 +106,7 @@ async function saveAnonymousBoardComment() {
 
 async function deleteAnonymousBoard() {
   try {
-    await axios.delete(`http://localhost:9999/anonymous-board/${route.params.id}`);
+    await axios.delete(`http://localhost:5000/anonymous-board/${route.params.id}`);
     router.push('/office-life/anonymous-board');
   } catch (error) {
     console.error('Failed to delete anonymous board:', error);

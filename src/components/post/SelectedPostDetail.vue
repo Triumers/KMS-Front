@@ -149,7 +149,7 @@ import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 const router = useRouter();
 const currentRoute = useRoute();
 const postId = currentRoute.params.id;
-const general = ref((currentRoute.query.general == "true"));
+let general = ref((currentRoute.query.general == "true"));
 
 const isAuthorized = true;
 const historyPost = ref(null);

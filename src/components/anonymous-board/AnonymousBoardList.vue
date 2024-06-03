@@ -87,12 +87,12 @@ onMounted(() => {
 async function fetchAnonymousBoardList() {
   try {
     const response = await axios.get(
-      `http://localhost:9999/anonymous-board?page=${currentPage.value}&size=${pageSize.value}`
+      `http://localhost:5000/anonymous-board?page=${currentPage.value}&size=${pageSize.value}`
     );
     anonymousBoardList.value = await Promise.all(
       response.data.content.map(async (board) => {
         const commentCountResponse = await axios.get(
-          `http://localhost:9999/anonymous-board/${board.id}/comments/count`
+          `http://localhost:5000/anonymous-board/${board.id}/comments/count`
         );
         board.commentCount = commentCountResponse.data;
         return board;
@@ -109,12 +109,12 @@ async function searchAnonymousBoards() {
   try {
     const encodedKeyword = encodeURIComponent(keyword.value);
     const response = await axios.get(
-      `http://localhost:9999/anonymous-board/search?keyword=${encodedKeyword}&type=${searchType.value}&page=${currentPage.value}&size=${pageSize.value}`
+      `http://localhost:5000/anonymous-board/search?keyword=${encodedKeyword}&type=${searchType.value}&page=${currentPage.value}&size=${pageSize.value}`
     );
     anonymousBoardList.value = await Promise.all(
       response.data.content.map(async (board) => {
         const commentCountResponse = await axios.get(
-          `http://localhost:9999/anonymous-board/${board.id}/comments/count`
+          `http://localhost:5000/anonymous-board/${board.id}/comments/count`
         );
         board.commentCount = commentCountResponse.data;
         return board;
