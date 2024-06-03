@@ -30,7 +30,7 @@ const nickname = ref('익명');
 
 async function saveAnonymousBoard() {
   try {
-    const response = await axios.post('http://localhost:9999/anonymous-board', { // 백엔드 API 엔드포인트로 수정
+    const response = await axios.post('http://localhost:5000/anonymous-board', { // 백엔드 API 엔드포인트로 수정
       title: title.value,
       content: content.value,
       nickname: nickname.value,
