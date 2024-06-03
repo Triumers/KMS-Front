@@ -31,9 +31,15 @@
       const response = await axios.post('/login', {
         email: email.value,
         password: password.value,
-      });
+      }).then(response => {
+        localStorage.setItem('token', response.headers.get('Authorization'));
+        localStorage.setItem('role', response.headers.get('UserRole'));
+        router.push('/wiki/posts');
+
+        return response.data;
+      })
       // 로그인 성공 시 처리할 로직 추가
-      router.push('/wiki/posts');
+      
     } catch (error) {
       console.error('Failed to login:', error);
       // 로그인 실패 시 처리할 로직 추가
