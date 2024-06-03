@@ -1,33 +1,9 @@
 <template>
     <div id="top">
-        <h3 id="tab-name">{{ tabName }}</h3>
-        <p id="write-btn">
-            <b-button variant="light" @click="createNew()">글쓰기 버튼</b-button>
-        </p>
+        <h3 id="tab-name">검색 결과</h3>
     </div>
 
     <hr>
-
-    <p class="input-group mb-3 search">
-        <span class="search-type">
-            <select v-model="search.type" class="form-select pt-1 search-type"
-                style="width:fit-content; vertical-align: middle; margin-right: 10px;">
-                <option value="title">제목</option>
-                <option value="content">내용</option>
-                <option value="tag">태그</option>
-            </select>
-        </span>
-
-        <b-form-tags v-if="search.type == 'tag'" class="form-select pt-1" input-id="tags-separators"
-            v-model="search.tags" separator=" " placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter></b-form-tags>
-
-        <b-form-input v-else type="text" id="search-input" placeholder="검색어를 입력하세요" v-model="search.keyword"></b-form-input>
-
-        <button class="search-button" id="search-post" @click="searchPost" >
-            <img src="@/assets/icons/search_icon.png" alt="Search" />
-        </button>
-        
-    </p>
 
     <div class="postList-div">
         <div class="row row-cols-1 row-cols-1 row-cols-md-2">
@@ -74,44 +50,23 @@ import axios from 'axios';
 const router = useRouter();
 const currentRoute = useRoute();
 
-const tabId = 1; // useRoute().params.id;
-const tabName = ref(null);
-
 const postList = ref(null);
 const search = ref({
-    tabRelationId: 1,
-    categoryId: null,
-    type: 'title',
-    keyword: '',
+    type: currentRoute.query.type,
+    keyword: currentRoute.query.keyword,
     title: null,
     content: null,
     tags: []
 });
 
 onMounted(() => {
-    getTabName();
-    getPostList();
+    searchPost();
 });
 
 const postDetail = (postId) => {
-
-    const segments = currentRoute.path.split('/');
-
-    let detailPath = `${segments[1]}/${segments[2]}`;
-
-    if (segments.length > 3 && segments[2] === "organization") {
-        detailPath = `${detailPath}/${segments[3]}`;
-    }
-
     router.push({
-        path: `/${detailPath}/detail/${postId}`
+        path: `${currentRoute.path}/detail/${postId}`
     });
-};
-
-const createNew = () => {
-    const currentPath = router.currentRoute.value.path;
-    const newPath = `${currentPath}/new`;
-    router.push(newPath);
 };
 
 async function searchPost() {
@@ -128,35 +83,11 @@ async function searchPost() {
             break;
     }
 
-    if (search.value.type != "tag")
-        tags = [];
+    if (search.value.type == "tag")
+        search.value.tags = currentRoute.query.tags ? currentRoute.query.tags.split(',') : [];
 
     await getPostList();
 }
-
-async function getTabName() {
-    const response = await axios.get(`http://localhost:5000/tab/name/${tabId}`);
-    tabName.value = response.data;
-
-    // try {
-    //     const token = localStorage.getItem('token');
-    //     if (token) {
-    //         axios.defaults.headers.common['Authorization'] = token;
-    // const response = await axios.get(`http://localhost:5000/tab/name/${tabId}`);
-    //         tabName.value = response.data;
-    //     } else {
-    //         alert("잘못된 접근입니다.");
-    //     }
-    // } catch (error) {
-    //     alert("탭 이름을 불러올 수 없습니다.");
-    // } finally {
-    // }
-}
-
-const pageable = {
-    page: 0,
-    size: 10
-};
 
 async function getPostList() {
     try {
@@ -203,9 +134,6 @@ const convertToDate = (date) => {
 
     return dateSplit[0] + " " + dateSplit[1];
 };
-
-
-
 
 </script>
 

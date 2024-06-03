@@ -1,12 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import MainView from '@/views/MainView.vue';
+import SearchView from '@/views/SearchView.vue';
+import SearchAllListView from '@/components/post/SearchAllPostList.vue';
 
-import PostView from '@/views/PostView.vue';
+import WorkspaceView from '@/views/WorkspaceView.vue';
 import PostListView from "@/components/post/SelectedPostList.vue";
 import PostDetailView from "@/components/post/SelectedPostDetail.vue";
 import PostWriterView from "@/components/post/CreateNewPost.vue";
 import GeneralWriterView from "@/components/post/CreateNewGeneralPost.vue";
+import DocsWriterView from "@/components/post/CreateNewDocs.vue";
+import DocsListView from "@/components/post/SelectedDocsList.vue";
+
 import CreateQuiz from '@/components/quiz/CreateQuiz.vue';
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 import QuizView from '@/views/QuizView.vue';
@@ -22,56 +26,38 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            path: '/',
-            component: MainView
+            path: '',
+            component: PostListView
         },
         {
-            path: '/tab',
-            component: PostView,
+            path: '/search',
+            component: SearchView,
             children: [
                 {
-                    path: ':id',
-                    component: PostListView
+                    path: '',
+                    component: SearchAllListView,
+                },
+                {
+                    path: 'detail/:id',
+                    component: PostDetailView
+                }
+            ]
+        },
+        {
+            path: '/wiki/1',
+            component: Wiki,
+            children: [
+                {
+                    path: '',
+                    component: PostListView,
                 },
                 {
                     path: 'detail/:id',
                     component: PostDetailView
                 },
                 {
-                    path: ':id/new',
+                    path: 'new',
                     component: PostWriterView
-                },
-                {
-                    path: 'general/new',
-                    component: GeneralWriterView
-                }
-            ]
-        },
-        {
-            path: '/wiki',
-            component: Wiki,
-            children: [
-                {
-                    path: 'posts',
-                    component: PostView,
-                    children: [
-                        {
-                            path: ':id',
-                            component: PostListView
-                        },
-                        {
-                            path: 'detail/:id',
-                            component: PostDetailView
-                        },
-                        {
-                            path: ':id/new',
-                            component: PostWriterView
-                        },
-                        {
-                            path: 'general/new',
-                            component: GeneralWriterView
-                        }
-                    ]
                 },
                 {
                     path: 'quiz',
@@ -94,26 +80,30 @@ const router = createRouter({
             component: Workspace,
             children: [
                 {
-                    path: 'posts',
-                    component: PostView,
+                    path: '',  // 추후 ':id'로 변경
+                    component: WorkspaceView,
                     children: [
                         {
-                            path: ':id',
+                            path: 'wiki',
                             component: PostListView
                         },
                         {
-                            path: 'detail/:id',
-                            component: PostDetailView
+                            path: 'docs',
+                            component: DocsListView
                         },
                         {
-                            path: ':id/new',
+                            path: 'wiki/new',
                             component: PostWriterView
                         },
                         {
-                            path: 'general/new',
-                            component: GeneralWriterView
+                            path: 'docs/new',
+                            component: DocsWriterView
                         }
                     ]
+                },
+                {
+                    path: 'detail/:id',
+                    component: PostDetailView
                 },
                 {
                     path: 'quiz',
@@ -136,30 +126,16 @@ const router = createRouter({
             component: Group,
             children: [
                 {
-                    path: 'study',
+                    path: 'study', // 추후 ':id'로 변경
                     component: Study,
                     children: [
                         {
-                            path: 'posts',
-                            component: PostView,
-                            children: [
-                                {
-                                    path: ':id',
-                                    component: PostListView
-                                },
-                                {
-                                    path: 'detail/:id',
-                                    component: PostDetailView
-                                },
-                                {
-                                    path: ':id/new',
-                                    component: PostWriterView
-                                },
-                                {
-                                    path: 'general/new',
-                                    component: GeneralWriterView
-                                }
-                            ]
+                            path: '', 
+                            component: PostListView
+                        },
+                        {
+                            path: 'new',
+                            component: PostWriterView
                         },
                         {
                             path: 'quiz',
@@ -178,30 +154,24 @@ const router = createRouter({
                     ]
                 },
                 {
-                    path: 'organization',
+                    path: 'detail/:id',
+                    component: PostDetailView
+                },
+                {
+                    path: 'organization/2',
                     component: Organization,
                     children: [
                         {
-                            path: 'posts',
-                            component: PostView,
-                            children: [
-                                {
-                                    path: ':id',
-                                    component: PostListView
-                                },
-                                {
-                                    path: 'detail/:id',
-                                    component: PostDetailView
-                                },
-                                {
-                                    path: ':id/new',
-                                    component: PostWriterView
-                                },
-                                {
-                                    path: 'general/new',
-                                    component: GeneralWriterView
-                                }
-                            ]
+                            path: '',  // 추후 ':id'로 변경
+                            component: PostListView
+                        },
+                        {
+                            path: 'detail/:id',
+                            component: PostDetailView
+                        },
+                        {
+                            path: 'new',
+                            component: GeneralWriterView
                         },
                         {
                             path: 'quiz',
@@ -222,30 +192,20 @@ const router = createRouter({
             ]
         },
         {
-            path: '/office-life',
+            path: '/office-life/3',
             component: OfficeLife,
             children: [
                 {
-                    path: 'posts',
-                    component: PostView,
-                    children: [
-                        {
-                            path: ':id',
-                            component: PostListView
-                        },
-                        {
-                            path: 'detail/:id',
-                            component: PostDetailView
-                        },
-                        {
-                            path: ':id/new',
-                            component: PostWriterView
-                        },
-                        {
-                            path: 'general/new',
-                            component: GeneralWriterView
-                        }
-                    ]
+                    path: '',
+                    component: PostListView
+                },
+                {
+                    path: 'detail/:id',
+                    component: PostDetailView
+                },
+                {
+                    path: '/new',
+                    component: PostWriterView
                 },
                 {
                     path: 'quiz',

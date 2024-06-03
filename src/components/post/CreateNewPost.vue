@@ -2,7 +2,7 @@
     <div id="container">
         <form @submit.prevent="submitPost" @keydown.enter.prevent>
             <div id="top">
-                <h3 id="title"><strong>게시글 작성</strong> </h3>
+                <h3 id="top-title"><strong>게시글 작성</strong> </h3>
                 <div>
                     <button id="save-btn" type="submit" class="btn btn-light" @click="savePost">작성 완료</button>
                 </div>
@@ -13,9 +13,9 @@
                 <div id="main-content">
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="title" v-model="postForm.title"
+                        <input type="text" class="form-control" id="title-input" v-model="postForm.title"
                             placeholder="제목을 입력해주세요.">
-                        <label for="title">제목</label>
+                        <label for="title-input">제목</label>
                     </div>
 
                     <div class="form-floating mb-3">
@@ -26,10 +26,18 @@
 
                     <p id="content-info">
                         <small>※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
+
+                    <div>
                         <span><b-button variant="outline-secondary" data-bs-toggle="modal"
                                 data-bs-target="#preview">미리보기</b-button></span>
+                        <span>
+                            <b-button variant="outline-info" @click="aiToggle = !aiToggle">AI
+                                CHAT</b-button>
+                        </span>
+                    </div>
 
-                        <!-- 미리보기 모달창 -->
+
+                    <!-- 미리보기 모달창 -->
                     <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" aria-labelledby="previewLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -51,7 +59,7 @@
                     </div>
                     </p>
 
-                    <div id="content" class="form-floating mb-3">
+                    <div id="content" class="form-floating">
                         <b-form-textarea id="content-text" class="form-control" placeholder="내용을 입력해주세요."
                             v-model="postForm.content" no-resize @contextmenu.prevent="openFileDialog"
                             @keydown.stop></b-form-textarea>
@@ -62,25 +70,17 @@
                     </div>
                 </div>
 
-                <div id="ai-chat">
-                    <div>
-                        <div class="ai" data-bs-toggle="collapse" :data-bs-target="`#aiChat`"
-                            :aria-controls="`#aiChat`">
-                            <h5>AI CHAT ▽</h5>
-                        </div>
-                        <hr>
-
-                        <div class="collapse" id="aiChat">
-                            <p>
-                                <b-badge class="ai-menu" @click="requestToAI($event)">글 업그레이드</b-badge>
-                                <b-badge class="ai-menu" @click="requestToAI($event)">내용 검증</b-badge>
-                                <b-badge class="ai-menu" @click="requestToAI($event)">맞춤법 검사</b-badge>
+                <div id="ai-chat" v-if="aiToggle">
+                    <div id="aiChat">
+                        <p>
+                            <b-badge class="ai-menu" @click="requestToAI($event)">글 업그레이드</b-badge>
+                            <b-badge class="ai-menu" @click="requestToAI($event)">내용 검증</b-badge>
+                            <b-badge class="ai-menu" @click="requestToAI($event)">맞춤법 교정</b-badge>
+                        </p>
+                        <div id="ai-content" class="card">
+                            <p><span class="material-icons">info</span>&nbsp;<small>응답 메시지 박스 클릭 시, 내용 복사</small>
                             </p>
-                            <div id="ai-content" class="card">
-                                <p><span class="material-icons">info</span>&nbsp;<small>응답 메시지 박스 클릭 시, 내용 복사</small>
-                                </p>
 
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,6 +101,8 @@ const currentRoute = useRoute();
 
 const tabId = currentRoute.params.id;
 const originId = currentRoute.query.post;
+const post = ref(null);
+const aiToggle = ref(false);
 
 const fileInput = ref(null);
 const postForm = ref({
@@ -111,6 +113,24 @@ const postForm = ref({
     tabRelationId: tabId,
     originId: originId
 })
+
+onMounted(() => {
+    if (originId) {
+        setPost();
+    }
+});
+
+async function setPost() {
+
+    await getPostById(originId);
+    postForm.value = {
+        title: post.value.title,
+        content: post.value.content,
+        tags: post.value.tags,
+        tabRelationId: tabId,
+        originId: originId
+    };
+}
 
 function openFileDialog(event) {
     event.preventDefault();
@@ -183,18 +203,17 @@ function insertAtCursor(text) {
 }
 
 async function savePost() {
-
-    console.log(postForm.value);
-
     if (originId) {
         console.log("MODIFY");
         // await saveModifyPost();
-        router.push(`/tab/detail/${originId}`);
     }
     else {
         // await saveNewPost();
-        router.push(`/tab/detail/${originId}`);
     }
+    const segments = currentRoute.path.split('/');
+    const firstRoot = segments[1];
+    const newPath = `/${firstRoot}/detail/${originId}`;
+    router.push(newPath);
 }
 
 async function saveNewPost() {
@@ -202,7 +221,14 @@ async function saveNewPost() {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.get(`http://localhost:5000/post/regist`, { newPost: postForm.value });
+            const response = await axios.post(`http://localhost:5000/post/regist`, {
+                title: postForm.value.title,
+                postImg: postForm.value.postImg,
+                content: postForm.value.content,
+                tags: postForm.value.tags,
+                tabRelationId: postForm.value.tabId,
+                originId: postForm.value.originId
+            });
             originId.value = response.data.id;
         } else {
             alert("잘못된 접근입니다.");
@@ -217,7 +243,14 @@ async function saveModifyPost() {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            await axios.get(`http://localhost:5000/post/modify`, { modifyPost: postForm.value });
+            await axios.post(`http://localhost:5000/post/modify`, {
+                title: postForm.value.title,
+                postImg: postForm.value.postImg,
+                content: postForm.value.content,
+                tags: postForm.value.tags,
+                tabRelationId: postForm.value.tabId,
+                originId: postForm.value.originId
+            });
         } else {
             alert("잘못된 접근입니다.");
         }
@@ -225,7 +258,6 @@ async function saveModifyPost() {
         alert("게시글 저장에 실패했습니다.");
     }
 }
-
 
 function responseMsgClick() {
     const divContent = this.textContent;
@@ -241,7 +273,7 @@ function responseMsgClick() {
 
 async function requestToAI(event) {
 
-    const aiType = { '글 업그레이드': 'enhancement', '내용 검증': 'validation', '맞춤법 검사': 'grammar' };
+    const aiType = { '글 업그레이드': 'enhancement', '내용 검증': 'validation', '맞춤법 교정': 'grammar' };
     const type = event.target.textContent;
 
     const requestAI = document.createElement('p');
@@ -249,26 +281,32 @@ async function requestToAI(event) {
     requestAI.innerHTML = type;
     document.getElementById('ai-content').appendChild(requestAI);
 
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.get(`http://localhost:5000/post/ai`, {
-                request: {
-                    type: aiType[type],
-                    content: postForm.value.content
-                }
-            });
+    const response = await axios.post(`http://localhost:5000/post/ai`, {
+        type: aiType[type],
+        content: postForm.value.content
+    });
 
-            const responseContent = response.data.content;
-            createResponseMsg(responseContent);
+    const responseContent = response.data;
+    createResponseMsg(responseContent);
 
-        } else {
-            alert("잘못된 접근입니다.");
-        }
-    } catch (error) {
-        alert("요청에 실패했습니다.");
-    }
+    // try {
+    //     const token = localStorage.getItem('token');
+    //     if (token) {
+    //         axios.defaults.headers.common['Authorization'] = token;
+    // const response = await axios.post(`http://localhost:5000/post/ai`, {
+    //                 type: aiType[type],
+    //                 content: postForm.value.content
+    //         });
+
+    //         const responseContent = response.data;
+    //         createResponseMsg(responseContent);
+
+    //     } else {
+    //         alert("잘못된 접근입니다.");
+    //     }
+    // } catch (error) {
+    //     alert("요청에 실패했습니다.");
+    // }
 
     function createResponseMsg(content) {
         const responseAI = document.createElement('p');
@@ -276,158 +314,31 @@ async function requestToAI(event) {
         responseAI.className = 'alert alert-primary';
         responseAI.setAttribute('data-bs-toggle', 'tooltip'); // 툴팁 토글 속성 추가
         responseAI.setAttribute('title', '클릭 시, 내용 복사'); // 툴팁 제목 추가
-        responseAI.innerHTML = content;
+        responseAI.innerText = content;
 
         document.getElementById('ai-content').appendChild(responseAI);
     }
-
-
 }
 
+async function getPostById(originId) {
 
-const setPost = () => {
-    postForm.value = {
-        title: post.value.title,
-        content: post.value.content,
-        tags: post.value.tags,
-        tabRelationId: tabId,
-        originId: originId
-    };
+    const response = await axios.get(`http://localhost:5000/post/find/${originId}`);
+    post.value = response.data;
+
+    // try {
+    //     const token = localStorage.getItem('token');
+    //     if (token) {
+    //         axios.defaults.headers.common['Authorization'] = token;
+    //         const response = await axios.post(`http://localhost:5000/post/find/${originId}`);
+    //         post.value = response.data;
+    //     } else {
+    //         alert("잘못된 접근입니다.");
+    //     }
+    // } catch (error) {
+    //     alert("게시글을 불러올 수 없습니다.");
+    // } finally {
+    // }
 }
-
-onMounted(() => {
-    if (originId) {
-        setPost();
-    }
-});
-
-async function getPostById() {
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://localhost:5000/post/${originId}`);
-            post.value = response.data;
-        } else {
-            alert("잘못된 접근입니다.");
-        }
-    } catch (error) {
-        alert("게시글을 불러올 수 없습니다.");
-    } finally {
-    }
-}
-
-const post = ref({
-    "id": 2,
-    "title": "자바의 기본 문법 수정\r\n",
-    "content": "수정 내용",
-    "createdAt": "2021-11-08T11:44:30.327959",
-    "author": {
-        "id": 2,
-        "email": "test1",
-        "name": "테스트1",
-        "profileImg": "test1.jpg",
-        "role": "ROLE_NORMAL",
-        "startDate": null,
-        "endDate": null,
-        "phoneNumber": null,
-        "teamId": 2,
-        "positionId": 2,
-        "rankId": 2
-    },
-    "originId": 1,
-    "recentId": null,
-    "tabRelationId": 1,
-    "categoryId": null,
-    "tags": [
-        "개발", "tag1", "tag2", "tag6", "tag7", "tag8"
-    ],
-    "history": [
-        {
-            "id": 1,
-            "title": "자바의 기본 문법",
-            "content": "자바는 객체 지향 프로그래밍 언어로, 강력한 기능과 유연성을 제공합니다. 이번 스터디에서는 자바의 기본 문법과 객체 지향 프로그래밍의 개념을 학습합니다. 변수 선언, 자료형, 조건문, 반복문, 클래스와 객체, 상속과 다형성 등의 내용을 다룹니다.",
-            "createdAt": "2021-11-08T11:44:30.327959",
-            "author": {
-                "id": 1,
-                "email": "admin",
-                "name": "관리자",
-                "profileImg": null,
-                "role": "ROLE_ADMIN",
-                "startDate": "2024-05-17",
-                "endDate": null,
-                "phoneNumber": null,
-                "teamId": 1,
-                "positionId": 1,
-                "rankId": 1
-            },
-            "originId": null,
-            "recentId": 2,
-            "tabRelationId": 1,
-            "categoryId": null,
-            "tags": [
-                "개발", "tag1", "tag2", "tag3", "tag4", "tag5"
-            ],
-            "history": null,
-            "participants": null
-        },
-        {
-            "id": 2,
-            "title": "자바의 기본 문법 수정\r\n",
-            "content": "수정 내용",
-            "createdAt": "2021-11-08T11:44:30.327959",
-            "author": {
-                "id": 2,
-                "email": "test1",
-                "name": "테스트1",
-                "profileImg": "test1.jpg",
-                "role": "ROLE_NORMAL",
-                "startDate": null,
-                "endDate": null,
-                "phoneNumber": null,
-                "teamId": 2,
-                "positionId": 2,
-                "rankId": 2
-            },
-            "originId": 1,
-            "recentId": null,
-            "tabRelationId": 1,
-            "categoryId": null,
-            "tags": [],
-            "history": null,
-            "participants": null
-        }
-    ],
-    "participants": [
-        {
-            "id": 1,
-            "email": "admin",
-            "name": "관리자",
-            "profileImg": null,
-            "role": "ROLE_ADMIN",
-            "startDate": "2024-05-17",
-            "endDate": null,
-            "phoneNumber": null,
-            "teamId": 1,
-            "positionId": 1,
-            "rankId": 1
-        },
-        {
-            "id": 2,
-            "email": "test1",
-            "name": "테스트1",
-            "profileImg": "test1.jpg",
-            "role": "ROLE_NORMAL",
-            "startDate": null,
-            "endDate": null,
-            "phoneNumber": null,
-            "teamId": 2,
-            "positionId": 2,
-            "rankId": 2
-        }
-    ]
-});
-
 </script>
 
 <style>
@@ -469,7 +380,6 @@ const post = ref({
 }
 
 #content-text {
-    width: 100%;
     min-height: 450px;
 }
 </style>

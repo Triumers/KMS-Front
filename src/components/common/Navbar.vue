@@ -1,10 +1,10 @@
 <template>
   <div class="navbar">
     <li class="nav-item">
-      <router-link class="nav-link" to="/wiki/posts">Wiki</router-link>
+      <router-link class="nav-link" to="/wiki/1">Wiki</router-link>
     </li>
     <li class="nav-item">
-      <router-link class="nav-link" to="/workspace/posts">Workspace</router-link>
+      <router-link class="nav-link" to="/workspace">Workspace</router-link>
     </li>
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
@@ -13,15 +13,15 @@
       </a>
       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
         <li>
-          <router-link class="dropdown-item" to="/group/study/posts">Study</router-link>
+          <router-link class="dropdown-item" to="/group/study">Study</router-link>
         </li>
         <li>
-          <router-link class="dropdown-item" to="/group/organization/posts">Organization</router-link>
+          <router-link class="dropdown-item" to="/group/organization/2">Organization</router-link>
         </li>
       </ul>
     </li>
     <li class="nav-item">
-      <router-link class="nav-link" to="/office-life/posts">Office Life</router-link>
+      <router-link class="nav-link" to="/office-life/3">Office Life</router-link>
     </li>
   </div>
 </template>
@@ -35,7 +35,7 @@
   list-style-type: none;
   flex-direction: column;
   width: 200px;
-  background-color: #f8f9fa;
+  background-color: #042444;
   padding: 10px;
 }
 
@@ -43,7 +43,7 @@
   margin: 5px 0;
   padding: 10px;
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
 }
 
 .nav-item:hover {
