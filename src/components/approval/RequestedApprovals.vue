@@ -7,7 +7,7 @@
     <div class="filters">
       <div class="filter-item">
         <label for="type">결재 유형:</label>
-        <select id="type" v-model="selectedType" @change="fetchRequestedApprovalsByType" class="filter-select">
+        <select id="type" v-model="selectedType" @change="fetchRequestedApprovals" class="filter-select">
           <option value="">전체</option>
           <option value="1">워크스페이스 생성 요청</option>
           <option value="2">스터디 생성 요청</option>
@@ -24,7 +24,7 @@
       </div>
       <div class="filter-item">
         <label for="status">상태:</label>
-        <select id="status" v-model="selectedStatus" @change="fetchRequestedApprovalsByStatus" class="filter-select">
+        <select id="status" v-model="selectedStatus" @change="fetchRequestedApprovals" class="filter-select">
           <option value="">전체</option>
           <option value="WAITING">승인 대기 중</option>
           <option value="APPROVED">승인됨</option>
@@ -32,10 +32,10 @@
         </select>
       </div>
       <div class="filter-item">
-    <input type="text" id="keyword" v-model="searchKeyword" @keyup.enter="fetchRequestedApprovalsByKeyword" placeholder="내용 검색" class="filter-input" />
-    <button @click="fetchRequestedApprovalsByKeyword" class="search-button">검색</button>
-  </div>
-  <div class="search-result-message" v-if="showSearchResultMessage">{{ searchResultMessage }}</div>
+        <input type="text" id="keyword" v-model="searchKeyword" @keyup.enter="fetchRequestedApprovals" placeholder="내용 검색" class="filter-input" />
+        <button @click="fetchRequestedApprovals" class="search-button">검색</button>
+      </div>
+      <div class="search-result-message" v-if="showSearchResultMessage">{{ searchResultMessage }}</div>
     </div>
     <div class="approval-list">
       <div v-for="approval in paginatedApprovals" :key="approval.requestApprovalId" class="approval-item" @click="goToApprovalDetail(approval.approvalId)">
@@ -60,15 +60,15 @@
       </div>
     </div>
     <div class="pagination">
-    <button @click="previousPage" :disabled="currentPage === 1 || totalCount === 0" class="pagination-button">이전</button>
-    <span>{{ currentPage }} / {{ totalPages === 0 ? 1 : totalPages }}</span>
-    <button @click="nextPage" :disabled="currentPage === totalPages || totalCount === 0" class="pagination-button">다음</button>
-  </div>
+      <button @click="previousPage" :disabled="currentPage === 1 || totalCount === 0" class="pagination-button">이전</button>
+      <span>{{ currentPage }} / {{ totalPages === 0 ? 1 : totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages || totalCount === 0" class="pagination-button">다음</button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -84,7 +84,6 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 const totalCount = ref(0);
 const showingDatePicker = ref(false);
-const userData = ref(null);
 const searchResultCount = ref(0);
 const showSearchResultMessage = ref(false);
 
@@ -105,7 +104,14 @@ const searchResultMessage = computed(() => {
   return '';
 });
 
-// 전체 조회
+onMounted(() => {
+  fetchRequestedApprovals();
+});
+
+watch([selectedType, selectedStatus, startDate, endDate, searchKeyword], () => {
+  fetchRequestedApprovals();
+});
+
 async function fetchRequestedApprovals() {
   try {
     const token = localStorage.getItem('token');
@@ -114,15 +120,27 @@ async function fetchRequestedApprovals() {
       return;
     }
 
-    const response = await axios.get(`http://localhost:5000/approval?page=${currentPage.value}&size=${pageSize.value}`, {
+    const params = {
+      typeId: selectedType.value || undefined,
+      startDate: startDate.value ? `${startDate.value}T00:00:00` : undefined,
+      endDate: endDate.value ? `${endDate.value}T23:59:59` : undefined,
+      keyword: searchKeyword.value || undefined,
+      status: selectedStatus.value || undefined,
+      page: currentPage.value,
+      size: pageSize.value,
+    };
+
+    const response = await axios.get('http://localhost:5000/approval/search', {
       headers: {
         Authorization: `${token}`,
       },
+      params,
     });
+
     requestedApprovals.value = response.data;
     totalCount.value = response.data.length;
-    searchResultCount.value = response.data.length; // 검색 결과 개수 업데이트
-    showSearchResultMessage.value = false; // 전체 조회에서는 메시지 숨김
+    searchResultCount.value = response.data.length;
+    showSearchResultMessage.value = true;
   } catch (error) {
     console.error('Error fetching requested approvals:', error);
     if (error.response && error.response.status === 401) {
@@ -135,156 +153,6 @@ async function fetchRequestedApprovals() {
     }
   }
 }
-
-// 유형별 조회
-async function fetchRequestedApprovalsByType() {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
-    const typeId = selectedType.value;
-    const response = await axios.get(`http://localhost:5000/approval/type/${typeId}?page=${currentPage.value}&size=${pageSize.value}`, {
-      headers: {
-        Authorization: `${token}`,
-      },
-    });
-    requestedApprovals.value = response.data;
-    totalCount.value = response.data.length;
-    searchResultCount.value = response.data.length; // 검색 결과 개수 업데이트
-    showSearchResultMessage.value = true; // 유형별 조회에서는 메시지 표시
-  } catch (error) {
-    console.error('Error fetching requested approvals by type:', error);
-    if (error.response && error.response.status === 401) {
-      router.push('/login');
-    } else {
-      requestedApprovals.value = [];
-      totalCount.value = 0;
-      searchResultCount.value = 0;
-      showSearchResultMessage.value = true;
-    }
-  }
-}
-
-// 상태별 조회
-async function fetchRequestedApprovalsByStatus() {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
-    const status = selectedStatus.value;
-    if (status === '') {
-      fetchRequestedApprovals(); // '전체' 선택 시 전체 조회로 이동
-      return;
-    }
-
-    const response = await axios.get(`http://localhost:5000/approval/status/${status}?page=${currentPage.value}&size=${pageSize.value}`, {
-      headers: {
-        Authorization: `${token}`,
-      },
-    });
-    requestedApprovals.value = response.data;
-    totalCount.value = response.data.length;
-    searchResultCount.value = response.data.length; // 검색 결과 개수 업데이트
-    showSearchResultMessage.value = true; // 상태별 조회에서는 메시지 표시
-  } catch (error) {
-    console.error('Error fetching requested approvals by status:', error);
-    if (error.response && error.response.status === 401) {
-      router.push('/login');
-    } else {
-      requestedApprovals.value = [];
-      totalCount.value = 0;
-      searchResultCount.value = 0;
-      showSearchResultMessage.value = true;
-    }
-  }
-}
-
-// 기간별 조회
-async function fetchRequestedApprovalsByDateRange() {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
-    const startDateString = startDate.value ? `${startDate.value}T00:00:00` : '';
-    const endDateString = endDate.value ? `${endDate.value}T23:59:59` : '';
-
-    const url = `http://localhost:5000/approval/date-range?page=${currentPage.value}&size=${pageSize.value}&startDate=${startDateString}&endDate=${endDateString}`;
-
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `${token}`,
-      },
-    });
-
-    requestedApprovals.value = response.data;
-    totalCount.value = response.data.length;
-    searchResultCount.value = response.data.length;
-    showSearchResultMessage.value = true;
-
-
-  } catch (error) {
-    console.error('Error fetching requested approvals by date range:', error);
-    if (error.response && error.response.status === 401) {
-      router.push('/login');
-    } else {
-      requestedApprovals.value = [];
-      totalCount.value = 0;
-      searchResultCount.value = 0;
-      showSearchResultMessage.value = true;
-    }
-  }
-}
-
-// 내용 검색
-async function fetchRequestedApprovalsByKeyword() {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
-    const keyword = searchKeyword.value;
-    if (keyword.trim() === '') {
-      fetchRequestedApprovals(); // 검색어가 없으면 전체 조회
-      return;
-    }
-
-    const response = await axios.get(`http://localhost:5000/approval/search?keyword=${keyword}&page=${currentPage.value}&size=${pageSize.value}`, {
-      headers: {
-        Authorization: `${token}`,
-      },
-    });
-    requestedApprovals.value = response.data;
-    totalCount.value = response.data.length;
-    searchResultCount.value = response.data.length; // 검색 결과 개수 업데이트
-    showSearchResultMessage.value = true; // 내용 검색에서는 메시지 표시
-  } catch (error) {
-    console.error('Error fetching requested approvals by keyword:', error);
-    if (error.response && error.response.status === 401) {
-      router.push('/login');
-    } else {
-      requestedApprovals.value = [];
-      totalCount.value = 0;
-      searchResultCount.value = 0;
-      showSearchResultMessage.value = true;
-    }
-  }
-}
-
-
-onMounted(() => {
-  fetchRequestedApprovals();
-});
 
 function goToCreateApproval() {
   router.push('/approval/new');
@@ -364,8 +232,6 @@ function updatePeriod() {
   const endDateString = endDate.value ? endDate.value : '';
   period.value = `${startDateString}${endDateString}`;
   showingDatePicker.value = false;
-
-  fetchRequestedApprovalsByDateRange(); // 기간별 조회 함수 호출
 }
 </script>
    
