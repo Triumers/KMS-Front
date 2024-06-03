@@ -11,6 +11,11 @@ import GeneralWriterView from "@/components/post/CreateNewGeneralPost.vue";
 import DocsWriterView from "@/components/post/CreateNewDocs.vue";
 import DocsListView from "@/components/post/SelectedDocsList.vue";
 
+import AnonymousBoard from '@/views/AnonymousBoard.vue';
+import AnonymousBoardListView from '@/components/anonymous-board/AnonymousBoardList.vue';
+import AnonymousBoardDetailView from '@/components/anonymous-board/AnonymousBoardDetail.vue';
+import AnonymousBoardWriterView from '@/components/anonymous-board/CreateNewAnonymousBoard.vue';
+
 import CreateQuiz from '@/components/quiz/CreateQuiz.vue';
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 import QuizView from '@/views/QuizView.vue';
@@ -218,6 +223,24 @@ const router = createRouter({
                         {
                             path: ':id',
                             component: TakeQuiz
+                        }
+                    ]
+                },
+                {
+                    path: 'anonymous-board',
+                    component: AnonymousBoard,
+                    children: [
+                        {
+                            path: 'list',
+                            component: AnonymousBoardListView
+                        },
+                        {
+                            path: 'new',
+                            component: AnonymousBoardWriterView
+                        },
+                        {
+                            path: ':id',
+                            component: AnonymousBoardDetailView
                         }
                     ]
                 }
