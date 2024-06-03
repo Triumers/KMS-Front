@@ -60,10 +60,10 @@
       </div>
     </div>
     <div class="pagination">
-      <button @click="previousPage" :disabled="currentPage === 1" class="pagination-button">이전</button>
-      <span>{{ currentPage }} / {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-button">다음</button>
-    </div>
+    <button @click="previousPage" :disabled="currentPage === 1 || totalCount === 0" class="pagination-button">이전</button>
+    <span>{{ currentPage }} / {{ totalPages === 0 ? 1 : totalPages }}</span>
+    <button @click="nextPage" :disabled="currentPage === totalPages || totalCount === 0" class="pagination-button">다음</button>
+  </div>
   </div>
 </template>
 
@@ -85,8 +85,8 @@ const pageSize = ref(10);
 const totalCount = ref(0);
 const showingDatePicker = ref(false);
 const userData = ref(null);
-const searchResultCount = ref(0); // 검색 결과 개수
-const showSearchResultMessage = ref(false); // 검색 결과 메시지 표시 여부
+const searchResultCount = ref(0);
+const showSearchResultMessage = ref(false);
 
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
 
@@ -97,11 +97,12 @@ const paginatedApprovals = computed(() => {
 });
 
 const searchResultMessage = computed(() => {
-  if (searchResultCount.value === 0) {
-    return '0개 반환되었습니다.';
-  } else {
+  if (searchResultCount.value === 0 && showSearchResultMessage.value) {
+    return '반환된 결과가 없습니다.';
+  } else if (searchResultCount.value > 0) {
     return `${searchResultCount.value}개의 결과가 반환되었습니다.`;
   }
+  return '';
 });
 
 // 전체 조회
@@ -129,7 +130,8 @@ async function fetchRequestedApprovals() {
     } else {
       requestedApprovals.value = [];
       totalCount.value = 0;
-      console.log('No approvals found');
+      searchResultCount.value = 0;
+      showSearchResultMessage.value = true;
     }
   }
 }
@@ -157,6 +159,11 @@ async function fetchRequestedApprovalsByType() {
     console.error('Error fetching requested approvals by type:', error);
     if (error.response && error.response.status === 401) {
       router.push('/login');
+    } else {
+      requestedApprovals.value = [];
+      totalCount.value = 0;
+      searchResultCount.value = 0;
+      showSearchResultMessage.value = true;
     }
   }
 }
@@ -192,7 +199,8 @@ async function fetchRequestedApprovalsByStatus() {
     } else {
       requestedApprovals.value = [];
       totalCount.value = 0;
-      console.log('No approvals found');
+      searchResultCount.value = 0;
+      showSearchResultMessage.value = true;
     }
   }
 }
@@ -209,21 +217,20 @@ async function fetchRequestedApprovalsByDateRange() {
     const startDateString = startDate.value ? `${startDate.value}T00:00:00` : '';
     const endDateString = endDate.value ? `${endDate.value}T23:59:59` : '';
 
-    if (startDateString && endDateString) {
-      const response = await axios.get(`http://localhost:5000/approval/date-range?startDate=${startDateString}&endDate=${endDateString}&page=${currentPage.value}&size=${pageSize.value}`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-      requestedApprovals.value = response.data;
-      totalCount.value = response.data.length;
-      searchResultCount.value = response.data.length; // 검색 결과 개수 업데이트
-      showSearchResultMessage.value = true; // 기간별 조회에서는 메시지 표시
-    } else {
-      requestedApprovals.value = [];
-      totalCount.value = 0;
-      console.log('No approvals found');
-    }
+    const url = `http://localhost:5000/approval/date-range?page=${currentPage.value}&size=${pageSize.value}&startDate=${startDateString}&endDate=${endDateString}`;
+
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+
+    requestedApprovals.value = response.data;
+    totalCount.value = response.data.length;
+    searchResultCount.value = response.data.length;
+    showSearchResultMessage.value = true;
+
+
   } catch (error) {
     console.error('Error fetching requested approvals by date range:', error);
     if (error.response && error.response.status === 401) {
@@ -231,7 +238,8 @@ async function fetchRequestedApprovalsByDateRange() {
     } else {
       requestedApprovals.value = [];
       totalCount.value = 0;
-      console.log('No approvals found');
+      searchResultCount.value = 0;
+      showSearchResultMessage.value = true;
     }
   }
 }
@@ -267,7 +275,8 @@ async function fetchRequestedApprovalsByKeyword() {
     } else {
       requestedApprovals.value = [];
       totalCount.value = 0;
-      searchResultCount.value = 0; // 검색 결과 개수 초기화
+      searchResultCount.value = 0;
+      showSearchResultMessage.value = true;
     }
   }
 }
@@ -355,6 +364,8 @@ function updatePeriod() {
   const endDateString = endDate.value ? endDate.value : '';
   period.value = `${startDateString}${endDateString}`;
   showingDatePicker.value = false;
+
+  fetchRequestedApprovalsByDateRange(); // 기간별 조회 함수 호출
 }
 </script>
    
