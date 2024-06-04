@@ -44,13 +44,13 @@
             <span class="approval-content" :title="approval.content">{{ approval.content }}</span>
           </div>
           <div class="approval-info-container">
-            <span class="approval-info">{{ approval.requesterName }} | {{ formatDate(approval.createdAt) }}</span>
+            <span class="approval-info">{{ approval.approverName }} | {{ formatDate(approval.createdAt) }}</span>
           </div>
         </div>
         <div class="approval-details">
           <div class="approver-container">
             <span class="approver-label">결재 요청자: </span>
-            <span class="approver-name">{{ approval.approverName }}</span>
+            <span class="approver-name">{{ approval.requesterName }}</span>
           </div>
           <div class="approval-status-container">
             <span :class="`approval-status ${getStatusClass(approval.isApproved)}`">{{ formatStatus(approval.isApproved) }}</span>
