@@ -1,12 +1,14 @@
 <template>
-<router-link to="/workspace/wiki">WIKI</router-link>
-<router-link to="/workspace/docs">DOCS</router-link>
+<router-link :to="`/workspace/${route.params.id}/wiki`">WIKI</router-link>
+<router-link :to="`/workspace/${route.params.id}/docs`">DOCS</router-link>
 <RouterView/>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
+
+const route = useRoute();
 
 </script>
 

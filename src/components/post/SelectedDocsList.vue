@@ -9,15 +9,20 @@
 
     <hr>
 
-    <b-input-group class="search">
-        <template #prepend>
-            <b-form-select id="condition">
-                <b-form-select-option value="title">제목</b-form-select-option>
-            </b-form-select>
-        </template>
-        <b-form-input type="text" id="input-search" v-model="search.word"></b-form-input>
-        <b-button variant="light" id="search-post" @click="searchPost">검색</b-button>
-    </b-input-group>
+    <p class="input-group mb-3 search">
+        <span class="search-type">
+            <select v-model="search.type" class="form-select pt-1 search-type"
+                style="width:fit-content; vertical-align: middle; margin-right: 10px;">
+                <option value="title">제목</option>
+            </select>
+        </span>
+
+        <b-form-input type="text" id="search-input" placeholder="검색어를 입력하세요" v-model="search.keyword"></b-form-input>
+
+        <button class="search-button" id="search-post" @click="searchPost">
+            <img src="@/assets/icons/search_icon.png" alt="Search" />
+        </button>
+    </p>
 
     <div id="docsList">
         <table class="table table-borderless">
@@ -54,12 +59,14 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
+const currentRoute = useRoute();
 
-const tabId = 1; //useRoute().params.id;
+const tabId = currentRoute.params.id;
 const postList = ref([]);
 const search = ref({
     tabRelationId: tabId,
     categoryId: 1,
+    type: "title",
     word: '',
     title: null
 });

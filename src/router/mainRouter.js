@@ -34,7 +34,8 @@ const router = createRouter({
     routes: [
         {
             path: '',
-            component: PostListView
+            component: Wiki,
+            redirect: '/wiki/1'
         },
         {
             path: '/search',
@@ -51,11 +52,11 @@ const router = createRouter({
             ]
         },
         {
-            path: '/wiki/1',
+            path: '/wiki',
             component: Wiki,
             children: [
                 {
-                    path: '',
+                    path: ':id',
                     component: PostListView,
                 },
                 {
@@ -63,7 +64,7 @@ const router = createRouter({
                     component: PostDetailView
                 },
                 {
-                    path: 'new',
+                    path: ':id/new',
                     component: PostWriterView
                 },
                 {
@@ -87,7 +88,7 @@ const router = createRouter({
             component: Workspace,
             children: [
                 {
-                    path: '',  // 추후 ':id'로 변경
+                    path: ':id',
                     component: WorkspaceView,
                     children: [
                         {
@@ -97,19 +98,19 @@ const router = createRouter({
                         {
                             path: 'docs',
                             component: DocsListView
-                        },
-                        {
-                            path: 'wiki/new',
-                            component: PostWriterView
-                        },
-                        {
-                            path: 'docs/new',
-                            component: DocsWriterView
                         }
                     ]
                 },
                 {
-                    path: 'detail/:id',
+                    path: ':id/wiki/new',
+                    component: PostWriterView
+                },
+                {
+                    path: ':id/docs/new',
+                    component: DocsWriterView
+                },
+                {
+                    path: 'detail/:post',
                     component: PostDetailView
                 },
                 {
@@ -133,15 +134,19 @@ const router = createRouter({
             component: Group,
             children: [
                 {
-                    path: 'study', // 추후 ':id'로 변경
+                    path: 'study',
                     component: Study,
                     children: [
                         {
-                            path: '', 
+                            path: ':id',
                             component: PostListView
                         },
                         {
-                            path: 'new',
+                            path: 'detail/:post',
+                            component: PostDetailView
+                        },
+                        {
+                            path: ':id/new',
                             component: PostWriterView
                         },
                         {
@@ -161,15 +166,11 @@ const router = createRouter({
                     ]
                 },
                 {
-                    path: 'detail/:id',
-                    component: PostDetailView
-                },
-                {
-                    path: 'organization/2',
+                    path: 'organization',
                     component: Organization,
                     children: [
                         {
-                            path: '',  // 추후 ':id'로 변경
+                            path: ':id',
                             component: PostListView
                         },
                         {
@@ -177,7 +178,7 @@ const router = createRouter({
                             component: PostDetailView
                         },
                         {
-                            path: 'new',
+                            path: ':id/new',
                             component: GeneralWriterView
                         },
                         {
@@ -199,11 +200,11 @@ const router = createRouter({
             ]
         },
         {
-            path: '/office-life/3',
+            path: '/office-life',
             component: OfficeLife,
             children: [
                 {
-                    path: '',
+                    path: ':id',
                     component: PostListView
                 },
                 {

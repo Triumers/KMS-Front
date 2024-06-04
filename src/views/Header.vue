@@ -2,7 +2,7 @@
     <header class="header">
         <div class="header-left">
             <div class="logo">
-                <img src="@/assets/images/logo_header.png" alt="Logo" @click="navigateTo('')" />
+                <img src="@/assets/images/logo_header.png" alt="Logo" @click="navigateTo('/')" />
             </div>
         </div>
 
