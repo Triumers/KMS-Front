@@ -16,6 +16,13 @@ import AnonymousBoardListView from '@/components/anonymous-board/AnonymousBoardL
 import AnonymousBoardDetailView from '@/components/anonymous-board/AnonymousBoardDetail.vue';
 import AnonymousBoardWriterView from '@/components/anonymous-board/CreateNewAnonymousBoard.vue';
 
+import ApprovalView from '@/views/Approval.vue';
+import CreateApprovalView from '@/components/approval/CreateApproval.vue';
+import RequestedApprovalView from '@/components/approval/RequestedApprovals.vue';
+import RequestedApprovalDetailView from '@/components/approval/RequestedApprovalDetail.vue';
+import ReceivedApprovalView from '@/components/approval/ReceivedApprovals.vue';
+import ReceivedApprovalDetailView from '@/components/approval/ReceivedApprovalDetail.vue';
+
 import CreateQuiz from '@/components/quiz/CreateQuiz.vue';
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 import QuizView from '@/views/QuizView.vue';
@@ -251,6 +258,32 @@ const router = createRouter({
                     path: '/login',
                     component: Login
                 },
+            ]
+        },
+        {
+            path: '/approval',
+            component: ApprovalView,
+            children:[
+                {
+                    path: 'requested',
+                    component: RequestedApprovalView
+                },
+                {
+                    path: 'requested/:approvalId',
+                    component: RequestedApprovalDetailView
+                },
+                {
+                    path: 'received',
+                    component: ReceivedApprovalView
+                },
+                {
+                    path: 'received/:requestApprovalId',
+                    component: ReceivedApprovalDetailView
+                },
+                {
+                    path: 'new',
+                    component: CreateApprovalView
+                }
             ]
         }
     ]
