@@ -13,16 +13,16 @@
         </div>
         <div class="detail-item">
           <span class="label">요청자:</span>
-          <span class="value">{{ approvalDetail.requester?.team?.name }} {{ approvalDetail.requester?.position?.name }} {{ approvalDetail.requester?.name }} ({{ approvalDetail.requester?.phoneNumber }})</span>
+          <span class="value">{{ approvalDetail.requester?.team?.name }} {{ approvalDetail.requester?.position?.name }} {{ approvalDetail.requester?.rank?.name }} {{ approvalDetail.requester?.name }} ({{ approvalDetail.requester?.phoneNumber }})</span>
         </div>
         <div class="detail-item">
           <span class="label">결재자:</span>
-          <span class="value">{{ approvalDetail.approver?.team?.name }} {{ approvalDetail.approver?.position?.name }} {{ approvalDetail.approver?.name }} ({{ approvalDetail.approver?.phoneNumber }})</span>
+          <span class="value">{{ approvalDetail.approver?.team?.name }} {{ approvalDetail.approver?.position?.name }} {{ approvalDetail.approver?.rank?.name }} {{ approvalDetail.approver?.name }} ({{ approvalDetail.approver?.phoneNumber }})</span>
         </div>
         <div class="detail-item">
           <span class="label">결재 상태:</span>
-          <span :class="['value', getStatusClass(approvalDetail.approvalInfo?.isApproved)]">
-            {{ formatStatus(approvalDetail.approvalInfo?.isApproved) }}
+          <span :class="['value', getStatusClass(approvalDetail.approvalInfo?.isApproved, approvalDetail.approvalInfo?.canceled)]">
+            {{ formatStatus(approvalDetail.approvalInfo?.isApproved, approvalDetail.approvalInfo?.canceled) }}
           </span>
         </div>
       </div>
@@ -82,7 +82,11 @@ function formatDate(dateString) {
   return `${year}-${month}-${day}`;
 }
 
-function formatStatus(status) {
+function formatStatus(status, isCanceled) {
+  if (isCanceled) {
+    return '취소됨';
+  }
+
   switch (status) {
     case 'WAITING':
       return '승인 대기 중';
@@ -95,7 +99,11 @@ function formatStatus(status) {
   }
 }
 
-function getStatusClass(status) {
+function getStatusClass(status, isCanceled) {
+  if (isCanceled) {
+    return 'status-canceled';
+  }
+
   switch (status) {
     case 'WAITING':
       return 'status-waiting';
@@ -213,5 +221,9 @@ function goToApprovalList() {
   border-radius: 4px;
   margin-top: 10px;
   white-space: pre-wrap;
+}
+
+.status-canceled {
+  color: #9e9e9e;
 }
 </style>
