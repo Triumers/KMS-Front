@@ -2,7 +2,23 @@
   <div class="container">
     <div class="header no-background no-shadow">
       <h2>결재 상세 정보</h2>
-      <button @click="goToApprovalList" class="list-button">목록으로</button>
+      <div class="button-group">
+        <button @click="goToApprovalList" class="list-button">목록으로</button>
+        <button
+          @click="approveApproval"
+          class="approve-button"
+          :disabled="!isButtonEnabled"
+        >
+          결재 승인
+        </button>
+        <button
+          @click="rejectApproval"
+          class="reject-button"
+          :disabled="!isButtonEnabled"
+        >
+          결재 거부
+        </button>
+      </div>
     </div>
     <div class="approval-detail">
       <div class="section">
@@ -37,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -69,6 +85,67 @@ async function fetchApprovalDetail(requestApprovalId) {
     console.error('Error fetching approval detail:', error);
     if (error.response && error.response.status === 401) {
       router.push('/login');
+    }
+  }
+}
+
+const isButtonEnabled = computed(() => {
+  return (
+    approvalDetail.value.approvalInfo?.isApproved === 'WAITING' &&
+    !approvalDetail.value.approvalInfo?.canceled
+  );
+});
+
+async function approveApproval() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    const requestApprovalId = route.params.requestApprovalId;
+    await axios.post(`http://localhost:5000/approval/received/${requestApprovalId}/approve`, null, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+
+    alert('결재가 승인되었습니다.');
+    await fetchApprovalDetail(requestApprovalId);
+  } catch (error) {
+    console.error('Error approving approval:', error);
+    if (error.response && error.response.status === 401) {
+      router.push('/login');
+    } else {
+      alert('결재 승인에 실패했습니다.');
+    }
+  }
+}
+
+async function rejectApproval() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    const requestApprovalId = route.params.requestApprovalId;
+    await axios.post(`http://localhost:5000/approval/received/${requestApprovalId}/reject`, null, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+
+    alert('결재가 거부되었습니다.');
+    await fetchApprovalDetail(requestApprovalId);
+  } catch (error) {
+    console.error('Error rejecting approval:', error);
+    if (error.response && error.response.status === 401) {
+      router.push('/login');
+    } else {
+      alert('결재 거부에 실패했습니다.');
     }
   }
 }
@@ -221,6 +298,43 @@ function goToApprovalList() {
   border-radius: 4px;
   margin-top: 10px;
   white-space: pre-wrap;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.approve-button,
+.reject-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.approve-button {
+  background-color: #4caf50;
+}
+
+.approve-button:hover {
+  background-color: #388e3c;
+}
+
+.reject-button {
+  background-color: #f44336;
+}
+
+.reject-button:hover {
+  background-color: #d32f2f;
+}
+
+.approve-button:disabled,
+.reject-button:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
 }
 
 .status-canceled {
