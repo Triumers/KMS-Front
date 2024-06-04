@@ -33,13 +33,14 @@
                     <th scope="col">TYPE</th>
                     <th scope="col">UPLOADER</th>
                     <th scope="col">DATE ADDED</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="post in postList" :key="post.id">
                     <td><strong>{{ post.title }}</strong></td>
                     <td>
-                        <a :href="post.content.split(' : ')[2]" style="color: black; text-decoration: none;">
+                        <a id="attach" :href="post.content.split(' : ')[2]" style="color: black; text-decoration: none;">
                             <span class="material-icons">attach_file</span>
                             {{ post.content.split(' : ')[0] }}
                         </a>
@@ -47,6 +48,11 @@
                     <td>{{ post.content.split(' : ')[1] }}</td>
                     <td>{{ post.author.name }}</td>
                     <td>{{ convertToDate(post.createdAt) }}</td>
+                    <td>
+                       <p  @click="deletePost(post.originId ? post.originId : post.id)">
+                        <span class="material-icons">delete</span>
+                        </p> 
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -61,6 +67,7 @@ import axios from 'axios';
 const router = useRouter();
 const currentRoute = useRoute();
 
+const isAuthorized = ref(false);
 const tabId = currentRoute.params.id;
 const postList = ref([]);
 const search = ref({
@@ -71,8 +78,9 @@ const search = ref({
     title: null
 });
 
-onMounted(() => {
-    getPostList();
+onMounted(async() => {
+    await getPostList();
+    await getIsAuthorized();
 });
 
 const createNew = () => {
@@ -88,36 +96,23 @@ async function searchPost() {
 
 async function getPostList() {
     try {
-        const response = await axios.post('http://localhost:5000/post/tab', {
-            tabRelationId: search.value.tabRelationId,
-            categoryId: search.value.categoryId,
-            title: search.value.title
-        });
-        postList.value = response.data.content;
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.post('http://localhost:5000/post/tab', {
+                tabRelationId: tabId,
+                categoryId: search.value.categoryId,
+                title: search.value.title
+            });
+            postList.value = response.data.content;
+        } else {
+            alert("잘못된 접근입니다.");
+        }
     } catch (error) {
-        console.error("게시글을 불러올 수 없습니다.", error);
+        alert("게시글을 불러올 수 없습니다.");
+    } finally {
     }
 }
-
-// async function getPostList() {
-//     try {
-//         const token = localStorage.getItem('token');
-//         if (token) {
-//             axios.defaults.headers.common['Authorization'] = token;
-// const response = await axios.post('http://localhost:5000/post/tab', {
-//     tabRelationId: search.value.tabRelationId,
-//     categoryId: search.value.categoryId,
-//     title: search.value.title
-// });
-//             postList.value = response.data.content;
-//         } else {
-//             alert("잘못된 접근입니다.");
-//         }
-//     } catch (error) {
-//         alert("게시글을 불러올 수 없습니다.");
-//     } finally {
-//     }
-// }
 
 const convertToDate = (date) => {
     const dateSplit = date.split("T");
@@ -125,6 +120,50 @@ const convertToDate = (date) => {
 
     return dateSplit[0] + " " + dateSplit[1];
 };
+
+async function getIsAuthorized(){
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = token;
+      
+      const response = await axios.get(`http://localhost:5000/post/isAuthor/${postId}`);
+      isAuthorized.value = (response.data == true ? true : false);
+    } else {
+      alert("잘못된 접근입니다.");
+    }
+  } catch (error) {
+  } finally {
+  }  
+}
+
+async function deletePost(postId) {
+
+if (confirm("게시글을 삭제하시겠습니까?")) {
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = token;
+      const response = await axios.delete(`http://localhost:5000/post/delete/${postId}`);
+
+      const segments = currentRoute.path.split('/');
+      let detailPath = `${segments[1]}`;
+
+      if (segments[1] != 'wiki') {
+        detailPath = `${segments[1]}/${segments[2]}`;
+      }
+
+      location.reload(true);
+    } else {
+      alert("잘못된 접근입니다.");
+    }
+  } catch (error) {
+    alert("게시글을 삭제할 수 없습니다.");
+  } finally {
+  }
+}
+
+}
 
 </script>
 
@@ -150,5 +189,10 @@ const convertToDate = (date) => {
 #top {
     display: flex;
     justify-content: space-between;
+}
+
+#attach{
+    display: flex;
+      align-items: center;
 }
 </style>
