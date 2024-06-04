@@ -2,7 +2,10 @@
   <div class="container">
     <div class="header no-background no-shadow">
       <h2>결재 상세 정보</h2>
-      <button @click="goToApprovalList" class="list-button">목록으로</button>
+      <div class="button-group">
+        <button @click="goToApprovalList" class="list-button">목록으로</button>
+        <button @click="cancelApproval" class="cancel-button" :disabled="approvalDetail.approvalInfo?.canceled">결재 취소</button>
+      </div>
     </div>
     <div class="approval-detail">
       <div class="section">
@@ -13,16 +16,16 @@
         </div>
         <div class="detail-item">
           <span class="label">요청자:</span>
-          <span class="value">{{ approvalDetail.requester?.team?.name }} {{ approvalDetail.requester?.position?.name }} {{ approvalDetail.requester?.name }} ({{ approvalDetail.requester?.phoneNumber }})</span>
+          <span class="value">{{ approvalDetail.requester?.team?.name }} {{ approvalDetail.requester?.position?.name }}  {{ approvalDetail.requester?.rank?.name }} {{ approvalDetail.requester?.name }} ({{ approvalDetail.requester?.phoneNumber }})</span>
         </div>
         <div class="detail-item">
           <span class="label">결재자:</span>
-          <span class="value">{{ approvalDetail.approver?.team?.name }} {{ approvalDetail.approver?.position?.name }} {{ approvalDetail.approver?.name }} ({{ approvalDetail.approver?.phoneNumber }})</span>
+          <span class="value">{{ approvalDetail.approver?.team?.name }} {{ approvalDetail.approver?.position?.name }} {{ approvalDetail.approver?.rank?.name }} {{ approvalDetail.approver?.name }} ({{ approvalDetail.approver?.phoneNumber }})</span>
         </div>
         <div class="detail-item">
           <span class="label">결재 상태:</span>
-          <span :class="['value', getStatusClass(approvalDetail.approvalInfo?.isApproved)]">
-            {{ formatStatus(approvalDetail.approvalInfo?.isApproved) }}
+          <span :class="['value', getStatusClass(approvalDetail.approvalInfo?.isApproved, approvalDetail.approvalInfo?.canceled)]">
+            {{ formatStatus(approvalDetail.approvalInfo?.isApproved, approvalDetail.approvalInfo?.canceled) }}
           </span>
         </div>
       </div>
@@ -73,6 +76,34 @@ async function fetchApprovalDetail(approvalId) {
   }
 }
 
+async function cancelApproval() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    const approvalId = route.params.approvalId;
+    await axios.post(`http://localhost:5000/approval/${approvalId}/cancel`, null, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+
+    alert('결재가 취소되었습니다.');
+    router.push('/approval/requested');
+  } catch (error) {
+    console.error('Error canceling approval:', error);
+    if (error.response && error.response.status === 401) {
+      router.push('/login');
+    } else {
+      alert('결재 취소에 실패했습니다.');
+    }
+  }
+}
+
+
 function formatDate(dateString) {
   if (!dateString) return '';
   const date = new Date(dateString);
@@ -82,7 +113,11 @@ function formatDate(dateString) {
   return `${year}-${month}-${day}`;
 }
 
-function formatStatus(status) {
+function formatStatus(status, isCanceled) {
+  if (isCanceled) {
+    return '취소됨';
+  }
+
   switch (status) {
     case 'WAITING':
       return '승인 대기 중';
@@ -95,7 +130,11 @@ function formatStatus(status) {
   }
 }
 
-function getStatusClass(status) {
+function getStatusClass(status, isCanceled) {
+  if (isCanceled) {
+    return 'status-canceled';
+  }
+
   switch (status) {
     case 'WAITING':
       return 'status-waiting';
@@ -107,6 +146,7 @@ function getStatusClass(status) {
       return '';
   }
 }
+
 
 function formatType(typeId) {
   switch (typeId) {
@@ -213,5 +253,33 @@ function goToApprovalList() {
   border-radius: 4px;
   margin-top: 10px;
   white-space: pre-wrap;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.cancel-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f;
+}
+
+.cancel-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.status-canceled {
+  color: #9e9e9e;
 }
 </style>
