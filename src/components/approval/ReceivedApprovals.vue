@@ -37,7 +37,7 @@
       <div class="search-result-message" v-if="showSearchResultMessage">{{ searchResultMessage }}</div>
     </div>
     <div class="approval-list">
-      <div v-for="approval in paginatedReceivedApprovals" :key="approval.requestApprovalId" class="approval-item" @click="goToApprovalDetail(approval.approvalId)">
+      <div v-for="approval in paginatedReceivedApprovals" :key="approval.requestApprovalId" class="approval-item" @click="goToApprovalDetail(approval.requestApprovalId)">
         <div class="approval-header">
           <div class="approval-title">
             <span class="approval-type">{{ formatType(approval.typeId) }}</span>
@@ -153,8 +153,8 @@ async function fetchReceivedApprovals() {
   }
 }
 
-function goToApprovalDetail(approvalId) {
-  router.push(`/approval/received/${approvalId}`);
+function goToApprovalDetail(requestApprovalId) {
+  router.push(`/approval/received/${requestApprovalId}`);
 }
 
 function formatDate(dateString) {
