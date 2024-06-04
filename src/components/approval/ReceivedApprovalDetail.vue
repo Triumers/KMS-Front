@@ -18,6 +18,14 @@
         >
           결재 거부
         </button>
+        <button
+          class="add-approver-button"
+          :disabled="!isButtonEnabled"
+          data-bs-toggle="collapse"
+          data-bs-target="#addApproverCollapse"
+        >
+          다음 결재자 추가
+        </button>
       </div>
     </div>
     <div class="approval-detail">
@@ -49,37 +57,81 @@
         </div>
       </div>
     </div>
+ 
+    <div class="collapse" id="addApproverCollapse">
+    <div class="card card-body">
+      <h3>다음 결재자 추가</h3>
+      <div class="search-input">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="직원 이름 검색"
+          id="search-input"
+          @input="searchEmployees"
+          @keyup.enter="searchEmployees"
+        />
+        <button @click="searchEmployees">검색</button>
+      </div>
+      <div v-if="searchResults.length > 0" class="search-results">
+        <div
+          v-for="employee in searchResults"
+          :key="employee.id"
+          class="search-result"
+          :class="{ 'selected': selectedEmployee && selectedEmployee.id === employee.id }"
+          @click="selectEmployee(employee)"
+        >
+          {{ employee.name }} ({{ employee.team.name }} {{ employee.position.name }} {{ employee.rank.name }})
+        </div>
+      </div>
+      <div v-else-if="searchQuery" class="no-results">
+        검색 결과가 없습니다.
+      </div>
+      <div class="buttons">
+        <button @click="addApprover" class="confirm-button" :disabled="!selectedEmployee">추가</button>
+        <button
+          class="cancel-button"
+          data-bs-toggle="collapse"
+          data-bs-target="#addApproverCollapse"
+        >
+          취소
+        </button>
+      </div>
+    </div>
   </div>
-</template>
-
-<script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
-
-const route = useRoute();
-const router = useRouter();
-const approvalDetail = ref({});
-
-onMounted(async () => {
+  </div>
+ </template>
+ 
+ <script setup>
+ import { ref, onMounted, computed } from 'vue';
+ import { useRoute, useRouter } from 'vue-router';
+ import axios from 'axios';
+ 
+ const route = useRoute();
+ const router = useRouter();
+ const approvalDetail = ref({});
+ const searchQuery = ref('');
+ const searchResults = ref([]);
+ const selectedEmployee = ref(null);
+ 
+ onMounted(async () => {
   const requestApprovalId = route.params.requestApprovalId;
   await fetchApprovalDetail(requestApprovalId);
-});
-
-async function fetchApprovalDetail(requestApprovalId) {
+ });
+ 
+ async function fetchApprovalDetail(requestApprovalId) {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
       return;
     }
-
+ 
     const response = await axios.get(`http://localhost:5000/approval/received/${requestApprovalId}`, {
       headers: {
         Authorization: `${token}`,
       },
     });
-
+ 
     approvalDetail.value = response.data;
   } catch (error) {
     console.error('Error fetching approval detail:', error);
@@ -87,30 +139,30 @@ async function fetchApprovalDetail(requestApprovalId) {
       router.push('/login');
     }
   }
-}
-
-const isButtonEnabled = computed(() => {
+ }
+ 
+ const isButtonEnabled = computed(() => {
   return (
     approvalDetail.value.approvalInfo?.isApproved === 'WAITING' &&
     !approvalDetail.value.approvalInfo?.canceled
   );
-});
-
-async function approveApproval() {
+ });
+ 
+ async function approveApproval() {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
       return;
     }
-
+ 
     const requestApprovalId = route.params.requestApprovalId;
     await axios.post(`http://localhost:5000/approval/received/${requestApprovalId}/approve`, null, {
       headers: {
         Authorization: `${token}`,
       },
     });
-
+ 
     alert('결재가 승인되었습니다.');
     await fetchApprovalDetail(requestApprovalId);
   } catch (error) {
@@ -121,23 +173,23 @@ async function approveApproval() {
       alert('결재 승인에 실패했습니다.');
     }
   }
-}
-
-async function rejectApproval() {
+ }
+ 
+ async function rejectApproval() {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
       return;
     }
-
+ 
     const requestApprovalId = route.params.requestApprovalId;
     await axios.post(`http://localhost:5000/approval/received/${requestApprovalId}/reject`, null, {
       headers: {
         Authorization: `${token}`,
       },
     });
-
+ 
     alert('결재가 거부되었습니다.');
     await fetchApprovalDetail(requestApprovalId);
   } catch (error) {
@@ -148,22 +200,98 @@ async function rejectApproval() {
       alert('결재 거부에 실패했습니다.');
     }
   }
-}
+ }
+ 
+ async function searchEmployees() {
+  if (searchQuery.value.trim() === '') {
+    searchResults.value = [];
+    return;
+  }
 
-function formatDate(dateString) {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+ 
+    const requestBody = { name: searchQuery.value };
+    const response = await axios.post(`http://localhost:5000/employee/find/name`, requestBody, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+ 
+    searchResults.value = response.data.employee;
+  } catch (error) {
+    console.error('Error searching employees:', error);
+    if (error.response && error.response.status === 401) {
+      router.push('/login');
+    }
+  }
+ }
+ 
+ function selectEmployee(employee) {
+  selectedEmployee.value = employee;
+ }
+ 
+ async function addApprover() {
+  if (!selectedEmployee.value) {
+    alert('다음 결재자를 선택해주세요.');
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    const requestApprovalId = route.params.requestApprovalId;
+    await axios.post(
+      `http://localhost:5000/approval/received/${requestApprovalId}/addApprover`,
+      {
+        newApproverId: selectedEmployee.value.id,
+      },
+      {
+        headers: {
+          Authorization: `${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    alert('다음 결재자가 추가되었습니다.');
+    await fetchApprovalDetail(requestApprovalId);
+    searchQuery.value = '';
+    searchResults.value = [];
+    selectedEmployee.value = null;
+    document.getElementById('addApproverCollapse').classList.remove('show');
+  } catch (error) {
+    console.error('Error adding approver:', error);
+    if (error.response && error.response.status === 401) {
+      router.push('/login');
+    } else {
+      alert('다음 결재자 추가에 실패했습니다.');
+    }
+  }
+}
+ 
+ function formatDate(dateString) {
   if (!dateString) return '';
   const date = new Date(dateString);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
-}
-
-function formatStatus(status, isCanceled) {
+ }
+ 
+ function formatStatus(status, isCanceled) {
   if (isCanceled) {
     return '취소됨';
   }
-
+ 
   switch (status) {
     case 'WAITING':
       return '승인 대기 중';
@@ -174,13 +302,13 @@ function formatStatus(status, isCanceled) {
     default:
       return status;
   }
-}
-
-function getStatusClass(status, isCanceled) {
+ }
+ 
+ function getStatusClass(status, isCanceled) {
   if (isCanceled) {
     return 'status-canceled';
   }
-
+ 
   switch (status) {
     case 'WAITING':
       return 'status-waiting';
@@ -191,9 +319,9 @@ function getStatusClass(status, isCanceled) {
     default:
       return '';
   }
-}
-
-function formatType(typeId) {
+ }
+ 
+ function formatType(typeId) {
   switch (typeId) {
     case 1:
       return '워크스페이스 생성 요청';
@@ -204,36 +332,186 @@ function formatType(typeId) {
     default:
       return '기타';
   }
-}
-
-function goToApprovalList() {
+ }
+ 
+ function goToApprovalList() {
   router.push('/approval/received');
-}
-</script>
-
-<style scoped>
-.container {
+ }
+ </script>
+ 
+ <style scoped>
+ .container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-}
-
-.header {
+ }
+ 
+ .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-}
-
-.no-background {
+ }
+ 
+ .no-background {
   background-color: transparent;
-}
-
-.no-shadow {
+ }
+ 
+ .no-shadow {
   box-shadow: none;
+ }
+ 
+ .list-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  background-color: #042444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+ }
+ 
+ .list-button:hover {
+  background-color: #1b2cba;
+ }
+ 
+ .approval-detail {
+  background-color: #ffffff;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ }
+ 
+ .section {
+  margin-bottom: 30px;
+ }
+ 
+ .section-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+ }
+ 
+ .detail-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+ }
+ 
+ .label {
+  font-weight: bold;
+  width: 120px;
+  margin-right: 10px;
+ }
+ 
+ .value {
+  flex-grow: 1;
+ }
+ 
+ .status-waiting {
+  color: #2196f3;
+ }
+ 
+ .status-approved {
+  color: #4caf50;
+ }
+ 
+ .status-rejected {
+  color: #f44336;
+ }
+ 
+ .content-box {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 4px;
+  margin-top: 10px;
+  white-space: pre-wrap;
+ }
+ 
+ .button-group {
+  display: flex;
+  gap: 10px;
+ }
+ 
+ .approve-button,
+ .reject-button,
+ .add-approver-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+ }
+ 
+ .approve-button {
+  background-color: #4caf50;
+ }
+ 
+ .approve-button:hover {
+  background-color: #388e3c;
+ }
+ 
+ .reject-button {
+  background-color: #f44336;
+ }
+ 
+ .reject-button:hover {
+  background-color: #d32f2f;
+ }
+ 
+ .add-approver-button {
+  background-color: #042444;
+ }
+ 
+ .add-approver-button:hover {
+  background-color: #1b2cba;
+ }
+ 
+ .approve-button:disabled,
+ .reject-button:disabled,
+ .add-approver-button:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+ }
+ 
+ .status-canceled {
+  color: #9e9e9e;
+ }
+
+ .collapse {
+  background-color: #ffffff;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none;
+ }
+
+ .card {
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: none;
+  outline: none;
 }
 
-.list-button {
+ .search-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.search-input input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-input button {
+  margin-left: 10px;
   padding: 8px 16px;
   border-radius: 4px;
   background-color: #042444;
@@ -243,101 +521,67 @@ function goToApprovalList() {
   transition: background-color 0.2s;
 }
 
-.list-button:hover {
+.search-input button:hover {
   background-color: #1b2cba;
 }
 
-.approval-detail {
-  background-color: #ffffff;
-  border-radius: 4px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.search-results {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 10px;
 }
 
-.section {
-  margin-bottom: 30px;
+.search-result {
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.section-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.label {
-  font-weight: bold;
-  width: 120px;
-  margin-right: 10px;
-}
-
-.value {
-  flex-grow: 1;
-}
-
-.status-waiting {
-  color: #2196f3;
-}
-
-.status-approved {
-  color: #4caf50;
-}
-
-.status-rejected {
-  color: #f44336;
-}
-
-.content-box {
+.search-result:hover {
   background-color: #f5f5f5;
-  padding: 20px;
-  border-radius: 4px;
-  margin-top: 10px;
-  white-space: pre-wrap;
 }
 
-.button-group {
+.search-result.selected {
+  background-color: #e0e0e0;
+}
+
+.no-results {
+  margin-bottom: 10px;
+  color: #888;
+}
+
+.confirm-button:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+}
+ 
+ .buttons {
   display: flex;
+  justify-content: center;
   gap: 10px;
-}
-
-.approve-button,
-.reject-button {
+  margin-top: 20px;
+ }
+ 
+ .confirm-button,
+ .cancel-button {
   padding: 8px 16px;
   border-radius: 4px;
   color: white;
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-
-.approve-button {
+ }
+ 
+ .confirm-button {
   background-color: #4caf50;
 }
-
-.approve-button:hover {
-  background-color: #388e3c;
+.confirm-button:hover {
+background-color: #388e3c;
 }
-
-.reject-button {
-  background-color: #f44336;
+.cancel-button {
+background-color: #f44336;
 }
-
-.reject-button:hover {
-  background-color: #d32f2f;
-}
-
-.approve-button:disabled,
-.reject-button:disabled {
-  background-color: #bdbdbd;
-  cursor: not-allowed;
-}
-
-.status-canceled {
-  color: #9e9e9e;
+.cancel-button:hover {
+background-color: #d32f2f;
 }
 </style>
