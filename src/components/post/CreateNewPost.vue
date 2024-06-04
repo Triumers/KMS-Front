@@ -286,7 +286,6 @@ async function requestToAI(event) {
 }
 
 async function getPostById(originId) {
-    console.log(originId);
     try {
         const token = localStorage.getItem('token');
         if (token) {
