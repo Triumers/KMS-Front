@@ -2,7 +2,6 @@
   <div class="container">
     <div class="header no-background no-shadow">
       <h2>본인이 요청한 결재 목록</h2>
-      <button @click="goToCreateApproval" class="create-button">결재 요청</button>
     </div>
     <div class="filters">
       <div class="filter-item">
@@ -54,7 +53,9 @@
             <span class="approver-name">{{ approval.approverName }}</span>
           </div>
           <div class="approval-status-container">
-            <span :class="`approval-status ${getStatusClass(approval.isApproved)}`">{{ formatStatus(approval.isApproved) }}</span>
+            <span v-if="approval.isCanceled" class="approval-status status-canceled">취소됨</span>
+            <span v-else-if="approval.isApproved === 'WAITING'" class="approval-status status-waiting">승인 대기 중</span>
+            <span v-else :class="`approval-status ${getStatusClass(approval.isApproved)}`">{{ formatStatus(approval.isApproved) }}</span>
           </div>
         </div>
       </div>
@@ -154,10 +155,6 @@ async function fetchRequestedApprovals() {
   }
 }
 
-function goToCreateApproval() {
-  router.push('/approval/new');
-}
-
 function goToApprovalDetail(approvalId) {
   router.push(`/approval/requested/${approvalId}`);
 }
@@ -255,20 +252,6 @@ function updatePeriod() {
 
 .no-shadow {
   box-shadow: none;
-}
-
-.create-button {
-  padding: 8px 16px;
-  border-radius: 4px;
-  background-color: #042444;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.create-button:hover {
-  background-color: #1b2cba;
 }
 
 .filters {
@@ -466,5 +449,10 @@ function updatePeriod() {
   margin-top: 10px;
   font-size: 14px;
   color: #888;
+}
+
+.status-canceled {
+  background-color: #9e9e9e;
+  color: white;
 }
 </style>
