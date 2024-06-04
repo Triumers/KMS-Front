@@ -62,7 +62,7 @@
           </p>
         </div>
         <hr>
-        <div id="tag-div">
+        <div id="tag-div" v-if="post.tags.length > 0">
           <p><strong>태그</strong></p>
           <div class="hashtag">
             <p>
@@ -71,8 +71,9 @@
               </span>&nbsp;
             </p>
           </div>
+          <hr>
         </div>
-        <hr>
+
         <div>
           <div class="authors" data-bs-toggle="collapse" :data-bs-target="`#authorList`" :aria-controls="`#authorList`">
             <p id="author-drop"><strong>참여자</strong><span class="material-icons">arrow_drop_down</span></p>
@@ -87,7 +88,7 @@
         </div>
       </div>
     </div>
-    
+
     <span class="material-icons" id="top-btn" @click=scrollToTop()>assistant_navigation</span>
 
     <!-- 퀴즈 모달창 -->
@@ -109,7 +110,7 @@
                 <h4 id="title"> {{ historyPost.title }} </h4>
                 <div id="date-restore">
                   <small> {{ convertToDate(historyPost.createdAt) }}</small>
-                &nbsp;<b-button size="sm" variant="outline-secondary" @click="restorePost()">버전 복원하기</b-button>
+                  &nbsp;<b-button size="sm" variant="outline-secondary" @click="restorePost()">버전 복원하기</b-button>
                 </div>
                 <div id="tag-div">
                   <div class="hashtag">
@@ -145,7 +146,9 @@
               </div>
             </template>
             <template v-else>
-              <div><p>게시글 히스토리가 존재하지 않습니다.</p></div>
+              <div>
+                <p>게시글 히스토리가 존재하지 않습니다.</p>
+              </div>
             </template>
           </div>
         </div>
@@ -166,7 +169,7 @@ import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 const router = useRouter();
 const currentRoute = useRoute();
 const postId = currentRoute.params.id;
-let general = ref((currentRoute.path.includes("organization")));
+const general = ref(currentRoute.path.includes("organization") ? true : false);
 
 const isAuthorized = ref(false);
 const historyPost = ref(null);
@@ -175,24 +178,22 @@ const isQuizAvailable = ref(false);
 
 const post = ref(null);
 
-
 onMounted(async () => {
-  await getPostById()
+  await getPostById();
   await checkQuizVisibility();
-  setHistoryContent(post.value.history[0]);
 });
 
 const modifyPost = (postId) => {
 
   const segments = currentRoute.path.split('/');
-  let detailPath = `${segments[1]}/${segments[2]}`;
+  let detailPath = `${segments[1]}`;
 
   if (segments.length > 3 && segments[2] === "organization") {
-    detailPath = `${detailPath}/${segments[3]}`;
+    detailPath = `${segments[1]}/${segments[2]}`;
   }
 
   router.push({
-    path: `/${detailPath}/new`,
+    path: `/${detailPath}/${post.value.tabRelationId}/new`,
     query: {
       post: postId
     }
@@ -236,7 +237,7 @@ async function favoritePost(id) {
 async function restorePost() {
   if (confirm("선택한 버전으로 복원하시겠습니까?")) {
     historyPost.value.id = null;
-    //await saveModifyPost(historyPost.value);
+    await saveModifyPost(historyPost.value);
     location.reload(true);
   }
 }
@@ -247,19 +248,31 @@ const setHistoryContent = (selectPost) => {
 
 
 async function deletePost(postId) {
-  try {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = token;
-      // const response = await axios.post(`http://localhost:5000/post/delete/${postId}`);
-      router.push(`/tab/${post.value.tabRelationId}`);
-    } else {
-      alert("잘못된 접근입니다.");
+
+  if (confirm("게시글을 삭제하시겠습니까?")) {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        axios.defaults.headers.common['Authorization'] = token;
+        const response = await axios.delete(`http://localhost:5000/post/delete/${postId}`);
+
+        const segments = currentRoute.path.split('/');
+        let detailPath = `${segments[1]}`;
+
+        if (segments[1] != 'wiki') {
+          detailPath = `${segments[1]}/${segments[2]}`;
+        }
+
+        router.push(`/${detailPath}/${post.value.tabRelationId}`);
+      } else {
+        alert("잘못된 접근입니다.");
+      }
+    } catch (error) {
+      alert("게시글을 삭제할 수 없습니다.");
+    } finally {
     }
-  } catch (error) {
-    alert("게시글을 불러올 수 없습니다.");
-  } finally {
   }
+
 }
 
 const convertToDate = (date) => {
@@ -276,12 +289,11 @@ async function getPostById() {
       const response = await axios.get(`http://localhost:5000/post/find/${postId}`);
       post.value = response.data;
 
-      isAuthorized.value = await axios.get(`http://localhost:5000/post/isAuthor/${postId}`).data;
+      const res = await axios.get(`http://localhost:5000/post/isAuthor/${postId}`);
+      isAuthorized.value = (res.data == true ? true : false);
 
-      const segments = currentRoute.path.split('/');
-      if (segments.length > 2 && segments[2] === "organization") {
-        general = true;
-      }
+      if (post.value.history && post.value.history.length > 0)
+        await setHistoryContent(post.value.history[0]);
 
     } else {
       alert("잘못된 접근입니다.");
@@ -343,7 +355,7 @@ const checkQuizVisibility = async () => {
   }
 };
 
-function scrollToTop(){
+function scrollToTop() {
   window.scrollTo({
     top: 0,
     behavior: 'smooth'
@@ -421,11 +433,11 @@ function scrollToTop(){
   padding-left: 10px;
 }
 
-#tag-div{
+#tag-div {
   margin-top: 10px;
 }
 
-#date-restore{
+#date-restore {
   margin-top: 20px;
 }
 
@@ -464,7 +476,8 @@ li {
   color: #042444;
 }
 
-#date, #author-drop{
+#date,
+#author-drop {
   display: flex;
   align-items: center;
 }
@@ -474,7 +487,7 @@ li {
   color: white;
 }
 
-.history{
+.history {
   padding: 10px;
 }
 
