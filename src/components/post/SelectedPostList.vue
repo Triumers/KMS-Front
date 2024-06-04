@@ -53,14 +53,13 @@
                         <b-card-img :src="post.postImg ? post.postImg : '@/assets/images/logo_header.png'" style="width: 200px; height: 100px;" rounded alt="Image" bottom></b-card-img>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <p class="like
-                            ">
-                                <span class="material-icons">favorite</span>
+                            <p class="like">
+                                <span class="material-icons"  @click="likePost(post.originId ? post.originId : post.id)" :style="{ color: post.isLike ? '#042444' : '#EFEFEF' }">favorite</span>
                                 &nbsp;<span>{{ post.likeList.length }} </span>
                             </p>
                             <p class="tags">
                                 <span class="tag" v-for="tag in post.tags" :key="tag.id">
-                                    <b-badge>#{{ tag }}</b-badge>
+                                    <b-badge class="custom-badge" variant="custom-badge">#{{ tag }}</b-badge>
                                 </span>&nbsp;
                             </p>
                         </div>
@@ -261,4 +260,11 @@ const convertToDate = (date) => {
 .preview-main, .d-flex{
     margin-top: 10px;
 }
+
+.custom-badge {
+  background-color: #042444;
+  color: white;
+}
+
+
 </style>
