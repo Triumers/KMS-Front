@@ -312,11 +312,11 @@ const generatePDF = () => {
   function createPdfHtml() {
     const pdfContent = `
     <div style="padding:20px">
-    <h3>${post.value.title}</h3>
+    <h1><strong>${post.value.title}</strong></h1>
     <p>최종 수정일: ${convertToDate(post.value.createdAt)}</p>
     <div>
       <p>
-        ${post.value.tags.map(tag => `<b-badge>#${tag}</b-badge>`).join('&nbsp;')}
+        ${post.value.tags.map(tag => `<b-badge class="custom-badge">#${tag}</b-badge>`).join('&nbsp;')}
       </p>
     </div>
     <hr>
