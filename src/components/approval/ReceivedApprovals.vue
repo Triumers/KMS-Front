@@ -154,7 +154,7 @@ async function fetchReceivedApprovals() {
 }
 
 function goToApprovalDetail(approvalId) {
-  router.push(`/received-approval/${approvalId}`);
+  router.push(`/approval/received/${approvalId}`);
 }
 
 function formatDate(dateString) {
