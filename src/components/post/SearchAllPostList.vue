@@ -5,7 +5,7 @@
 
     <hr>
 
-    <div class="postList-div">
+    <div v-if="postList" class="postList-div">
         <div class="row row-cols-1 row-cols-1 row-cols-md-2">
             <div class="col" v-for="post in postList" :key="post.id"
                 @click="postDetail(post.originId ? post.originId : post.id)">
@@ -39,18 +39,21 @@
             </div>
         </div>
     </div>
+    <div v-else>
+        <p>검색 결과가 없습니다.</p>
+    </div>
 
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
 const currentRoute = useRoute();
 
-const postList = ref(null);
+const postList = ref({});
 const search = ref({
     type: currentRoute.query.type,
     keyword: currentRoute.query.keyword,
@@ -59,8 +62,14 @@ const search = ref({
     tags: []
 });
 
-onMounted(() => {
-    searchPost();
+onMounted(async() => {
+    await searchPost();
+});
+
+watch(() => currentRoute.query, async () => {
+  search.value.type = currentRoute.query.type;
+  search.value.keyword = currentRoute.query.keyword;
+  await searchPost();
 });
 
 const postDetail = (postId) => {
@@ -78,55 +87,44 @@ async function searchPost() {
         case 'title':
             search.value.title = search.value.keyword;
             break;
-        case 'keyword':
+        case 'content':
             search.value.content = search.value.keyword;
             break;
     }
 
     if (search.value.type == "tag")
-        search.value.tags = currentRoute.query.tags ? currentRoute.query.tags.split(',') : [];
+        search.value.tags = currentRoute.query.tags.length > 0 ? currentRoute.query.tags.split(',') : [];
 
     await getPostList();
 }
 
 async function getPostList() {
-    try {
-        const response = await axios.post('http://localhost:5000/post/tab', {
-            tabRelationId: search.value.tabRelationId,
+
+    console.log(search.value.title);
+    console.log(search.value.content);
+try {
+    const token = localStorage.getItem('token');
+    if (token) {
+        axios.defaults.headers.common['Authorization'] = token;
+        const response = await axios.post('http://localhost:5000/post/tab/all', {
             categoryId: search.value.categoryId,
             title: search.value.title,
             content: search.value.content,
             tags: search.value.tags
         });
+        console.log(response.data);
         postList.value = response.data.content;
-    } catch (error) {
-        console.error("게시글을 불러올 수 없습니다.", error);
+    } else {
+        alert("잘못된 접근입니다.");
+    }
+} catch (error) {
+    alert("게시글을 불러올 수 없습니다.");
+} finally{
+    if(!postList.value || postList.value.length <= 0){
+        postList.value = null;
     }
 }
-
-
-// async function getPostList() {
-
-//     try {
-//         const token = localStorage.getItem('token');
-//         if (token) {
-//             axios.defaults.headers.common['Authorization'] = token;
-//             const response = await axios.post('http://localhost:5000/post/tab', {
-//                 tabRelationId: search.value.tabRelationId,
-//                 categoryId: search.value.categoryId,
-//                 title: search.value.title,
-//                 content: search.value.content,
-//                 tags: search.value.tags
-//             });
-//             postList.value = response.data.content;
-//         } else {
-//             alert("잘못된 접근입니다.");
-//         }
-//     } catch (error) {
-//         alert("게시글을 불러올 수 없습니다.");
-//     } finally {
-//     }
-// }
+}
 
 const convertToDate = (date) => {
     const dateSplit = date.split("T");
