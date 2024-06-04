@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="header no-background no-shadow">
-      <h2>본인이 요청한 결재 목록</h2>
+      <h2>요청한 결재 목록</h2>
     </div>
     <div class="filters">
       <div class="filter-item">
