@@ -35,7 +35,7 @@ async function saveAnonymousBoard() {
       content: content.value,
       nickname: nickname.value,
     });
-    router.push(`/office-life/3/anonymous-board/${response.data.id}`); // 상세 페이지 URL 수정
+    router.push(`/office-life/anonymous-board/${response.data.id}`); // 상세 페이지 URL 수정
   } catch (error) {
     console.error('Failed to save anonymous board:', error);
     // 에러 처리 로직 추가
