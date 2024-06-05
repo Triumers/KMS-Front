@@ -166,7 +166,7 @@ async function getTabName(id) {
             alert("잘못된 접근입니다.");
         }
     } catch (error) {
-        alert("탭 이름을 불러올 수 없습니다.");
+        console.log("탭 이름을 불러올 수 없습니다.");
     } finally {
     }
 }
@@ -190,7 +190,7 @@ async function getPostList() {
             alert("잘못된 접근입니다.");
         }
     } catch (error) {
-        alert("게시글을 불러올 수 없습니다.");
+        console.log("게시글을 불러올 수 없습니다.");
     } finally{
         if(!postList.value || postList.value.length <= 0){
             postList.value = null;
