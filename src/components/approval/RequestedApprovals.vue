@@ -53,10 +53,10 @@
             <span class="approver-name">{{ approval.approverName }}</span>
           </div>
           <div class="approval-status-container">
-            <span v-if="approval.isCanceled" class="approval-status status-canceled">취소됨</span>
-            <span v-else-if="approval.isApproved === 'WAITING'" class="approval-status status-waiting">승인 대기 중</span>
-            <span v-else :class="`approval-status ${getStatusClass(approval.isApproved)}`">{{ formatStatus(approval.isApproved) }}</span>
-          </div>
+          <span :class="`approval-status ${getStatusClass(approval.isApproved, approval.canceled)}`">
+            {{ formatStatus(approval.isApproved, approval.canceled) }}
+          </span>
+        </div>
         </div>
       </div>
     </div>
@@ -165,7 +165,11 @@ function formatDate(dateString) {
   return `${year}-${month}-${day}`;
 }
 
-function formatStatus(status) {
+function formatStatus(status, canceled) {
+  if (canceled) {
+    return '취소됨';
+  }
+
   switch (status) {
     case 'WAITING':
       return '승인 대기 중';
@@ -178,7 +182,11 @@ function formatStatus(status) {
   }
 }
 
-function getStatusClass(status) {
+function getStatusClass(status, canceled) {
+  if (canceled) {
+    return 'status-canceled';
+  }
+
   switch (status) {
     case 'WAITING':
       return 'status-waiting';
