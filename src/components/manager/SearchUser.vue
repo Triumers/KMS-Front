@@ -12,7 +12,7 @@
       <input
         type="text"
         v-model="searchKeyword"
-        placeholder="이름 또는 이메일 검색"
+        placeholder="이름 검색(한 글자 이상)"
         class="search-input"
         @input="searchMembers"
         @keyup.enter="searchMembers"
@@ -50,43 +50,30 @@ const members = ref([]);
 async function searchMembers() {
   try {
     const token = localStorage.getItem('token');
-    let response;
-    if (searchKeyword.value.includes('@')) {
-      response = await axios.get(
-        `http://localhost:5000/employee/find/email/${searchKeyword.value}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-    } else {
-      response = await axios.post(
-        'http://localhost:5000/employee/find/name',
-        {
-          name: searchKeyword.value,
+    const response = await axios.post(
+      'http://localhost:5000/employee/find/name',
+      {
+        name: searchKeyword.value,
+      },
+      {
+        headers: {
+          Authorization: token,
         },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-    }
+      }
+    );
     members.value = response.data.employee;
   } catch (error) {
     console.error('Failed to search members:', error);
-    // 오류 처리 로직 추가
     alert('회원 검색에 실패했습니다. 다시 시도해주세요.');
   }
 }
 
 function selectMember(member) {
-  router.push({ name: 'MemberEdit', params: { id: member.id } });
+  router.push({ name: 'EditUser', params: { id: member.id } });
 }
 
 function goToMemberCreate() {
-  router.push({ name: 'MemberCreate' });
+  router.push({ name: 'CreateUser' });
 }
 </script>
 

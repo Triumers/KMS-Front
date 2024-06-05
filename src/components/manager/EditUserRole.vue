@@ -36,7 +36,7 @@
         },
       });
       alert('회원 권한이 성공적으로 수정되었습니다.');
-      router.push({ name: 'MemberEdit', params: { id: memberId } });
+      router.push({ name: 'EditUser', params: { id: memberId } });
     } catch (error) {
       console.error('Failed to update member permission:', error);
       alert('회원 권한 수정에 실패했습니다. 다시 시도해주세요.');

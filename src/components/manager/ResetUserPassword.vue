@@ -27,7 +27,7 @@
   
       const newPassword = response.data.password;
       alert(`회원의 비밀번호가 초기화되었습니다. 새로운 비밀번호: ${newPassword}`);
-      router.push({ name: 'MemberEdit', params: { id: memberId } });
+      router.push({ name: 'EditUser', params: { id: memberId } });
     } catch (error) {
       console.error('Failed to reset member password:', error);
       // 오류 처리 로직 추가

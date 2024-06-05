@@ -371,7 +371,7 @@ async function updateMember() {
 
     if (response.status === 200) {
       alert('회원 정보가 성공적으로 수정되었습니다.');
-      router.push({ name: 'MemberSearch' });
+      router.push({ name: 'SearchUser' });
     } else {
       alert('회원 정보 수정에 실패했습니다. 다시 시도해주세요.');
     }
@@ -382,11 +382,11 @@ async function updateMember() {
 }
 
 function goToMemberPermission() {
-  router.push({ name: 'MemberPermission', params: { id: memberId } });
+  router.push({ name: 'EditUserRole', params: { id: memberId } });
 }
 
 function goToMemberResetPassword() {
-  router.push({ name: 'MemberResetPassword', params: { id: memberId } });
+  router.push({ name: 'ResetUserPassword', params: { id: memberId } });
 }
 </script>
   
