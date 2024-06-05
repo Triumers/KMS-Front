@@ -12,11 +12,11 @@
             @click="likePost(post.originId ? post.originId : post.id)"
             :style="{ color: post.isLike ? '#042444' : '#EFEFEF' }">favorite</span>
         <div class="like" data-bs-toggle="dropdown" aria-expanded="false">
-          <span><strong>&nbsp;{{ post.likeList.length }}</strong></span>
+          <span><strong>&nbsp;{{ likeCnt }}</strong></span>
         </div>
         <ul class="dropdown-menu">
           <li v-for="like in post.likeList">
-            <b-avatar variant="info" :src="like.profileImg ? like.profileImg : 'https://placekitten.com/300/300'">
+            <b-avatar variant="info" :src="like.profileImg ? like.profileImg : '/src/assets/images/profile_image.png'">
             </b-avatar>
             &nbsp;{{ like.name }}&nbsp;
           </li>
@@ -26,10 +26,11 @@
 
       <div id="etc">
         <div class="translate">
-          <select id="condition">
-            <option value="en">영어</option>
-            <option value="jp">일본어</option>
-            <option value="ch">중국어</option>
+          <select id="condition" v-model="selectedLanguage" @change="handleTranslation">
+            <option value="ko">한국어</option>
+            <option value="en-US">영어</option>
+            <option value="ja">일본어</option>
+            <option value="zh">중국어</option>
           </select>
         </div>
         <b-dropdown size="lg" variant="link" toggle-class="text-decoration-none" no-caret>
@@ -81,7 +82,7 @@
           <div class="show" id="authorList">
             <p class="author" v-for="participant in post.participants" :key="participant.id">
               <b-avatar variant="info"
-                :src="participant.profileImg ? participant.profileImg : 'https://placekitten.com/300/300'"></b-avatar>
+                :src="participant.profileImg ? participant.profileImg : ''"></b-avatar>
               &nbsp;{{ participant.name }}&nbsp;
             </p>
           </div>
@@ -176,28 +177,52 @@ const historyPost = ref(null);
 const selectedQuizId = ref(null);
 const isQuizAvailable = ref(false);
 
+const likeCnt = ref(0);
+
 const post = ref(null);
+
+const selectedLanguage = ref('ko'); // 초기값은 한국어
+const originalPost = ref(null); // 원래 게시글 데이터 저장용
 
 onMounted(async () => {
   await getPostById();
   await checkQuizVisibility();
+  originalPost.value = { ...post.value }; 
 });
+
+
+// 번역 처리 함수
+const handleTranslation = async () => {
+  if (selectedLanguage.value === 'ko') {
+    // 한국어 선택 시 원래 내용 표시
+    post.value = { ...originalPost.value };
+  } else {
+    try {
+      const response = await axios.get(`/translate/${postId}/${selectedLanguage.value}`);
+      post.value.title = response.data.title;
+      post.value.content = response.data.content;
+    } catch (error) {
+      console.error('Failed to translate post:', error);
+    }
+  }
+};
+
 
 const modifyPost = (postId) => {
 
-  const segments = currentRoute.path.split('/');
-  let detailPath = `${segments[1]}`;
+const segments = currentRoute.path.split('/');
+let detailPath = `${segments[1]}`;
 
-  if (segments.length > 3 && segments[2] === "organization") {
-    detailPath = `${segments[1]}/${segments[2]}`;
+if (segments.length > 3 && segments[1] === "group") {
+  detailPath = `${segments[1]}/${segments[2]}`;
+}
+
+router.push({
+  path: `/${detailPath}/${post.value.tabRelationId}/${currentRoute.path.includes("workspace") ? "wiki/" : ''}new`,
+  query: {
+    post: postId
   }
-
-  router.push({
-    path: `/${detailPath}/${post.value.tabRelationId}/new`,
-    query: {
-      post: postId
-    }
-  });
+});
 };
 
 async function likePost(id) {
@@ -207,6 +232,11 @@ async function likePost(id) {
       axios.defaults.headers.common['Authorization'] = token;
       const response = await axios.post(`http://localhost:5000/post/like`, { postId: id });
 
+      if(post.value.isLike){
+        likeCnt.value = likeCnt.value - 1;
+      }else{
+        likeCnt.value = likeCnt.value + 1;
+      }
       post.value.isLike = !post.value.isLike
       
     } else {
@@ -292,6 +322,7 @@ async function getPostById() {
       const res = await axios.get(`http://localhost:5000/post/isAuthor/${postId}`);
       isAuthorized.value = (res.data == true ? true : false);
 
+      likeCnt.value = post.value.likeList.length;
       if (post.value.history && post.value.history.length > 0)
         await setHistoryContent(post.value.history[0]);
 
@@ -508,5 +539,25 @@ li {
 
 #historyContent{
   width: 100%;
+}
+
+#condition {
+  margin-right: 20px;
+  font-size: 16px;
+  padding: 8px 10px;
+  border: 1px solid #042444;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #042444;
+  transition: background-color 0.3s ease;
+}
+
+#condition:hover {
+  background-color: #f0f0f0;
+}
+
+#condition option {
+  background-color: #ffffff;
+  color: #042444;
 }
 </style>

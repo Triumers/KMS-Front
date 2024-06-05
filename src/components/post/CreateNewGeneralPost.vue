@@ -207,7 +207,7 @@ async function getPostById(originId) {
             alert("잘못된 접근입니다.");
         }
     } catch (error) {
-        alert("게시글을 불러올 수 없습니다.");
+        console.log("게시글을 불러올 수 없습니다.");
     } finally {
     }
 }

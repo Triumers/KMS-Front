@@ -35,6 +35,14 @@ import Organization from '@/views/Organization.vue';
 import OfficeLife from '@/views/OfficeLife.vue';
 
 import Login from '@/components/user/Login.vue';
+import Profile from '@/views/Profile.vue';
+import MyPage from '@/components/user/MyPage.vue';
+import EditMyInfo from '@/components/user/EditMyInfo.vue';
+import ChangePassword from '@/components/user/ChangePassword.vue';
+import LikedPosts from '@/components/user/LikedPosts.vue';
+import FavoritePosts from '@/components/user/FavoritePosts.vue';
+import MyComments from '@/components/user/MyComments.vue';
+import MyPosts from '@/components/user/MyPosts.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -43,6 +51,34 @@ const router = createRouter({
             path: '',
             component: Wiki,
             redirect: '/wiki/1'
+        },
+        {
+            path: '/my-page',
+            component: MyPage
+        },
+        {
+            path: '/my-page/edit',
+            component: EditMyInfo
+        },
+        {
+            path: '/my-page/edit-password',
+            component: ChangePassword
+        },
+        {
+            path: '/my-page/liked-posts',
+            component: LikedPosts
+        },
+        {
+            path: '/my-page/favorite-posts',
+            component: FavoritePosts
+        },
+        {
+            path: '/my-page/posts',
+            component: MyPosts
+        },
+        {
+            path: '/my-page/comments',
+            component: MyComments
         },
         {
             path: '/search',
@@ -55,6 +91,10 @@ const router = createRouter({
                 {
                     path: 'detail/:id',
                     component: PostDetailView
+                },
+                {
+                    path: ':id/new',
+                    component: PostWriterView
                 }
             ]
         },
@@ -117,7 +157,7 @@ const router = createRouter({
                     component: DocsWriterView
                 },
                 {
-                    path: 'detail/:post',
+                    path: 'detail/:id',
                     component: PostDetailView
                 },
                 {
@@ -149,7 +189,7 @@ const router = createRouter({
                             component: PostListView
                         },
                         {
-                            path: 'detail/:post',
+                            path: 'detail/:id',
                             component: PostDetailView
                         },
                         {
@@ -219,7 +259,7 @@ const router = createRouter({
                     component: PostDetailView
                 },
                 {
-                    path: '/new',
+                    path: ':id/new',
                     component: PostWriterView
                 },
                 {
@@ -285,6 +325,10 @@ const router = createRouter({
                     component: CreateApprovalView
                 }
             ]
+        },
+        {
+            path: '/profile',
+            component: Profile
         }
     ]
 });
