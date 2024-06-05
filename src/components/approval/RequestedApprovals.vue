@@ -28,6 +28,7 @@
           <option value="WAITING">승인 대기 중</option>
           <option value="APPROVED">승인됨</option>
           <option value="REJECTED">승인 거부</option>
+          <option value="CANCELED">취소됨</option>
         </select>
       </div>
       <div class="filter-item">
@@ -128,6 +129,18 @@ async function fetchRequestedApprovals() {
       page: currentPage.value,
       size: pageSize.value,
     };
+
+    if (selectedStatus.value === 'WAITING') {
+    params.isApproved = "WAITING";
+    params.isCanceled = false;
+    } else if (selectedStatus.value === 'CANCELED') {
+        params.isCanceled = true;
+        params.isApproved = undefined;
+        params.status = undefined;
+    } else {
+        params.status = selectedStatus.value || undefined;
+        params.isCanceled = undefined;
+    }
 
     const response = await axios.get('http://localhost:5000/approval/search', {
       headers: {

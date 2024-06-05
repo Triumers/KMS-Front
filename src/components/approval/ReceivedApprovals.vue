@@ -129,10 +129,17 @@ async function fetchReceivedApprovals() {
       size: pageSize.value,
     };
 
-    if (selectedStatus.value === 'CANCELED') {
-      params.canceled = true;
+    if (selectedStatus.value === 'WAITING') {
+    params.isApproved = "WAITING";
+    params.isCanceled = false;
+    params.status = "WAITING";
+    } else if (selectedStatus.value === 'CANCELED') {
+        params.isCanceled = true;
+        params.isApproved = undefined;
+        params.status = undefined;
     } else {
-      params.status = selectedStatus.value || undefined;
+        params.status = selectedStatus.value || undefined;
+        params.isCanceled = undefined;
     }
 
     const response = await axios.get('http://localhost:5000/approval/received/search', {
