@@ -4,7 +4,7 @@
         <h2>좋아요 한 게시물</h2>
         </div>
         <div>
-        <p class="total-count">게시물: {{ totalCount }}개</p>
+        <p class="total-count">전체 {{ totalCount }}개</p>
       </div>
       <div class="post-list" ref="postList">
         <div v-for="post in likedPosts" :key="post.id" class="post-item" @click="goToPostDetail(post.id)">
