@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [21.x]
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -44,6 +44,11 @@ jobs:
         cp server.js deploy/ 
         cp Procfile deploy/Procfile
         cd deploy && zip -r deploy.zip .
+
+    - name: Build Number
+        id: build-number
+        run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
+
     - name: Beanstalk Deploy
       uses: einaregilsson/beanstalk-deploy@v22
       with:
