@@ -46,8 +46,9 @@ jobs:
         cd deploy && zip -r deploy.zip .
 
     - name: Build Number
-        id: build-number
-        run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
+      id: build-number
+      run: |
+        echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
     - name: Beanstalk Deploy
       uses: einaregilsson/beanstalk-deploy@v22
@@ -56,8 +57,7 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: Triumers-Front
         environment_name: Triumers-Front-env
-        version_label: ${{ build.build-number.outputs.BUILD_NUMBER }}
-        version_description: Version ${{build.build-number.outputs.BUILD_NUMBER}} deployed via github actions ${{ github.sha }}
+        version_label: ${{ steps.build-number.outputs.BUILD_NUMBER }}
+        version_description: Version ${{ steps.build-number.outputs.BUILD_NUMBER }} deployed via github actions ${{ github.sha }}
         region: ap-northeast-2
         deployment_package: deploy/deploy.zip
-        
