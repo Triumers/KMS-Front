@@ -208,6 +208,7 @@ async function likePost(id) {
       const response = await axios.post(`http://localhost:5000/post/like`, { postId: id });
 
       post.value.isLike = !post.value.isLike
+      
     } else {
       alert("잘못된 접근입니다.");
     }
@@ -236,7 +237,6 @@ async function favoritePost(id) {
 
 async function restorePost() {
   if (confirm("선택한 버전으로 복원하시겠습니까?")) {
-    historyPost.value.id = null;
     await saveModifyPost(historyPost.value);
     location.reload(true);
   }
@@ -303,18 +303,25 @@ async function getPostById() {
   }
 }
 
-async function saveModifyPost(historyPost) {
-  try {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = token;
-      await axios.get(`http://localhost:5000/post/modify`, { modifyPost: historyPost });
-    } else {
-      alert("잘못된 접근입니다.");
+async function saveModifyPost(post) {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.post(`http://localhost:5000/post/modify`, {
+                title: post.title,
+                postImg: post.postImg,
+                content: post.content,
+                tags: post.tags,
+                tabRelationId: post.tabRelationId,
+                originId: (post.originId ? post.originId : post.id)
+            });
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        console.log("게시글 저장에 실패했습니다.");
     }
-  } catch (error) {
-    alert("게시글 저장에 실패했습니다.");
-  }
 }
 
 const generatePDF = () => {
@@ -497,5 +504,9 @@ li {
   bottom: 20px;
   right: 20px;
   color: #042444;
+}
+
+#historyContent{
+  width: 100%;
 }
 </style>

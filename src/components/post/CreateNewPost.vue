@@ -28,10 +28,13 @@
                         <small>※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
 
                     <div>
-                        <span><b-button variant="outline-secondary" data-bs-toggle="modal"
-                                data-bs-target="#preview">미리보기</b-button></span>
                         <span>
-                            <b-button variant="outline-info" @click="aiToggle = !aiToggle">AI
+                            <b-button variant="outline-secondary" data-bs-toggle="modal"
+                                data-bs-target="#preview">미리보기</b-button>
+                        </span>
+                        &nbsp;
+                        <span>
+                            <b-button id="ai-btn" @click="aiToggle = !aiToggle">AI
                                 CHAT</b-button>
                         </span>
                     </div>
@@ -47,8 +50,9 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body" v-html="postForm.content">
-
+                                <div class="modal-body">
+                                    <div v-html="postForm.content">
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
@@ -100,7 +104,7 @@ const router = useRouter();
 const currentRoute = useRoute();
 
 const tabId = currentRoute.params.id;
-const originId = currentRoute.query.post;
+const originId = (currentRoute.query.post || null);
 const post = ref(null);
 const aiToggle = ref(false);
 
@@ -110,25 +114,24 @@ const postForm = ref({
     postImg: null,
     content: '',
     tags: [],
-    tabRelationId: tabId,
+    tabId: tabId,
     originId: originId
 })
 
-onMounted(() => {
-    if (originId) {
-        setPost();
+onMounted(async () => {
+    if (originId != null) {
+        await setPost();
     }
 });
 
 async function setPost() {
-
     await getPostById(originId);
     postForm.value = {
         title: post.value.title,
         content: post.value.content,
         tags: post.value.tags,
-        tabRelationId: tabId,
-        originId: originId
+        tabRelationId: post.value.tabRelationId,
+        originId: post.value.originId
     };
 }
 
@@ -140,53 +143,31 @@ function openFileDialog(event) {
 async function uploadFile(event) {
     const file = event.target.files[0];
 
-    const formData = new FormData();
-    formData.append('file', file);
+    if (file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
 
-    const response = await axios.post('http://localhost:5000/post/upload', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
+            const response = await axios.post('http://localhost:5000/post/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            const fileUrl = response.data;
+            const isImage = file.type.startsWith('image/');
+            const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
+            if (isImage && postForm.value.postImg == null) {
+                postForm.value.postImg = fileUrl;
+            }
+
+            insertAtCursor(urlToInsert);
+        } catch (error) {
+            alert("파일 업로드에 실패했습니다.");
         }
-    });
-
-    const fileUrl = response.data;
-    const isImage = file.type.startsWith('image/');
-    const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
-    if (isImage && postForm.value.postImg == null) {
-        postForm.value.postImg = fileUrl;
+    } else {
+        alert("잘못된 접근입니다.");
     }
-
-    insertAtCursor(urlToInsert);
-
-
-    // if (file) {
-    //     try {
-    //         const formData = new FormData();
-    //         formData.append('file', file);
-
-    //         const token = localStorage.getItem('token');
-    //         if (token) {
-    //             axios.defaults.headers.common['Authorization'] = token;
-    //             const response = await axios.post('http://localhost:5000/post/upload', formData, {
-    //                 headers: {
-    //                     'Content-Type': 'multipart/form-data'
-    //                 }
-    //             });
-
-    // const fileUrl = response.data;
-    // const isImage = file.type.startsWith('image/');
-    // const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
-    // if(isImage && postForm.value.postImg == null) {
-    //     postForm.value.postImg = fileUrl;
-    // }
-    //             insertAtCursor(urlToInsert);
-    //         } else {
-    //             alert("잘못된 접근입니다.");
-    //         }
-    //     } catch (error) {
-    //         alert("파일 업로드에 실패했습니다.");
-    //     }
-    // }
 }
 
 function insertAtCursor(text) {
@@ -203,54 +184,44 @@ function insertAtCursor(text) {
 }
 
 async function savePost() {
-    if (originId) {
-        console.log("MODIFY");
-        // await saveModifyPost();
+
+    let url = `http://localhost:5000/post/regist`;
+    if (originId != null) {
+        url = `http://localhost:5000/post/modify`;
     }
-    else {
-        // await saveNewPost();
-    }
+    await saveNewPost(url);
+
+}
+
+async function goDetail(id) {
     const segments = currentRoute.path.split('/');
-    const firstRoot = segments[1];
-    const newPath = `/${firstRoot}/detail/${originId}`;
+
+    let detailPath = segments[1];
+    if (segments[1] == "group") {
+        detailPath = `${segments[1]}/${segments[2]}`
+    }
+
+    if (originId != null) {
+        id = originId;
+    }
+    const newPath = `/${detailPath}/detail/${id}`;
     router.push(newPath);
 }
 
-async function saveNewPost() {
+async function saveNewPost(url) {
     try {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://localhost:5000/post/regist`, {
+            const response = await axios.post(url, {
                 title: postForm.value.title,
                 postImg: postForm.value.postImg,
                 content: postForm.value.content,
                 tags: postForm.value.tags,
-                tabRelationId: postForm.value.tabId,
-                originId: postForm.value.originId
+                tabRelationId: tabId,
+                originId: originId
             });
-            originId.value = response.data.id;
-        } else {
-            alert("잘못된 접근입니다.");
-        }
-    } catch (error) {
-        alert("게시글 저장에 실패했습니다.");
-    }
-}
-
-async function saveModifyPost() {
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            await axios.post(`http://localhost:5000/post/modify`, {
-                title: postForm.value.title,
-                postImg: postForm.value.postImg,
-                content: postForm.value.content,
-                tags: postForm.value.tags,
-                tabRelationId: postForm.value.tabId,
-                originId: postForm.value.originId
-            });
+            await goDetail(response.data.id);
         } else {
             alert("잘못된 접근입니다.");
         }
@@ -272,7 +243,9 @@ function responseMsgClick() {
 }
 
 async function requestToAI(event) {
-
+    if (postForm.value.content.length < 10) {
+        return alert('10자 이상 입력해주세요.');
+    }
     const aiType = { '글 업그레이드': 'enhancement', '내용 검증': 'validation', '맞춤법 교정': 'grammar' };
     const type = event.target.textContent;
 
@@ -281,37 +254,29 @@ async function requestToAI(event) {
     requestAI.innerHTML = type;
     document.getElementById('ai-content').appendChild(requestAI);
 
-    const response = await axios.post(`http://localhost:5000/post/ai`, {
-        type: aiType[type],
-        content: postForm.value.content
-    });
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.post(`http://localhost:5000/post/ai`, {
+                type: aiType[type],
+                content: postForm.value.content
+            });
 
-    const responseContent = response.data;
-    createResponseMsg(responseContent);
+            const responseContent = response.data;
+            createResponseMsg(responseContent);
 
-    // try {
-    //     const token = localStorage.getItem('token');
-    //     if (token) {
-    //         axios.defaults.headers.common['Authorization'] = token;
-    // const response = await axios.post(`http://localhost:5000/post/ai`, {
-    //                 type: aiType[type],
-    //                 content: postForm.value.content
-    //         });
-
-    //         const responseContent = response.data;
-    //         createResponseMsg(responseContent);
-
-    //     } else {
-    //         alert("잘못된 접근입니다.");
-    //     }
-    // } catch (error) {
-    //     alert("요청에 실패했습니다.");
-    // }
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("요청에 실패했습니다.");
+    }
 
     function createResponseMsg(content) {
         const responseAI = document.createElement('p');
         responseAI.addEventListener('click', responseMsgClick);
-        responseAI.className = 'alert alert-primary';
+        responseAI.className = 'alert alert-secondary';
         responseAI.setAttribute('data-bs-toggle', 'tooltip'); // 툴팁 토글 속성 추가
         responseAI.setAttribute('title', '클릭 시, 내용 복사'); // 툴팁 제목 추가
         responseAI.innerText = content;
@@ -321,23 +286,19 @@ async function requestToAI(event) {
 }
 
 async function getPostById(originId) {
-
-    const response = await axios.get(`http://localhost:5000/post/find/${originId}`);
-    post.value = response.data;
-
-    // try {
-    //     const token = localStorage.getItem('token');
-    //     if (token) {
-    //         axios.defaults.headers.common['Authorization'] = token;
-    //         const response = await axios.post(`http://localhost:5000/post/find/${originId}`);
-    //         post.value = response.data;
-    //     } else {
-    //         alert("잘못된 접근입니다.");
-    //     }
-    // } catch (error) {
-    //     alert("게시글을 불러올 수 없습니다.");
-    // } finally {
-    // }
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = token;
+            const response = await axios.get(`http://localhost:5000/post/find/${originId}`);
+            post.value = response.data;
+        } else {
+            alert("잘못된 접근입니다.");
+        }
+    } catch (error) {
+        alert("게시글을 불러올 수 없습니다.");
+    } finally {
+    }
 }
 </script>
 
@@ -381,5 +342,17 @@ async function getPostById(originId) {
 
 #content-text {
     min-height: 450px;
+}
+
+.modal-body {
+    white-space: pre-wrap;
+}
+
+#ai-btn {
+    background-color: #042444;
+}
+
+#ai-btn:hover {
+    background-color: #042444c0;
 }
 </style>

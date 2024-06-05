@@ -10,8 +10,8 @@
         <hr>
 
         <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="title" v-model="docsForm.title" placeholder="제목을 입력해주세요.">
-            <label for="title">제목</label>
+            <input type="text" class="form-control" id="title-input" v-model="docsForm.title" placeholder="제목을 입력해주세요.">
+            <label for="title-input">제목</label>
         </div>
 
         <div class="mb-3">
@@ -31,7 +31,6 @@ const router = useRouter();
 const currentRoute = useRoute();
 
 const tabId = currentRoute.params.id;
-const originId = currentRoute.query.post;
 
 const docsForm = ref({
     title: '',
@@ -43,62 +42,55 @@ const docsForm = ref({
 async function uploadDocs(event) {
     const file = event.target.files[0];
 
-    const formData = new FormData();
-    formData.append('file', file);
+    if (file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
 
-    const response = await axios.post('http://localhost:5000/post/upload', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
+            const response = await axios.post('http://localhost:5000/post/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            const fileUrl = response.data;
+            docsForm.value.content = `${file.name.trim()} : ${file.type.trim()} : ${fileUrl.trim()}`;
+        } catch (error) {
+            alert("파일 업로드에 실패했습니다.");
         }
-    });
-
-    const fileUrl = response.data;
-    docsForm.value.content = `${file.name.trim()} : ${file.type.trim()} : ${fileUrl.trim()}`;
-
-    // if (file) {
-    //     try {
-    //         const formData = new FormData();
-    //         formData.append('file', file);
-
-    //         const token = localStorage.getItem('token');
-    //         if (token) {
-    //             axios.defaults.headers.common['Authorization'] = token;
-    //             const response = await axios.post('http://localhost:5000/post/upload', formData, {
-    //                 headers: {
-    //                     'Content-Type': 'multipart/form-data'
-    //                 }
-    //             });
-
-    // const fileUrl = response.data;
-    // docsForm.value.content = fileUrl;
-    //         } else {
-    //             alert("잘못된 접근입니다.");
-    //         }
-    //     } catch (error) {
-    //         alert("파일 업로드에 실패했습니다.");
-    //     }
-    // }
+    }
+    else {
+        alert("잘못된 접근입니다.");
+    }
 }
 
 async function savePost() {
 
-    console.log(postForm.value);
-    // await saveNewPost();
+    const url = `http://localhost:5000/post/regist`;
+    await saveNewPost(url);
 
+    const segments = currentRoute.path.split('/');
+    const newPath = `/${segments[1]}/${segments[2]}/docs`;
+    router.push(newPath);
+    
 }
 
-async function saveNewPost() {
+async function saveNewPost(url) {
     try {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://localhost:5000/post/regist`, {
-                title: postForm.value.title,
-                content: postForm.value.content,
-                tabRelationId: postForm.value.tabId,
-                categoryId: postForm.value
+            const response = await axios.post(url, {
+                title: docsForm.value.title,
+                content: docsForm.value.content,
+                tabRelationId: tabId,
+                categoryId: docsForm.value.categoryId,
+                tags: []
             });
-            originId.value = response.data.id;
+
+    //         const segments = currentRoute.path.split('/');
+    // const newPath = `/${segments[1]}/${segments[2]}/docs`;
+    // router.push(newPath);
         } else {
             alert("잘못된 접근입니다.");
         }
@@ -109,7 +101,7 @@ async function saveNewPost() {
 
 
 onMounted(() => {
-    
+
 });
 
 </script>
