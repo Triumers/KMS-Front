@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+    <div>
+      <h1>관리자 페이지</h1>
+    </div>
+    <div style="height: 20px;"></div>
     <div class="header no-background no-shadow">
       <h2>회원 검색</h2>
       <button class="create-button" @click="goToMemberCreate">회원 생성</button>
