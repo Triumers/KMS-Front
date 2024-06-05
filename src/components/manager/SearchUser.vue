@@ -48,6 +48,11 @@ const searchKeyword = ref('');
 const members = ref([]);
 
 async function searchMembers() {
+  if (searchKeyword.value.length === 0) {
+    members.value = [];
+    return;
+  }
+  
   try {
     const token = localStorage.getItem('token');
     const response = await axios.post(
@@ -69,11 +74,11 @@ async function searchMembers() {
 }
 
 function selectMember(member) {
-  router.push({ name: 'EditUser', params: { id: member.id } });
+  router.push({ name: 'MemberEdit', params: { id: member.id } });
 }
 
 function goToMemberCreate() {
-  router.push({ name: 'CreateUser' });
+  router.push({ name: 'MemberCreate' });
 }
 </script>
 
