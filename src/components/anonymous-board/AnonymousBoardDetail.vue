@@ -6,7 +6,7 @@
         <hr class="title-separator" />
         <div class="board-actions">
           <button @click="goToBoardList" class="list-button">글 목록</button>
-          <button @click="deleteAnonymousBoard" v-if="isAdmin" class="delete-button">삭제</button>
+          <button @click="deleteAnonymousBoard" v-if="isHrManagerOrAdmin" class="delete-button">삭제</button>
         </div>
       </div>
       <div class="board-info">
@@ -67,6 +67,11 @@ const newComment = ref({
 const isAdmin = ref(false);
 
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
+
+const isHrManagerOrAdmin = computed(() => {
+  const userRole = localStorage.getItem('role');
+  return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(userRole);
+});
 
 onMounted(() => {
   fetchAnonymousBoardById();
