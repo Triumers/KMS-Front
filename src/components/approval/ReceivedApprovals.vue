@@ -28,6 +28,7 @@
           <option value="WAITING">승인 대기 중</option>
           <option value="APPROVED">승인</option>
           <option value="REJECTED">승인 거부</option>
+          <option value="CANCELED">취소됨</option>
         </select>
       </div>
       <div class="filter-item">
@@ -53,7 +54,9 @@
             <span class="approver-name">{{ approval.requesterName }}</span>
           </div>
           <div class="approval-status-container">
-            <span :class="`approval-status ${getStatusClass(approval.isApproved)}`">{{ formatStatus(approval.isApproved) }}</span>
+            <span :class="`approval-status ${getStatusClass(approval.isApproved, approval.canceled)}`">
+              {{ formatStatus(approval.isApproved, approval.canceled) }}
+            </span>
           </div>
         </div>
       </div>
@@ -89,9 +92,7 @@ const showSearchResultMessage = ref(false);
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
 
 const paginatedReceivedApprovals = computed(() => {
-  const startIndex = (currentPage.value - 1) * pageSize.value;
-  const endIndex = startIndex + pageSize.value;
-  return receivedApprovals.value.slice(startIndex, endIndex);
+  return receivedApprovals.value;
 });
 
 const searchResultMessage = computed(() => {
@@ -124,10 +125,22 @@ async function fetchReceivedApprovals() {
       startDate: startDate.value ? `${startDate.value}T00:00:00` : undefined,
       endDate: endDate.value ? `${endDate.value}T23:59:59` : undefined,
       keyword: searchKeyword.value || undefined,
-      status: selectedStatus.value || undefined,
       page: currentPage.value,
       size: pageSize.value,
     };
+
+    if (selectedStatus.value === 'WAITING') {
+    params.isApproved = "WAITING";
+    params.isCanceled = false;
+    params.status = "WAITING";
+    } else if (selectedStatus.value === 'CANCELED') {
+        params.isCanceled = true;
+        params.isApproved = undefined;
+        params.status = undefined;
+    } else {
+        params.status = selectedStatus.value || undefined;
+        params.isCanceled = undefined;
+    }
 
     const response = await axios.get('http://localhost:5000/approval/received/search', {
       headers: {
@@ -137,8 +150,8 @@ async function fetchReceivedApprovals() {
     });
 
     receivedApprovals.value = response.data;
-    totalCount.value = response.data.length;
-    searchResultCount.value = response.data.length;
+    totalCount.value = response.data[0]?.totalCount || 0;
+    searchResultCount.value = totalCount.value;
     showSearchResultMessage.value = true;
   } catch (error) {
     console.error('Error fetching received approvals:', error);
@@ -152,7 +165,6 @@ async function fetchReceivedApprovals() {
     }
   }
 }
-
 function goToApprovalDetail(requestApprovalId) {
   router.push(`/approval/received/${requestApprovalId}`);
 }
@@ -165,7 +177,11 @@ function formatDate(dateString) {
   return `${year}-${month}-${day}`;
 }
 
-function formatStatus(status) {
+function formatStatus(status, canceled) {
+  if (canceled) {
+    return '취소됨';
+  }
+
   switch (status) {
     case 'WAITING':
       return '승인 대기 중';
@@ -178,7 +194,11 @@ function formatStatus(status) {
   }
 }
 
-function getStatusClass(status) {
+function getStatusClass(status, canceled) {
+  if (canceled) {
+    return 'status-canceled';
+  }
+
   switch (status) {
     case 'WAITING':
       return 'status-waiting';
@@ -461,5 +481,10 @@ function updatePeriod() {
   margin-top: 10px;
   font-size: 14px;
   color: #888;
+}
+
+.status-canceled {
+  background-color: #9e9e9e;
+  color: white;
 }
 </style>
