@@ -35,6 +35,7 @@ import Organization from '@/views/Organization.vue';
 import OfficeLife from '@/views/OfficeLife.vue';
 
 import Login from '@/components/user/Login.vue';
+import Profile from '@/views/Profile.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -55,6 +56,10 @@ const router = createRouter({
                 {
                     path: 'detail/:id',
                     component: PostDetailView
+                },
+                {
+                    path: ':id/new',
+                    component: PostWriterView
                 }
             ]
         },
@@ -117,7 +122,7 @@ const router = createRouter({
                     component: DocsWriterView
                 },
                 {
-                    path: 'detail/:post',
+                    path: 'detail/:id',
                     component: PostDetailView
                 },
                 {
@@ -149,7 +154,7 @@ const router = createRouter({
                             component: PostListView
                         },
                         {
-                            path: 'detail/:post',
+                            path: 'detail/:id',
                             component: PostDetailView
                         },
                         {
@@ -219,7 +224,7 @@ const router = createRouter({
                     component: PostDetailView
                 },
                 {
-                    path: '/new',
+                    path: ':id/new',
                     component: PostWriterView
                 },
                 {
@@ -285,6 +290,10 @@ const router = createRouter({
                     component: CreateApprovalView
                 }
             ]
+        },
+        {
+            path: '/profile',
+            component: Profile
         }
     ]
 });
