@@ -58,6 +58,7 @@
         </span>
     </div>
 
+    <span class="material-icons" id="top-btn" @click=scrollToTop()>assistant_navigation</span>
 </template>
 
 <script setup>
@@ -144,7 +145,7 @@ try {
             content: search.value.content,
             tags: search.value.tags,
             page: search.value.page,
-                size: search.value.size
+            size: search.value.size
             });
             const newPosts = response.data.content;
             postList.value = [...postList.value, ...newPosts];
@@ -167,6 +168,13 @@ const convertToDate = (date) => {
 
     return dateSplit[0] + " " + dateSplit[1];
 };
+
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
 
 </script>
 
@@ -192,5 +200,12 @@ const convertToDate = (date) => {
 #top {
     display: flex;
     justify-content: space-between;
+}
+#top-btn {
+  font-size: 50px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: #042444;
 }
 </style>

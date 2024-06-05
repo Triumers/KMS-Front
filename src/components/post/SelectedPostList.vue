@@ -63,7 +63,7 @@
             </div>
         </div>
     </div>
-    <div v-else-if="!isLoading && !postList && postList.length < 0" id="no-content">
+    <div v-else-if="!isLoading && (!postList || postList.length <= 0)" id="no-content">
         <p>게시글이 존재하지 않습니다.</p>
     </div>
 
@@ -81,6 +81,8 @@
             <span class="visually-hidden">Loading...</span>
         </span>
     </div>
+
+    <span class="material-icons" id="top-btn" @click=scrollToTop()>assistant_navigation</span>
 </template>
 
 <script setup>
@@ -216,6 +218,13 @@ const convertToDate = (date) => {
     dateSplit[1] = dateSplit[1].split(".")[0];
     return dateSplit[0] + " " + dateSplit[1];
 };
+
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
 </script>
 
 <style>
@@ -279,5 +288,13 @@ const convertToDate = (date) => {
 .scroll-container {
     height: 100vh;
     overflow-y: auto;
+}
+
+#top-btn {
+  font-size: 50px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: #042444;
 }
 </style>
