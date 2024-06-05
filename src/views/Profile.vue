@@ -1,7 +1,8 @@
 <template>
     <!-- 관리자 탭 추가 (권한 있는 경우) -->
     <div>
-        <button v-if="isManager" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addTab">
+        <button v-if="isManager" type="button" class="btn btn-secondary" data-bs-toggle="modal"
+            data-bs-target="#addTab">
             탭 추가
         </button>
 
@@ -14,37 +15,42 @@
                     </div>
                     <div class="modal-body">
                         <div id="form-container">
-                        <div id="tab-select" class="d-flex align-items-center mb-3">
-                            <b-form-select v-model="tabForm.topTab" :options="options"></b-form-select>
-                            <input v-if="tabForm.topTab === '스터디'" type="text" v-model="tabForm.bottomTab"
-                                placeholder="스터디명을 입력하세요." class="form-control ms-2" />
-                        </div>
-                        <div class="form-group d-flex flex-column">
-                            <label class="form-label fw-bold">대표회원 선택</label>
-                            <p v-if="tabForm.leader"> ○ {{ tabForm.leader.name }} ({{ tabForm.leader.team.name }} {{ tabForm.leader.position.name }} {{
+                            <div id="tab-select" class="d-flex align-items-center mb-3">
+                                <b-form-select v-model="tabForm.topTab" :options="options"></b-form-select>
+                                <input v-if="tabForm.topTab === '스터디'" type="text" v-model="tabForm.bottomTab"
+                                    placeholder="스터디명을 입력하세요." class="form-control ms-2" />
+                            </div>
+                            <div class="form-group d-flex flex-column">
+                                <label class="form-label fw-bold">대표회원 선택</label>
+                                <p v-if="tabForm.leader"> ○ {{ tabForm.leader.name }} ({{ tabForm.leader.team.name }} {{
+                                    tabForm.leader.position.name }} {{
                                     tabForm.leader.rank.name }})</p>
-                            <div class="d-flex mb-2">
-                                <input v-model="search" type="text" placeholder="직원 이름 검색" class="form-control" />
-                                <button @click="searchEmployees" class="btn btn-primary ms-2">검색</button>
+                                <div class="d-flex mb-2">
+                                    <input v-model="search" type="text" placeholder="직원 이름 검색" class="form-control" />
+
+                                    <button class="search-button" id="search-post" @click="searchEmployees">
+                                        <img src="@/assets/icons/search_icon.png" alt="Search" />
+                                    </button>
+                                </div>
+                                <div v-if="searchEmployeeList && searchEmployeeList.length > 0" class="list-group">
+                                    <button v-for="employee in searchEmployeeList" :key="employee.id"
+                                        class="list-group-item list-group-item-action"
+                                        @click="selectEmployee(employee)">
+                                        {{ employee.name }} ({{ employee.team.name }} {{ employee.position.name }} {{
+                                        employee.rank.name }})
+                                    </button>
+                                </div>
+                                <div v-else-if="searchEmployeeList && search" class="text-danger">
+                                    검색 결과가 없습니다.
+                                </div>
+                                <button v-if="searchEmployeeList" class="btn btn-secondary mt-2"
+                                    @click="selectLeader">선택</button>
                             </div>
-                            <div v-if="searchEmployeeList && searchEmployeeList.length > 0" class="list-group">
-                                <button v-for="employee in searchEmployeeList" :key="employee.id"
-                                    class="list-group-item list-group-item-action"
-                                    @click="selectEmployee(employee)">
-                                    {{ employee.name }} ({{ employee.team.name }} {{ employee.position.name }} {{
-                                    employee.rank.name }})
-                                </button>
-                            </div>
-                            <div v-else-if="searchEmployeeList && search" class="text-danger">
-                                검색 결과가 없습니다.
-                            </div>
-                            <button v-if="searchEmployeeList" class="btn btn-secondary mt-2" @click="selectLeader">선택</button>
-                        </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                        <button type="button" class="btn btn-primary" @click="saveNewTab">저장</button>
+                        <button type="button" class="btn btn-outline-dark" @click="saveNewTab">저장</button>
                     </div>
                 </div>
             </div>

@@ -39,7 +39,7 @@
                         <div id="top-info">
                             <div>
                             <b-avatar variant="info" size="4rem" id="profile-img"
-                                :src="post.author.profileImg ? post.author.profileImg : '@/assets/images/profile_image.png'"></b-avatar>
+                                :src="post.author.profileImg ? post.author.profileImg : '/src/assets/images/profile_image.png'"></b-avatar>
                             </div>
                                 <div id="author-date">
                                 <h5 class="author"> {{ post.author.name }} </h5>
@@ -50,7 +50,7 @@
                         <div class="preview-main">
                         <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
                         <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
-                        <b-card-img :src="post.postImg ? post.postImg : '@/assets/images/logo_header.png'" style="width: 200px; height: 100px;" rounded alt="Image" bottom></b-card-img>
+                        <b-card-img :src="post.postImg ? post.postImg : '/src/assets/images/logo_header.png'" style="width: 100%; height: 200px;" rounded alt="Image" bottom></b-card-img>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <p class="like">
@@ -143,7 +143,7 @@ async function searchPost() {
         case 'title':
             search.value.title = search.value.keyword;
             break;
-        case 'keyword':
+        case 'content':
             search.value.content = search.value.keyword;
             break;
     }
@@ -218,6 +218,10 @@ const convertToDate = (date) => {
     min-height: 50px;
 }
 
+.card-title{
+    min-height: 20px;
+}
+
 #profile-img {
     float: left;
 }
@@ -266,5 +270,13 @@ const convertToDate = (date) => {
   color: white;
 }
 
+.card{
+    margin: 10px;
+}
+
+.content-preview{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 
 </style>

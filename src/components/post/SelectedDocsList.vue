@@ -74,7 +74,7 @@ const search = ref({
     tabRelationId: tabId,
     categoryId: 1,
     type: "title",
-    word: '',
+    keyword: '',
     title: null
 });
 
@@ -90,7 +90,7 @@ const createNew = () => {
 };
 
 async function searchPost() {
-    search.value.title = search.value.word;
+    search.value.title = search.value.keyword;
     await getPostList();
 }
 
