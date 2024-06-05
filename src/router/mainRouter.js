@@ -105,7 +105,7 @@ const router = createRouter({
                 component: EditUser,
                 },
                 {
-                path: 'permission/:id',
+                path: 'edit-user-role/:id',
                 name: 'EditUserRole',
                 component: EditUserRole,
                 },
