@@ -46,19 +46,19 @@
         <div class="activity-container">
           <div class="activity-card" @click="goToMyPosts">
             <i class="fa-solid fa-pen-to-square"></i>
-            <span>내가 쓴 게시물</span>
+            <span>내 게시물</span>
           </div>
           <div class="activity-card" @click="goToMyComments">
             <i class="fa-solid fa-comment"></i>
-            <span>내가 쓴 댓글</span>
-          </div>
-          <div class="activity-card" @click="goToLikedPosts">
-            <i class="fa-solid fa-heart"></i>
-            <span>좋아요한 게시물</span>
+            <span>내 댓글</span>
           </div>
           <div class="activity-card" @click="goToFavoritePosts">
             <i class="fa-solid fa-bookmark"></i>
-            <span>즐겨찾기한 게시물</span>
+            <span>즐겨찾기</span>
+          </div>
+          <div class="activity-card" @click="goToLikedPosts">
+            <i class="fa-solid fa-heart"></i>
+            <span>좋아요 한 게시물</span>
           </div>
         </div>
       </div>
