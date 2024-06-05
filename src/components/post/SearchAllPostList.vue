@@ -13,7 +13,7 @@
                     <div class="card-body">
                         <div id="top-info">
                             <b-avatar variant="info" size="4rem" id="profile-img"
-                                :src="post.author.profileImg ? post.author.profileImg : '@/assets/images/profile_image.png'"></b-avatar>
+                                :src="post.author.profileImg ? post.author.profileImg : '/src/assets/images/profile_image.png'"></b-avatar>
                             <div id="author-date">
                                 <h5 class="author"> {{ post.author.name }} </h5>
                                 <p class="date"><small class="text-muted"> {{ convertToDate(post.createdAt) }}</small>
@@ -22,7 +22,7 @@
                         </div>
                         <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
                         <div class="content-preview">{{ post.content }}</div>
-                        <b-card-img :src="post.postImg" rounded alt="Image" bottom></b-card-img>
+                        <b-card-img :src="post.postImg ? post.postImg : '/src/assets/images/logo_header.png'" style="width: 100%; height: 200px;" rounded alt="Image" bottom></b-card-img>
                         <div class="d-flex justify-content-between align-items-center">
                             <p class="like">
                                 <span class="material-icons">favorite</span>
@@ -39,32 +39,62 @@
             </div>
         </div>
     </div>
-    <div v-else>
+    <div v-else-if="!isLoading && (!postList || postList.length <= 0)" id="no-content">
         <p>검색 결과가 없습니다.</p>
+    </div>
+
+    <!-- spinner -->
+    <div class="text-center" v-if="isLoading" style="margin: 10px;">
+        <span class="spinner-grow spinner-grow-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </span>
+        &nbsp;
+        <span class="spinner-grow spinner-grow-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </span>
+        &nbsp;
+        <span class="spinner-grow spinner-grow-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </span>
     </div>
 
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
 const currentRoute = useRoute();
 
-const postList = ref({});
+const isLoading = ref(false);
+const postList = ref([]);
 const search = ref({
     type: currentRoute.query.type,
     keyword: currentRoute.query.keyword,
     title: null,
     content: null,
-    tags: []
+    tags: [],
+    page: 0,
+    size: 10
 });
 
-onMounted(async() => {
+onMounted(async () => {
     await searchPost();
+    window.addEventListener('scroll', handleScroll);
 });
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
+
+async function handleScroll() {
+    if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 1) {
+        search.value.page += 1;
+        await getPostList();
+    }
+}
 
 watch(() => currentRoute.query, async () => {
   search.value.type = currentRoute.query.type;
@@ -95,31 +125,36 @@ async function searchPost() {
     if (search.value.type == "tag")
         search.value.tags = currentRoute.query.tags.length > 0 ? currentRoute.query.tags.split(',') : [];
 
+    search.value.page = 0; 
+    postList.value = [];
+
     await getPostList();
 }
 
 async function getPostList() {
-
-    console.log(search.value.title);
-    console.log(search.value.content);
+    if (isLoading.value) return;
+        isLoading.value = true;
 try {
     const token = localStorage.getItem('token');
     if (token) {
         axios.defaults.headers.common['Authorization'] = token;
         const response = await axios.post('http://localhost:5000/post/tab/all', {
-            categoryId: search.value.categoryId,
+            categoryId: null,
             title: search.value.title,
             content: search.value.content,
-            tags: search.value.tags
-        });
-        console.log(response.data);
-        postList.value = response.data.content;
+            tags: search.value.tags,
+            page: search.value.page,
+                size: search.value.size
+            });
+            const newPosts = response.data.content;
+            postList.value = [...postList.value, ...newPosts];
     } else {
         alert("잘못된 접근입니다.");
     }
 } catch (error) {
     console.log("게시글을 불러올 수 없습니다.");
 } finally{
+    isLoading.value = false;
     if(!postList.value || postList.value.length <= 0){
         postList.value = null;
     }
