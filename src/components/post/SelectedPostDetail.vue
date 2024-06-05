@@ -540,4 +540,24 @@ li {
 #historyContent{
   width: 100%;
 }
+
+#condition {
+  margin-right: 20px;
+  font-size: 16px;
+  padding: 8px 10px;
+  border: 1px solid #042444;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #042444;
+  transition: background-color 0.3s ease;
+}
+
+#condition:hover {
+  background-color: #f0f0f0;
+}
+
+#condition option {
+  background-color: #ffffff;
+  color: #042444;
+}
 </style>
