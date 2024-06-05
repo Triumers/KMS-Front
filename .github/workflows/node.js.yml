@@ -56,6 +56,8 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: Triumers-Front
         environment_name: Triumers-Front-env
-        version_label: github-action-${{ github.sha }}
+        version_label: ${{ build.build-number.outputs.BUILD_NUMBER }}
+        version_description: Version ${{build.build-number.outputs.BUILD_NUMBER}} deployed via github actions ${{ github.sha }}
         region: ap-northeast-2
         deployment_package: deploy/deploy.zip
+        
