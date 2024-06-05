@@ -38,6 +38,7 @@
             <span class="material-icons" style="color: black;">more_horiz</span>
           </template>
           <b-dropdown-item id="export" @click="generatePDF">PDF 내보내기</b-dropdown-item>
+          <b-dropdown-item id="exportLink" @click="exportLink">링크 복사</b-dropdown-item>
           <b-dropdown-item v-if="!general" id="modify-btn"
             @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
           <b-dropdown-item v-else-if="general && isAuthorized" id="modify-btn"
@@ -207,6 +208,18 @@ const handleTranslation = async () => {
   }
 };
 
+const exportLink = ()=>{
+  const currentURL = window.location.href;
+
+  navigator.clipboard.writeText(currentURL)
+    .then(() => {
+      alert('링크가 성공적으로 복사되었습니다.');
+    })
+    .catch((err) => {
+      console.error('링크 복사 중 오류가 발생했습니다:', err);
+    });
+
+}
 
 const modifyPost = (postId) => {
 

@@ -107,7 +107,7 @@ async function saveAnonymousBoardComment() {
 async function deleteAnonymousBoard() {
   try {
     await axios.delete(`http://localhost:5000/anonymous-board/${route.params.id}`);
-    router.push('/office-life/anonymous-board');
+    router.push('/office-life/anonymous-board/list');
   } catch (error) {
     console.error('Failed to delete anonymous board:', error);
   }
@@ -142,7 +142,7 @@ function nextPage() {
 }
 
 function goToBoardList() {
-  router.push('/office-life/3/anonymous-board/list');
+  router.push('/office-life/anonymous-board/list');
 }
 
 function checkAdminRole() {

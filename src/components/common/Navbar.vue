@@ -20,8 +20,20 @@
         </li>
       </ul>
     </li>
-    <li class="nav-item">
-      <router-link class="nav-link" to="/office-life/3">Office Life</router-link>
+
+      <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        Office Life
+      </a>
+      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <li>
+          <router-link class="dropdown-item" to="/office-life/3">회사생활</router-link>
+        </li>
+        <li>
+          <router-link class="dropdown-item" to="/office-life/anonymous-board/list">익명게시판</router-link>
+        </li>
+      </ul>
     </li>
   </div>
 </template>

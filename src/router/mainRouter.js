@@ -35,7 +35,6 @@ import Organization from '@/views/Organization.vue';
 import OfficeLife from '@/views/OfficeLife.vue';
 
 import Login from '@/components/user/Login.vue';
-import Profile from '@/views/Profile.vue';
 import MyPage from '@/components/user/MyPage.vue';
 import EditMyInfo from '@/components/user/EditMyInfo.vue';
 import ChangePassword from '@/components/user/ChangePassword.vue';
@@ -325,10 +324,6 @@ const router = createRouter({
                     component: CreateApprovalView
                 }
             ]
-        },
-        {
-            path: '/profile',
-            component: Profile
         }
     ]
 });

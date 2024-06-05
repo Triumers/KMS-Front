@@ -54,7 +54,7 @@ const navigateTo = (path) => {
 };
 
 const navigateToProfile = () => {
-    router.push({ path: '/profile' });
+    router.push({ path: '/my-page' });
 };
 
 const searchPost = () => {

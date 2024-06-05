@@ -129,11 +129,11 @@ async function searchAnonymousBoards() {
 }
 
 function goToWriteForm() {
-  router.push('/office-life/3/anonymous-board/new');
+  router.push('/office-life/anonymous-board/new');
 }
 
 function goToBoardDetail(boardId) {
-  router.push(`/office-life/3/anonymous-board/${boardId}`);
+  router.push(`/office-life/anonymous-board/${boardId}`);
 }
 
 function formatNickname(nickname) {
