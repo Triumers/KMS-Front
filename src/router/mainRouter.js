@@ -43,6 +43,13 @@ import FavoritePosts from '@/components/user/FavoritePosts.vue';
 import MyComments from '@/components/user/MyComments.vue';
 import MyPosts from '@/components/user/MyPosts.vue';
 
+import Manager from '@/views/Manager.vue';
+import CreateUser from '@/components/manager/CreateUser.vue';
+import EditUser from '@/components/manager/EditUser.vue';
+import EditUserRole from '@/components/manager/EditUserRole.vue';
+import ResetUserPassword from '@/components/manager/ResetUserPassword.vue';
+import SearchUser from '@/components/manager/SearchUser.vue';
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -78,6 +85,36 @@ const router = createRouter({
         {
             path: '/my-page/comments',
             component: MyComments
+        },
+        {
+            path: '/manager',
+            component: Manager,
+            children: [
+                {
+                path: '',
+                component: SearchUser,
+                },
+                {
+                path: 'create',
+                name: 'CreateUser',
+                component: CreateUser,
+                },
+                {
+                path: 'edit/:id',
+                name: 'EditUser',
+                component: EditUser,
+                },
+                {
+                path: 'permission/:id',
+                name: 'EditUserRole',
+                component: EditUserRole,
+                },
+                {
+                path: 'reset-password/:id',
+                name: 'ResetUserPassword',
+                component: ResetUserPassword,
+                },
+            ],
         },
         {
             path: '/search',
