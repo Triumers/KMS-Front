@@ -63,7 +63,7 @@ const router = useRouter();
 const currentRoute = useRoute();
 
 const tabId = currentRoute.params.id;
-const originId = currentRoute.query.post;
+const originId = (currentRoute.query.post || null);
 
 const fileInput = ref(null);
 
@@ -94,7 +94,7 @@ async function setPost(){
         content: post.value.content,
         tags: post.value.tags,
         tabRelationId: tabId,
-        originId: originId
+        id: originId
     };
 }
 
@@ -106,53 +106,34 @@ function openFileDialog(event) {
 async function uploadFile(event) {
     const file = event.target.files[0];
 
-    const formData = new FormData();
-    formData.append('file', file);
+    if (file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
 
-    const response = await axios.post('http://localhost:5000/post/upload', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.defaults.headers.common['Authorization'] = token;
+                const response = await axios.post('http://localhost:5000/post/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
 
     const fileUrl = response.data;
     const isImage = file.type.startsWith('image/');
     const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
-    if (isImage && postForm.value.postImg == null) {
+    if(isImage && postForm.value.postImg == null) {
         postForm.value.postImg = fileUrl;
     }
-
-    insertAtCursor(urlToInsert);
-
-
-    // if (file) {
-    //     try {
-    //         const formData = new FormData();
-    //         formData.append('file', file);
-
-    //         const token = localStorage.getItem('token');
-    //         if (token) {
-    //             axios.defaults.headers.common['Authorization'] = token;
-    //             const response = await axios.post('http://localhost:5000/post/upload', formData, {
-    //                 headers: {
-    //                     'Content-Type': 'multipart/form-data'
-    //                 }
-    //             });
-
-    // const fileUrl = response.data;
-    // const isImage = file.type.startsWith('image/');
-    // const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
-    // if(isImage && postForm.value.postImg == null) {
-    //     postForm.value.postImg = fileUrl;
-    // }
-    //             insertAtCursor(urlToInsert);
-    //         } else {
-    //             alert("잘못된 접근입니다.");
-    //         }
-    //     } catch (error) {
-    //         alert("파일 업로드에 실패했습니다.");
-    //     }
-    // }
+                insertAtCursor(urlToInsert);
+            } else {
+                alert("잘못된 접근입니다.");
+            }
+        } catch (error) {
+            alert("파일 업로드에 실패했습니다.");
+        }
+    }
 }
 
 function insertAtCursor(text) {
@@ -170,51 +151,65 @@ function insertAtCursor(text) {
 
 async function savePost() {
 
-    console.log(postForm.value);
-    // await saveNewPost();
-    router.push(`/tab/detail/${originId}`);
+let url = `http://localhost:5000/post/regist`;
+if (originId != null) {
+    url = `http://localhost:5000/post/modify`;
+}
+await saveNewPost(url);
 
 }
 
-async function saveNewPost() {
+async function goDetail(id) {
+const segments = currentRoute.path.split('/');
+
+let detailPath = segments[1];
+if (segments[1] == "group") {
+    detailPath = `${segments[1]}/${segments[2]}`
+}
+
+if (originId != null) {
+    id = originId;
+}
+const newPath = `/${detailPath}/detail/${id}`;
+router.push(newPath);
+}
+
+async function saveNewPost(url) {
+try {
+    const token = localStorage.getItem('token');
+    if (token) {
+        axios.defaults.headers.common['Authorization'] = token;
+        const response = await axios.post(url, {
+            title: postForm.value.title,
+            postImg: postForm.value.postImg,
+            content: postForm.value.content,
+            tags: postForm.value.tags,
+            tabRelationId: tabId,
+            originId: originId
+        });
+        await goDetail(response.data.id);
+    } else {
+        alert("잘못된 접근입니다.");
+    }
+} catch (error) {
+    alert("게시글 저장에 실패했습니다.");
+}
+}
+
+async function getPostById(originId) {
     try {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://localhost:5000/post/regist`, {
-                title: postForm.value.title,
-                postImg: postForm.value.postImg,
-                content: postForm.value.content,
-                tags: postForm.value.tags,
-                tabRelationId: postForm.value.tabId,
-                originId: postForm.value.originId
-            });
-            originId.value = response.data.id;
+            const response = await axios.get(`http://localhost:5000/post/find/${originId}`);
+            post.value = response.data;
         } else {
             alert("잘못된 접근입니다.");
         }
     } catch (error) {
-        alert("게시글 저장에 실패했습니다.");
+        alert("게시글을 불러올 수 없습니다.");
+    } finally {
     }
-}
-
-async function getPostById() {
-
-    const response = await axios.get(`http://localhost:5000/post/find/${originId}`);
-            post.value = response.data;
-    // try {
-    //     const token = localStorage.getItem('token');
-    //     if (token) {
-    //         axios.defaults.headers.common['Authorization'] = token;
-    //         const response = await axios.post(`http://localhost:5000/post/${originId}`);
-    //         post.value = response.data;
-    //     } else {
-    //         alert("잘못된 접근입니다.");
-    //     }
-    // } catch (error) {
-    //     alert("게시글을 불러올 수 없습니다.");
-    // } finally {
-    // }
 }
 
 </script>

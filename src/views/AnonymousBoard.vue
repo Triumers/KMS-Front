@@ -1,13 +1,11 @@
 <template>
     <div>
-      <RouterView/>
+      <router-view></router-view>
     </div>
   </template>
   
   <script>
+  import { ref } from 'vue';
   import { RouterView } from "vue-router";
-  export default {
-    name: 'Wiki'
-  }
-  </script>
   
+  </script>
