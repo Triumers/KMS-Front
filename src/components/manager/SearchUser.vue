@@ -74,11 +74,11 @@ async function searchMembers() {
 }
 
 function selectMember(member) {
-  router.push({ name: 'MemberEdit', params: { id: member.id } });
+  router.push({ name: 'EditUser', params: { id: member.id } });
 }
 
 function goToMemberCreate() {
-  router.push({ name: 'MemberCreate' });
+  router.push({ name: 'CreateUser' });
 }
 </script>
 
