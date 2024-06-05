@@ -89,9 +89,7 @@ const showSearchResultMessage = ref(false);
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
 
 const paginatedReceivedApprovals = computed(() => {
-  const startIndex = (currentPage.value - 1) * pageSize.value;
-  const endIndex = startIndex + pageSize.value;
-  return receivedApprovals.value.slice(startIndex, endIndex);
+  return receivedApprovals.value;
 });
 
 const searchResultMessage = computed(() => {
@@ -137,8 +135,8 @@ async function fetchReceivedApprovals() {
     });
 
     receivedApprovals.value = response.data;
-    totalCount.value = response.data.length;
-    searchResultCount.value = response.data.length;
+    totalCount.value = response.data[0]?.totalCount || 0;
+    searchResultCount.value = totalCount.value;
     showSearchResultMessage.value = true;
   } catch (error) {
     console.error('Error fetching received approvals:', error);
