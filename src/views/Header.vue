@@ -28,36 +28,39 @@
         <button v-if="isAdmin" class="admin-button" @click="navigateToManager">
           관리자
         </button>
+        <button v-if="isLoggedIn" class="logout-button" @click="logout">
+          로그아웃
+        </button>
         <button class="profile-button" @click="navigateToProfile">
           <img src="@/assets/images/profile_image.png" alt="Profile" />
         </button>
       </div>
     </header>
-  </template>
-  
-  <script setup>
-  import { ref, computed, onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
-  
-  const router = useRouter();
-  
-  const search = ref({
+   </template>
+   
+   <script setup>
+   import { ref, computed, onMounted } from 'vue';
+   import { useRouter } from 'vue-router';
+   
+   const router = useRouter();
+   
+   const search = ref({
     type: 'title',
     keyword: '',
     title: null,
     content: null,
     tags: []
-  });
-  
-  // 로그인 상태와 사용자 권한을 저장할 변수
-  const loggedIn = ref(false);
-  const role = ref('');
-  
-  // 로그인 상태와 사용자 권한을 확인하는 함수
-  const checkUserInfo = () => {
+   });
+   
+   // 로그인 상태와 사용자 권한을 저장할 변수
+   const loggedIn = ref(false);
+   const role = ref('');
+   
+   // 로그인 상태와 사용자 권한을 확인하는 함수
+   const checkUserInfo = () => {
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('role');
-  
+   
     if (token) {
       loggedIn.value = true;
       role.value = userRole;
@@ -65,137 +68,148 @@
       loggedIn.value = false;
       role.value = '';
     }
-  };
-  
-  const isLoggedIn = computed(() => loggedIn.value);
-  const isAdmin = computed(() => ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(role.value));
-  
-  const navigateTo = (path) => {
+   };
+   
+   const isLoggedIn = computed(() => loggedIn.value);
+   const isAdmin = computed(() => ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(role.value));
+   
+   const navigateTo = (path) => {
     router.push({ path });
-  };
-  
-  const navigateToProfile = () => {
+   };
+   
+   const navigateToProfile = () => {
     router.push({ path: '/my-page' });
-  };
-  
-  const searchPost = () => {
+   };
+   
+   const searchPost = () => {
     const query = {
       type: search.value.type,
       keyword: search.value.keyword,
       tags: search.value.type === 'tag' ? search.value.tags.join(',') : null
     };
     router.push({ path: '/search', query });
-  };
-  
-  const navigateToApproval = () => {
+   };
+   
+   const navigateToApproval = () => {
     router.push({ path: '/approval' });
-  };
-  
-  const navigateToManager = () => {
+   };
+   
+   const navigateToManager = () => {
     router.push({ path: '/manager' });
-  };
-  
-  onMounted(() => {
+   };
+   
+   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    loggedIn.value = false;
+    role.value = '';
+    alert('로그아웃되었습니다.');
+    router.push('/login');
+   };
+   
+   onMounted(() => {
     checkUserInfo();
-  });
-  </script>
-  
-  <style>
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #000;
-  width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.header-left,
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.header-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.logo {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.logo > img {
-  width: 200px;
-}
-
-.search-input {
-  width: 100%;
-  max-width: 800px;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px 4px 4px 4px;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-  outline: none;
-}
-
-.search-button {
-  background-color: #042444;
-  border: none;
-  border-radius: 4px 4px 4px 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.search-button > img {
-  width: 25px;
-  height: 25px;
-  filter: invert(100%);
-}
-
-.profile-button {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  overflow: hidden;
-  width: 40px;
-  height: 40px;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
-.profile-button > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.approval-button,
-.admin-button {
-  background-color: transparent;
-  color: #042444;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  margin-left: 10px;
-  font-weight: bold;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-.approval-button:hover,
-.admin-button:hover {
-  color: #0c5195;
-}
-</style>
+   });
+   </script>
+   
+   <style>
+   .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #000;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+   }
+   
+   .header-left,
+   .header-right {
+    display: flex;
+    align-items: center;
+   }
+   
+   .header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   }
+   
+   .logo {
+    font-size: 24px;
+    font-weight: bold;
+   }
+   
+   .logo > img {
+    width: 200px;
+   }
+   
+   .search-input {
+    width: 100%;
+    max-width: 800px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    outline: none;
+   }
+   
+   .search-button {
+    background-color: #042444;
+    border: none;
+    border-radius: 4px 4px 4px 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   }
+   
+   .search-button > img {
+    width: 25px;
+    height: 25px;
+    filter: invert(100%);
+   }
+   
+   .profile-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
+   }
+   
+   .profile-button > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+   }
+   
+   .approval-button,
+   .admin-button,
+   .logout-button {
+    background-color: transparent;
+    color: #042444;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s;
+   }
+   
+   .approval-button:hover,
+   .admin-button:hover,
+   .logout-button:hover {
+    color: #0c5195;
+   }
+   </style>
