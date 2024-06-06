@@ -12,10 +12,10 @@ export default ({ mode }) => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
-    build: {
-      rollupOptions: {
-        external: ['vuex']
-      }
-    }
+    // build: {
+    //   rollupOptions: {
+    //     external: ['vuex']
+    //   }
+    // }
   });
 };
