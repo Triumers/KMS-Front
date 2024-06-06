@@ -14,7 +14,7 @@ export default ({ mode }) => {
     },
     build: {
       rollupOptions: {
-        external: env.PROD ? ['vuex'] : []
+        external: ['vuex']
       }
     }
   });
