@@ -34,7 +34,7 @@ const checkLoginStatus = () => {
   const token = localStorage.getItem('token');
   if (token) {
     alert('이미 로그인한 상태입니다.');
-    router.push('/wiki/posts');
+    router.push('/wiki/1');
   }
 };
 
