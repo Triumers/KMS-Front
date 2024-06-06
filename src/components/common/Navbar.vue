@@ -35,6 +35,9 @@
         </li>
       </ul>
     </li>
+    <li class="nav-item">
+      <router-link class="nav-link" to="/search-employee">직원 조회</router-link>
+    </li>
   </div>
 </template>
 
