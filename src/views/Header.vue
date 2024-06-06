@@ -1,107 +1,150 @@
 <template>
     <header class="header">
-        <div class="header-left">
-            <div class="logo">
-                <img src="@/assets/images/logo_header.png" alt="Logo" @click="navigateTo('/')" />
-            </div>
+      <div class="header-left">
+        <div class="logo">
+          <img src="@/assets/images/logo_header.png" alt="Logo" @click="navigateTo('/')" />
         </div>
-
-        <div class="header-center">
-
-            <span class="search-type">
-                <select v-model="search.type" class="form-select pt-1 search-type"
-                    style="width:fit-content; vertical-align: middle; margin-right: 10px;">
-                    <option value="title">제목</option>
-                    <option value="content">내용</option>
-                    <option value="tag">태그</option>
-                </select>
-            </span>
-
-            <b-form-tags v-if="search.type == 'tag'" class="form-select pt-1 search-input" input-id="tags-separators"
-                v-model="search.tags" separator=" " placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter></b-form-tags>
-
-            <input v-else type="text" v-model="search.keyword" placeholder="검색어를 입력하세요" class="search-input" />
-            <button class="search-button" @click="searchPost">
-                <img src="@/assets/icons/search_icon.png" alt="Search" />
-            </button>
-        </div>
-
-        <div class="header-right">
-            <button class="profile-button" @click="navigateToProfile">
-                <img src="@/assets/images/profile_image.png" alt="Profile" />
-                <!-- Employee의 image -->
-            </button>
-        </div>
+      </div>
+      <div class="header-center">
+        <span class="search-type">
+          <select v-model="search.type" class="form-select pt-1 search-type"
+                  style="width:fit-content; vertical-align: middle; margin-right: 10px;">
+            <option value="title">제목</option>
+            <option value="content">내용</option>
+            <option value="tag">태그</option>
+          </select>
+        </span>
+        <b-form-tags v-if="search.type == 'tag'" class="form-select pt-1 search-input" input-id="tags-separators"
+                     v-model="search.tags" separator=" " placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter></b-form-tags>
+        <input v-else type="text" v-model="search.keyword" placeholder="검색어를 입력하세요" class="search-input" />
+        <button class="search-button" @click="searchPost">
+          <img src="@/assets/icons/search_icon.png" alt="Search" />
+        </button>
+      </div>
+      <div class="header-right">
+        <button v-if="isLoggedIn" class="approval-button" @click="navigateToApproval">
+          결재
+        </button>
+        <button v-if="isAdmin" class="admin-button" @click="navigateToManager">
+          관리자
+        </button>
+        <button v-if="isLoggedIn" class="logout-button" @click="logout">
+          로그아웃
+        </button>
+        <button class="profile-button" @click="navigateToProfile">
+          <img src="@/assets/images/profile_image.png" alt="Profile" />
+        </button>
+      </div>
     </header>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-
-const search = ref({
+   </template>
+   
+   <script setup>
+   import { ref, computed, onMounted } from 'vue';
+   import { useRouter } from 'vue-router';
+   
+   const router = useRouter();
+   
+   const search = ref({
     type: 'title',
     keyword: '',
     title: null,
     content: null,
     tags: []
-});
-
-const navigateTo = (path) => {
+   });
+   
+   // 로그인 상태와 사용자 권한을 저장할 변수
+   const loggedIn = ref(false);
+   const role = ref('');
+   
+   // 로그인 상태와 사용자 권한을 확인하는 함수
+   const checkUserInfo = () => {
+    const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('role');
+   
+    if (token) {
+      loggedIn.value = true;
+      role.value = userRole;
+    } else {
+      loggedIn.value = false;
+      role.value = '';
+    }
+   };
+   
+   const isLoggedIn = computed(() => loggedIn.value);
+   const isAdmin = computed(() => ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(role.value));
+   
+   const navigateTo = (path) => {
     router.push({ path });
-};
-
-const navigateToProfile = () => {
+   };
+   
+   const navigateToProfile = () => {
     router.push({ path: '/my-page' });
-};
-
-const searchPost = () => {
-
+   };
+   
+   const searchPost = () => {
     const query = {
-        type: search.value.type,
-        keyword: search.value.keyword,
-        tags: search.value.type === 'tag' ? search.value.tags.join(',') : null
+      type: search.value.type,
+      keyword: search.value.keyword,
+      tags: search.value.type === 'tag' ? search.value.tags.join(',') : null
     };
-
     router.push({ path: '/search', query });
-};
-</script>
-
-<style>
-.header {
+   };
+   
+   const navigateToApproval = () => {
+    router.push({ path: '/approval' });
+   };
+   
+   const navigateToManager = () => {
+    router.push({ path: '/manager' });
+   };
+   
+   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    loggedIn.value = false;
+    role.value = '';
+    alert('로그아웃되었습니다.');
+    router.push('/login');
+   };
+   
+   onMounted(() => {
+    checkUserInfo();
+   });
+   </script>
+   
+   <style>
+   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #000;
     width: 100%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.header-left,
-.header-right {
+   }
+   
+   .header-left,
+   .header-right {
     display: flex;
     align-items: center;
-}
-
-.header-center {
+   }
+   
+   .header-center {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.logo {
+   }
+   
+   .logo {
     font-size: 24px;
     font-weight: bold;
-}
-
-.logo>img {
+   }
+   
+   .logo > img {
     width: 200px;
-}
-
-.search-input {
+   }
+   
+   .search-input {
     width: 100%;
     max-width: 800px;
     padding: 5px 10px;
@@ -109,9 +152,9 @@ const searchPost = () => {
     border-radius: 4px 4px 4px 4px;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
     outline: none;
-}
-
-.search-button {
+   }
+   
+   .search-button {
     background-color: #042444;
     border: none;
     border-radius: 4px 4px 4px 4px;
@@ -120,15 +163,15 @@ const searchPost = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.search-button>img {
+   }
+   
+   .search-button > img {
     width: 25px;
     height: 25px;
     filter: invert(100%);
-}
-
-.profile-button {
+   }
+   
+   .profile-button {
     background: none;
     border: none;
     padding: 0;
@@ -142,11 +185,31 @@ const searchPost = () => {
     height: 40px;
     margin-left: 20px;
     margin-right: 20px;
-}
-
-.profile-button>img {
+   }
+   
+   .profile-button > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-</style>
+   }
+   
+   .approval-button,
+   .admin-button,
+   .logout-button {
+    background-color: transparent;
+    color: #042444;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s;
+   }
+   
+   .approval-button:hover,
+   .admin-button:hover,
+   .logout-button:hover {
+    color: #0c5195;
+   }
+   </style>
