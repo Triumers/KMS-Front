@@ -47,7 +47,7 @@ async function login() {
     const token = response.headers.get('Authorization');
     const userRole = response.headers.get('UserRole');
     store.dispatch('login', { token, userRole });
-    router.push('/wiki/posts');
+    router.push('/wiki/1');
   } catch (error) {
     console.error('Failed to login:', error);
     alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
