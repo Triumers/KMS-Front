@@ -22,6 +22,8 @@ import 'bootstrap-vue-3/dist/bootstrap-vue-3.css';
 
 const app = createApp(App);
 
+app.use(new window.Vuex.Store(store))
+
 app.use(router);
 app.use(store);
 app.use(BootstrapVue3);
