@@ -17,7 +17,7 @@
             </select>
         </span>
 
-        <b-form-input type="text" id="search-input" placeholder="검색어를 입력하세요" v-model="search.keyword"></b-form-input>
+        <b-form-input type="text" id="search-input" placeholder="검색어를 입력하세요" v-model="search.keyword" @keyup.enter="searchPost"></b-form-input>
 
         <button class="search-button" id="search-post" @click="searchPost">
             <img src="@/assets/icons/search_icon.png" alt="Search" />

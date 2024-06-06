@@ -16,8 +16,8 @@
             </select>
         </span>
         <b-form-tags v-if="search.type == 'tag'" class="form-select pt-1" input-id="tags-separators"
-            v-model="search.tags" separator=" " placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter></b-form-tags>
-        <b-form-input v-else type="text" id="search-input" placeholder="검색어를 입력하세요"
+            v-model="search.tags" separator=" " placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter @keyup.enter="searchPost"></b-form-tags>
+        <b-form-input @keyup.enter="searchPost" v-else type="text" id="search-input" placeholder="검색어를 입력하세요"
             v-model="search.keyword"></b-form-input>
         <button class="search-button" id="search-post" @click="searchPost">
             <img src="@/assets/icons/search_icon.png" alt="Search" />
