@@ -62,6 +62,12 @@ async function login() {
         });
         localStorage.setItem('token', loginResponse.headers.get('Authorization'));
         localStorage.setItem('role', loginResponse.headers.get('UserRole'));
+        if (loginResponse.status === 210) {
+          // 초기 비밀번호인 경우 비밀번호 변경 페이지로 이동
+          alert('비밀번호 변경이 필요합니다.')
+          router.push({ path: '/my-page/edit-password', query: { initialPassword: true } });
+          return;
+        }
         await router.push('/wiki/posts');
       } else if (authResponse.status === 202) {
         // MFA 인증 필요
@@ -92,82 +98,82 @@ onMounted(() => {
   checkLoginStatus();
 });
 </script>
-  
-  <style scoped>
-  .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
-  }
-  
-  .login-form {
-    width: 400px;
-    padding: 40px;
-    background-color: white;
-    border-radius: 4px;
-  }
-  
-  .form-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  label {
-    display: block;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .form-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-  
-  .login-button {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    background-color: #042444;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .login-button:hover {
-    background-color: #0c5195;
-  }
 
-  .mfa-active .form-group:not(.mfa-group) {
-    transform: translateY(-100%);
-    opacity: 0;
-    height: 0;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-  }
+<style scoped>
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
 
-  .mfa-group {
-    transition: all 0.3s ease-in-out;
-  }
+.login-form {
+  width: 400px;
+  padding: 40px;
+  background-color: white;
+  border-radius: 4px;
+}
 
-  .mfa-message {
-    font-size: 16px;
-    font-weight: bold;
-    color: #d9534f;
-    margin-bottom: 10px;
-  }
-  </style>
+.form-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #042444;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #0c5195;
+}
+
+.mfa-active .form-group:not(.mfa-group) {
+  transform: translateY(-100%);
+  opacity: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.mfa-group {
+  transition: all 0.3s ease-in-out;
+}
+
+.mfa-message {
+  font-size: 16px;
+  font-weight: bold;
+  color: #d9534f;
+  margin-bottom: 10px;
+}
+</style>
