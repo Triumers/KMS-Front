@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import router from '../router/mainRouter.js';
 
 const store = createStore({
   state: {
@@ -32,6 +33,15 @@ const store = createStore({
       if (token && userRole) {
         commit('setLoggedIn', true);
         commit('setUserRole', userRole);
+        if (router.currentRoute.value.path === '/login') {
+          router.push('/wiki/1');
+        }
+      } else {
+        commit('setLoggedIn', false);
+        commit('setUserRole', '');
+        if (router.currentRoute.value.path !== '/login') {
+          router.push('/login');
+        }
       }
     },
   },
