@@ -5,8 +5,12 @@
     </div>
     <div style="height: 20px;"></div>
     <div class="header no-background no-shadow">
-      <h2>회원 검색</h2>
+      <h2>직원 검색</h2>
+      <div class="button-container">
       <button class="create-button" @click="goToMemberCreate">회원 생성</button>
+      <button class="create-button" @click="goToManagePosition">직책 관리</button>
+      <button class="create-button" @click="goToManageRank">직급 관리</button>
+    </div>
     </div>
     <div class="search-container">
       <input
@@ -79,6 +83,14 @@ function selectMember(member) {
 
 function goToMemberCreate() {
   router.push({ name: 'CreateUser' });
+}
+
+function goToManagePosition() {
+  router.push({ name: 'ManagePosition' });
+}
+
+function goToManageRank() {
+  router.push({ name: 'ManageRank' });
 }
 </script>
 
@@ -183,5 +195,10 @@ function goToMemberCreate() {
 .member-email {
   font-size: 14px;
   color: #888;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
 }
 </style>
