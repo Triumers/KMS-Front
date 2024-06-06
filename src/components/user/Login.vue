@@ -39,8 +39,7 @@ const mfaMessage = ref('MFA 인증이 필요합니다.');
 
 // 로그인 상태 확인 함수
 const checkLoginStatus = () => {
-  const token = localStorage.getItem('token');
-  if (token) {
+  if (store.state.isLoggedIn) {
     alert('이미 로그인한 상태입니다.');
     router.push('/wiki/1');
   }
@@ -60,14 +59,16 @@ async function login() {
           email: email.value,
           password: password.value,
         });
-        localStorage.setItem('token', loginResponse.headers.get('Authorization'));
-        localStorage.setItem('role', loginResponse.headers.get('UserRole'));
         if (loginResponse.status === 210) {
           // 초기 비밀번호인 경우 비밀번호 변경 페이지로 이동
-          alert('비밀번호 변경이 필요합니다.')
+          alert('비밀번호 변경이 필요합니다.');
           router.push({ path: '/my-page/edit-password', query: { initialPassword: true } });
           return;
         }
+        store.dispatch('login', {
+          token: loginResponse.headers.get('Authorization'),
+          userRole: loginResponse.headers.get('UserRole')
+        });
         await router.push('/wiki/posts');
       } else if (authResponse.status === 202) {
         // MFA 인증 필요
@@ -84,8 +85,10 @@ async function login() {
         password: password.value,
         otpCode: otpCode.value,
       });
-      localStorage.setItem('token', loginResponse.headers.get('Authorization'));
-      localStorage.setItem('role', loginResponse.headers.get('UserRole'));
+      store.dispatch('login', {
+        token: loginResponse.headers.get('Authorization'),
+        userRole: loginResponse.headers.get('UserRole')
+      });
       await router.push('/wiki/posts');
     } catch (error) {
       console.error('Failed to login with MFA:', error);
