@@ -52,9 +52,12 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 const route = useRoute();
 const router = useRouter();
+const store = useStore();
+
 const anonymousBoard = ref({});
 const anonymousBoardCommentList = ref([]);
 const currentPage = ref(1);
@@ -64,19 +67,17 @@ const newComment = ref({
   content: '',
   nickname: '익명',
 });
-const isAdmin = ref(false);
 
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
 
 const isHrManagerOrAdmin = computed(() => {
-  const userRole = localStorage.getItem('role');
-  return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(userRole);
+  return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(store.state.userRole);
 });
 
 onMounted(() => {
   fetchAnonymousBoardById();
   fetchAnonymousBoardCommentList();
-  checkAdminRole();
+  store.dispatch('checkUserInfo');
 });
 
 async function fetchAnonymousBoardById() {
@@ -148,13 +149,6 @@ function nextPage() {
 
 function goToBoardList() {
   router.push('/office-life/anonymous-board/list');
-}
-
-function checkAdminRole() {
-  // 관리자 여부를 확인하는 로직 추가
-  // 예: 로그인한 사용자의 역할을 확인하여 관리자인 경우 isAdmin을 true로 설정
-  // 실제 구현에서는 서버에서 사용자 정보를 가져와 확인해야 함
-  isAdmin.value = true; // 예시로 관리자로 설정
 }
 </script>
 

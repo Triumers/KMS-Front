@@ -55,8 +55,8 @@ const router = createRouter({
     routes: [
         {
             path: '',
-            component: Wiki,
-            redirect: '/wiki/1'
+            component: Login,
+            redirect: '/login'
         },
         {
             path: '/my-page',
