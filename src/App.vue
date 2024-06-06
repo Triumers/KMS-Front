@@ -15,8 +15,16 @@
 </template>
 
 <script setup>
-import Navbar from './components/common/Navbar.vue'
+import { onMounted } from 'vue';
+import { useStore } from 'vuex';
+import Navbar from './components/common/Navbar.vue';
 import Header from '@/views/Header.vue';
+
+const store = useStore();
+
+onMounted(() => {
+  store.dispatch('checkUserInfo');
+});
 </script>
 
 <style>
