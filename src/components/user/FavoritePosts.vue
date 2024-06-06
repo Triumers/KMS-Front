@@ -7,7 +7,7 @@
         <p class="total-count">전체 {{ totalCount }}개</p>
       </div>
       <div class="post-list" ref="postList">
-        <div v-for="post in favoritePosts" :key="post.id" class="post-item" @click="goToPostDetail(post.id)">
+        <div v-for="post in favoritePosts" :key="post.id" class="post-item" @click="goToPostDetail((post.originId != 'null' ? post.originId : post.id))">
           <div class="post-title">{{ post.title }}</div>
         </div>
       </div>
