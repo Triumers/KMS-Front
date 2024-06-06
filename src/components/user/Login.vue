@@ -21,8 +21,11 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 const router = useRouter();
+const store = useStore();
+
 const email = ref('');
 const password = ref('');
 
@@ -40,16 +43,13 @@ async function login() {
     const response = await axios.post('/login', {
       email: email.value,
       password: password.value,
-    }).then(response => {
-      localStorage.setItem('token', response.headers.get('Authorization'));
-      localStorage.setItem('role', response.headers.get('UserRole'));
-      router.push('/wiki/posts');
-      return response.data;
     });
-    // 로그인 성공 시 처리할 로직 추가
+    const token = response.headers.get('Authorization');
+    const userRole = response.headers.get('UserRole');
+    store.dispatch('login', { token, userRole });
+    router.push('/wiki/posts');
   } catch (error) {
     console.error('Failed to login:', error);
-    // 로그인 실패 시 처리할 로직 추가
     alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
   }
 }
