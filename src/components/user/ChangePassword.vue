@@ -13,6 +13,7 @@
         <div class="form-group">
           <label for="newPassword">새로운 비밀번호:</label>
           <input type="password" id="newPassword" v-model="newPassword" required />
+          대문자, 소문자, 숫자 각각 한 개 이상 포함, 8~12자
         </div>
         <div class="form-group">
           <label for="confirmPassword">비밀번호 확인:</label>
