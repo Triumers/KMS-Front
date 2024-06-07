@@ -7,9 +7,7 @@
             <img src="@/assets/images/pinkFlowerRight.gif" alt="Right Flower" class="flower-image right-flower">
         </div>
         <div class="congrats-message">
-            <!-- <img src="@/assets/images/pinkFlowerLeft.gif" alt="Left Flower" class="flower-image left-flower"> -->
             <h2>귀하의 입사를 축하합니다 !</h2>
-            <!-- <img src="@/assets/images/pinkFlowerRight.gif" alt="Right Flower" class="flower-image right-flower"> -->
         </div>
         <div class="congrats-message">
             <img src="@/assets/images/pinkFlowerLeft.gif" alt="Left Flower" class="flower-image left-flower">
@@ -47,9 +45,6 @@
     font-size: 40px;
     font-weight: bold;
     margin: 0 20px;
-  }
-  
-  .flower-image {
   }
   
   .left-flower {
