@@ -35,7 +35,7 @@
   
   onMounted(async () => {
     try {
-      const response = await axios.get('http://localhost:5000/organization/find/center/detail/all');
+      const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/organization/find/center/detail/all');
       orgUnits.value = response.data;
     } catch (error) {
       console.error('Error fetching organization data:', error);

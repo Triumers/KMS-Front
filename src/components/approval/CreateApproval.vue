@@ -93,7 +93,7 @@ async function searchEmployees() {
     }
 
     const requestBody = { name: searchQuery.value };
-    const response = await axios.post(`http://localhost:5000/employee/find/name`, requestBody, {
+    const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/employee/find/name`, requestBody, {
       headers: {
         Authorization: `${token}`,
       },
@@ -139,7 +139,7 @@ async function createApproval() {
       approverId: approvalRequest.value.approverId,
     };
 
-    await axios.post(`http://localhost:5000/approval`, requestData, {
+    await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/approval`, requestData, {
       headers: {
         Authorization: `${token}`,
       },

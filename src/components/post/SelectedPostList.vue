@@ -172,7 +172,7 @@ async function getTabName(id) {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.get(`http://localhost:5000/tab/name/${id}`);
+            const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/tab/name/${id}`);
             tabName.value = response.data;
         } else {
             alert("잘못된 접근입니다.");
@@ -189,7 +189,7 @@ async function getPostList() {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post('http://localhost:5000/post/tab', {
+            const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/tab', {
                 tabRelationId: tabId,
                 categoryId: search.value.categoryId,
                 title: search.value.title,

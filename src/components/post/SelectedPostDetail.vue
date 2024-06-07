@@ -243,7 +243,7 @@ async function likePost(id) {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = token;
-      const response = await axios.post(`http://localhost:5000/post/like`, { postId: id });
+      const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/like`, { postId: id });
 
       if(post.value.isLike){
         likeCnt.value = likeCnt.value - 1;
@@ -266,7 +266,7 @@ async function favoritePost(id) {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = token;
-      const response = await axios.post(`http://localhost:5000/post/favorite`, { postId: id });
+      const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/favorite`, { postId: id });
 
       post.value.isFavorite = !post.value.isFavorite
     } else {
@@ -297,7 +297,7 @@ async function deletePost(postId) {
       const token = localStorage.getItem('token');
       if (token) {
         axios.defaults.headers.common['Authorization'] = token;
-        const response = await axios.delete(`http://localhost:5000/post/delete/${postId}`);
+        const response = await axios.delete(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/delete/${postId}`);
 
         const segments = currentRoute.path.split('/');
         let detailPath = `${segments[1]}`;
@@ -329,10 +329,10 @@ async function getPostById() {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = token;
-      const response = await axios.get(`http://localhost:5000/post/find/${postId}`);
+      const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/find/${postId}`);
       post.value = response.data;
 
-      const res = await axios.get(`http://localhost:5000/post/isAuthor/${postId}`);
+      const res = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/isAuthor/${postId}`);
       isAuthorized.value = (res.data == true ? true : false);
 
       likeCnt.value = post.value.likeList.length;
@@ -352,7 +352,7 @@ async function saveModifyPost(post) {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://localhost:5000/post/modify`, {
+            const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/modify`, {
                 title: post.title,
                 postImg: post.postImg,
                 content: post.content,

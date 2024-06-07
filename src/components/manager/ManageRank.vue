@@ -45,7 +45,7 @@
   async function fetchRanks() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/duty/find/rank/all', {
+      const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/duty/find/rank/all', {
         headers: {
           Authorization: token,
         },
@@ -60,7 +60,7 @@
   async function createRank() {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/manager/duty/add/rank', {
+      await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/manager/duty/add/rank', {
         rankName: newRank.value,
       }, {
         headers: {
@@ -78,7 +78,7 @@
   async function updateRank() {
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/manager/duty/edit/rank', {
+      await axios.put('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/manager/duty/edit/rank', {
         rankId: selectedRankId.value,
         rankName: editedRank.value,
       }, {
@@ -98,7 +98,7 @@
   async function deleteRank() {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete('http://localhost:5000/manager/duty/remove/rank', {
+      await axios.delete('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/manager/duty/remove/rank', {
         data: {
           rankId: selectedRankIdToDelete.value,
         },

@@ -114,7 +114,7 @@ async function uploadFile(event) {
             const token = localStorage.getItem('token');
             if (token) {
                 axios.defaults.headers.common['Authorization'] = token;
-                const response = await axios.post('http://localhost:5000/post/upload', formData, {
+                const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -151,9 +151,9 @@ function insertAtCursor(text) {
 
 async function savePost() {
 
-let url = `http://localhost:5000/post/regist`;
+let url = `http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/regist`;
 if (originId != null) {
-    url = `http://localhost:5000/post/modify`;
+    url = `http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/modify`;
 }
 await saveNewPost(url);
 
@@ -201,7 +201,7 @@ async function getPostById(originId) {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.get(`http://localhost:5000/post/find/${originId}`);
+            const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/find/${originId}`);
             post.value = response.data;
         } else {
             alert("잘못된 접근입니다.");

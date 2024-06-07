@@ -39,7 +39,7 @@
   
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/my-page/my-post', {
+      const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/my-page/my-post', {
         headers: {
           Authorization: token,
         },

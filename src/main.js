@@ -13,7 +13,7 @@ import App from './App.vue';
 import axios from 'axios';
 import store from './store/index.js';
 
-axios.defaults.baseURL = 'http://localhost:5000'; // 백엔드 서버의 주소와 포트를 지정합니다.
+axios.defaults.baseURL = 'http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint'; // 백엔드 서버의 주소와 포트를 지정합니다.
 axios.defaults.withCredentials = true; // 쿠키를 포함하여 요청을 보내도록 설정합니다.
 
 import BootstrapVue3 from 'bootstrap-vue-3';

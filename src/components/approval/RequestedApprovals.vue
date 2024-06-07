@@ -142,7 +142,7 @@ async function fetchRequestedApprovals() {
         params.isCanceled = undefined;
     }
 
-    const response = await axios.get('http://localhost:5000/approval/search', {
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/approval/search', {
       headers: {
         Authorization: `${token}`,
       },
