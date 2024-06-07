@@ -26,6 +26,7 @@ const store = createStore({
       localStorage.removeItem('userRole');
       commit('setLoggedIn', false);
       commit('setUserRole', '');
+      commit('setRole', '');
     },
     checkUserInfo({ commit }) {
       const token = localStorage.getItem('token');
