@@ -61,7 +61,7 @@ async function fetchApprovalDetail(approvalId) {
       return;
     }
 
-    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/approval/${approvalId}`, {
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/approval/${approvalId}`, {
       headers: {
         Authorization: `${token}`,
       },
@@ -85,7 +85,7 @@ async function cancelApproval() {
     }
 
     const approvalId = route.params.approvalId;
-    await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/approval/${approvalId}/cancel`, null, {
+    await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/approval/${approvalId}/cancel`, null, {
       headers: {
         Authorization: `${token}`,
       },

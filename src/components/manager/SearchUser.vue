@@ -60,7 +60,7 @@ async function searchMembers() {
   try {
     const token = localStorage.getItem('token');
     const response = await axios.post(
-      'http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/employee/find/name',
+      'http://triumers-back.ap-northeast-2.elasticbeanstalk.com/employee/find/name',
       {
         name: searchKeyword.value,
       },

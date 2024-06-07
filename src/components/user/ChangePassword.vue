@@ -41,7 +41,7 @@ async function changePassword() {
 
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/auth/edit/password', {
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/auth/edit/password', {
       oldPassword: oldPassword.value,
       newPassword: newPassword.value,
     }, {

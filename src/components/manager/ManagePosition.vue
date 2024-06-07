@@ -45,7 +45,7 @@
   async function fetchPositions() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/duty/find/position/all', {
+      const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/position/all', {
         headers: {
           Authorization: token,
         },
@@ -60,7 +60,7 @@
   async function createPosition() {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/manager/duty/add/position', {
+      await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/manager/duty/add/position', {
         positionName: newPosition.value,
       }, {
         headers: {
@@ -78,7 +78,7 @@
   async function updatePosition() {
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/manager/duty/edit/position', {
+      await axios.put('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/manager/duty/edit/position', {
         positionId: selectedPositionId.value,
         positionName: editedPosition.value,
       }, {
@@ -98,7 +98,7 @@
   async function deletePosition() {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/manager/duty/remove/position', {
+      await axios.delete('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/manager/duty/remove/position', {
         data: {
           positionId: selectedPositionIdToDelete.value,
         },

@@ -40,7 +40,7 @@ onMounted(async () => {
 async function fetchMyInfo() {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/my-page', {
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/my-page', {
       headers: {
         Authorization: token,
       },
@@ -67,7 +67,7 @@ async function updateMyInfo() {
       const formData = new FormData();
       formData.append('file', selectedProfileImg.value);
       
-      const uploadResponse = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/s3/upload', formData, {
+      const uploadResponse = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/s3/upload', formData, {
         headers: {
           Authorization: token,
           'Content-Type': 'multipart/form-data',
@@ -84,7 +84,7 @@ async function updateMyInfo() {
       profileImg: profileImgUrl
     };
 
-    await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/auth/edit/my-info', requestData, {
+    await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/auth/edit/my-info', requestData, {
       headers: {
         Authorization: token,
         'Content-Type': 'application/json',

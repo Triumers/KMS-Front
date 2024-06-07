@@ -17,7 +17,7 @@
   async function resetMemberPassword() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/manager/edit/password', {
+      const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/manager/edit/password', {
         email: memberId,
       }, {
         headers: {

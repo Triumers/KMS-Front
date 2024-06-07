@@ -59,7 +59,7 @@ async function getUserCategory() {
       const token = localStorage.getItem('token');
       if (token) {
           axios.defaults.headers.common['Authorization'] = token;
-          const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/group/employee`);
+          const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/group/employee`);
           categoryList.value = response.data;
 
           setCategory();

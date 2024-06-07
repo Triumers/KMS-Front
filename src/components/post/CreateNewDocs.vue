@@ -47,7 +47,7 @@ async function uploadDocs(event) {
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/upload', formData, {
+            const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -66,7 +66,7 @@ async function uploadDocs(event) {
 
 async function savePost() {
 
-    const url = `http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/regist`;
+    const url = `http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/regist`;
     await saveNewPost(url);
 
     const segments = currentRoute.path.split('/');

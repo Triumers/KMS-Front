@@ -164,7 +164,7 @@ onMounted(async () => {
   try {
     store.dispatch('checkUserInfo');
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/my-page', {
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/my-page', {
       headers: {
         Authorization: token,
       },
@@ -228,7 +228,7 @@ async function saveNewTab() {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = token;
-      const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/tab/regist/new/${tabForm.value.leader.id}`, requestData);
+      const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/tab/regist/new/${tabForm.value.leader.id}`, requestData);
       
       alert("탭 저장 완료");
       location.reload(true);
@@ -256,7 +256,7 @@ async function searchEmployees() {
     }
 
     const requestBody = { name: search.value };
-    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/employee/find/name', requestBody, {
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/employee/find/name', requestBody, {
       headers: {
         Authorization: `${token}`,
       },

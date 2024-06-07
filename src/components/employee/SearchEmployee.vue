@@ -62,7 +62,7 @@ function toggleOrgChart() {
 async function searchEmployees() {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/employee/find/name', {
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/employee/find/name', {
       name: searchKeyword.value,
     }, {
       headers: {

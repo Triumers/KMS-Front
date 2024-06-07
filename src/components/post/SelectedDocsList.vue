@@ -126,7 +126,7 @@ async function getPostList() {
         const token = localStorage.getItem('token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/tab', {
+            const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/tab', {
                 tabRelationId: tabId,
                 categoryId: search.value.categoryId,
                 title: search.value.title,
@@ -161,7 +161,7 @@ async function getIsAuthorized(){
     if (token) {
       axios.defaults.headers.common['Authorization'] = token;
       
-      const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/isAuthor/${postId}`);
+      const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/isAuthor/${postId}`);
       isAuthorized.value = (response.data == true ? true : false);
     } else {
       alert("잘못된 접근입니다.");
@@ -178,7 +178,7 @@ if (confirm("게시글을 삭제하시겠습니까?")) {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = token;
-      const response = await axios.delete(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/api/endpoint/post/delete/${postId}`);
+      const response = await axios.delete(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/delete/${postId}`);
 
       const segments = currentRoute.path.split('/');
       let detailPath = `${segments[1]}`;
