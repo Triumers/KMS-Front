@@ -57,6 +57,8 @@ import SearchEmployee from '@/components/employee/SearchEmployee.vue';
 import WelcomePage from '@/components/user/Welcome.vue';
 import WelcomeToJoin from '@/components/user/WelcomeToJoin.vue';
 
+import OtpRegistration from '@/components/user/OtpRegistration.vue';
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -392,6 +394,10 @@ const router = createRouter({
                     component: CreateApprovalView
                 }
             ]
+        },
+        {
+            path: '/otp-registration',
+            component: OtpRegistration
         }
     ]
 });
