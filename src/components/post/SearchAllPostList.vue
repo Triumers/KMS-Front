@@ -127,10 +127,13 @@ const postDetail = (postId) => {
     });
 };
 
-const stripHtmlTags = (html) => {
+const stripHtmlTags = (html) => {;
     const tempDiv = document.createElement('div');
+    
     tempDiv.innerHTML = html;
-    return tempDiv.textContent || tempDiv.innerText || "";
+    tempDiv.innerHTML = marked(tempDiv.textContent);
+
+    return tempDiv.textContent.trim() || tempDiv.innerText.trim() || "";
 };
 
 async function searchPost() {
