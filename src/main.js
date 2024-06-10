@@ -5,6 +5,7 @@ import './assets/main.css';
 // npm install vue-router@next
 // npm install html2pdf.js
 // npm install vuex
+// npm install marked
 
 import { createApp } from 'vue';
 import { createStore } from 'vuex'

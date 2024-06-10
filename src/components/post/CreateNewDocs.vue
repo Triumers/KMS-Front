@@ -88,9 +88,6 @@ async function saveNewPost(url) {
                 tags: []
             });
 
-    //         const segments = currentRoute.path.split('/');
-    // const newPath = `/${segments[1]}/${segments[2]}/docs`;
-    // router.push(newPath);
         } else {
             alert("잘못된 접근입니다.");
         }

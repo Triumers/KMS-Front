@@ -91,6 +91,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+import { marked } from 'marked';
 
 import defaultProfileImg from '@/assets/images/profile_image.png';
 import defaultPostImg from '@/assets/images/logo_header.png';
@@ -156,10 +157,13 @@ const createNew = () => {
     router.push(newPath);
 };
 
-const stripHtmlTags = (html) => {
+const stripHtmlTags = (html) => {;
     const tempDiv = document.createElement('div');
+
     tempDiv.innerHTML = html;
-    return tempDiv.textContent || tempDiv.innerText || "";
+    tempDiv.innerHTML = marked(tempDiv.textContent);
+
+    return tempDiv.textContent.trim() || tempDiv.innerText.trim() || "";
 };
 
 async function searchPost() {
