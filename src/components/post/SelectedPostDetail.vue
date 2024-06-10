@@ -1,32 +1,30 @@
 <template>
   <div v-if="post" id="container">
+    <!-- 게시글 구간 -->
     <div id="top">
-
       <div id="title-info">
         <h1 id="title"><strong>{{ post.title }}</strong></h1>
-
         <p id="like-container">
           <span class="material-icons" id="favorite-icon" @click="favoritePost(post.originId ? post.originId : post.id)"
             :style="{ color: post.isFavorite ? '#042444' : '#EFEFEF' }">bookmark</span>
           &nbsp;&nbsp;<span class="material-icons" id="like-icon"
             @click="likePost(post.originId ? post.originId : post.id)"
             :style="{ color: post.isLike ? '#042444' : '#EFEFEF' }">favorite</span>
-        <div class="like" data-bs-toggle="dropdown" aria-expanded="false">
-          <span><strong>&nbsp;{{ likeCnt }}</strong></span>
-        </div>
-        <ul class="dropdown-menu">
-          <li v-for="like in post.likeList">
-            <b-avatar variant="info" :src="like.profileImg ? like.profileImg : '/src/assets/images/profile_image.png'">
-            </b-avatar>
-            &nbsp;{{ like.name }}&nbsp;
-          </li>
-        </ul>
+          <div class="like" data-bs-toggle="dropdown" aria-expanded="false">
+            <span><strong>&nbsp;{{ likeCnt }}</strong></span>
+          </div>
+          <ul class="dropdown-menu">
+            <li v-for="like in post.likeList">
+              <b-avatar variant="light" :src="like.profileImg ? like.profileImg : '/src/assets/images/profile_image.png'"></b-avatar>
+              &nbsp;{{ like.name }}&nbsp;
+            </li>
+          </ul>
         </p>
       </div>
 
       <div id="etc">
         <div class="translate">
-          <select id="condition" v-model="selectedLanguage" @change="handleTranslation">
+          <select id="condition" v-model="selectedLanguage" @change="handleTranslation" class="form-select">
             <option value="ko">한국어</option>
             <option value="en-US">영어</option>
             <option value="ja">일본어</option>
@@ -50,16 +48,14 @@
     </div>
     <hr>
     <div id="post-container">
-      <div id="content" v-html="post.content"></div>
+      <div id="content" v-html="post.content" class="mb-4"></div>
       <div id="post-info">
         <div>
           <p><strong>최종 수정일</strong></p>
           <p id="date">
             <span>{{ convertToDate(post.createdAt) }} &nbsp;</span>
             <template v-if="!general">
-              <span class="material-icons" data-bs-target="#historyModal" data-bs-toggle="modal">
-                history
-              </span>
+              <span class="material-icons" data-bs-target="#historyModal" data-bs-toggle="modal">history</span>
             </template>
           </p>
         </div>
@@ -82,8 +78,7 @@
           </div>
           <div class="show" id="authorList">
             <p class="author" v-for="participant in post.participants" :key="participant.id">
-              <b-avatar variant="info"
-                :src="participant.profileImg ? participant.profileImg : ''"></b-avatar>
+              <b-avatar variant="light" :src="participant.profileImg ? participant.profileImg : ''"></b-avatar>
               &nbsp;{{ participant.name }}&nbsp;
             </p>
           </div>
@@ -91,7 +86,7 @@
       </div>
     </div>
 
-    <span class="material-icons" id="top-btn" @click=scrollToTop()>assistant_navigation</span>
+    <span class="material-icons" id="top-btn" @click="scrollToTop()">assistant_navigation</span>
 
     <!-- 퀴즈 모달창 -->
     <div v-if="isQuizAvailable" id="quiz-container">
@@ -135,7 +130,7 @@
                       <div>
                         <p>
                         <h5>
-                          <b-avatar variant="info"
+                          <b-avatar variant="light"
                             :src="history.author.profileImg ? history.author.profileImg : '@/assets/images/profile_image.png'"></b-avatar>
                           <span> &nbsp;{{ history.author.name }}&nbsp; </span>
                         </h5>
@@ -157,6 +152,11 @@
       </div>
     </div>
 
+    <!-- 댓글 구간 -->
+    <div id="comments-section" class="mt-4">
+      <h3>Comments</h3>
+      <CommentList :postId="post.id" />
+    </div>
   </div>
 </template>
 
@@ -167,6 +167,7 @@ import axios from 'axios';
 import html2pdf from 'html2pdf.js';
 
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
+import CommentList from '@/components/comment/CommentList.vue'; // 댓글 목록 컴포넌트 임포트
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -191,7 +192,6 @@ onMounted(async () => {
   originalPost.value = { ...post.value }; 
 });
 
-
 // 번역 처리 함수
 const handleTranslation = async () => {
   if (selectedLanguage.value === 'ko') {
@@ -208,7 +208,7 @@ const handleTranslation = async () => {
   }
 };
 
-const exportLink = ()=>{
+const exportLink = () => {
   const currentURL = window.location.href;
 
   navigator.clipboard.writeText(currentURL)
@@ -218,24 +218,22 @@ const exportLink = ()=>{
     .catch((err) => {
       console.error('링크 복사 중 오류가 발생했습니다:', err);
     });
-
-}
+};
 
 const modifyPost = (postId) => {
+  const segments = currentRoute.path.split('/');
+  let detailPath = `${segments[1]}`;
 
-const segments = currentRoute.path.split('/');
-let detailPath = `${segments[1]}`;
-
-if (segments.length > 3 && segments[1] === "group") {
-  detailPath = `${segments[1]}/${segments[2]}`;
-}
-
-router.push({
-  path: `/${detailPath}/${post.value.tabRelationId}/${currentRoute.path.includes("workspace") ? "wiki/" : ''}new`,
-  query: {
-    post: postId
+  if (segments.length > 3 && segments[1] === "group") {
+    detailPath = `${segments[1]}/${segments[2]}`;
   }
-});
+
+  router.push({
+    path: `/${detailPath}/${post.value.tabRelationId}/${currentRoute.path.includes("workspace") ? "wiki/" : ''}new`,
+    query: {
+      post: postId
+    }
+  });
 };
 
 async function likePost(id) {
@@ -245,20 +243,19 @@ async function likePost(id) {
       axios.defaults.headers.common['Authorization'] = token;
       const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/like`, { postId: id });
 
-      if(post.value.isLike){
+      if (post.value.isLike) {
         likeCnt.value = likeCnt.value - 1;
-      }else{
+      } else {
         likeCnt.value = likeCnt.value + 1;
       }
-      post.value.isLike = !post.value.isLike
+      post.value.isLike = !post.value.isLike;
       
     } else {
       alert("잘못된 접근입니다.");
     }
   } catch (error) {
     console.log("오류가 발생했습니다.");
-  } finally {
-  }
+  } finally {}
 }
 
 async function favoritePost(id) {
@@ -268,14 +265,13 @@ async function favoritePost(id) {
       axios.defaults.headers.common['Authorization'] = token;
       const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/favorite`, { postId: id });
 
-      post.value.isFavorite = !post.value.isFavorite
+      post.value.isFavorite = !post.value.isFavorite;
     } else {
       alert("잘못된 접근입니다.");
     }
   } catch (error) {
     console.log("오류가 발생했습니다.");
-  } finally {
-  }
+  } finally {}
 }
 
 async function restorePost() {
@@ -289,9 +285,7 @@ const setHistoryContent = (selectPost) => {
   historyPost.value = selectPost;
 };
 
-
 async function deletePost(postId) {
-
   if (confirm("게시글을 삭제하시겠습니까?")) {
     try {
       const token = localStorage.getItem('token');
@@ -312,10 +306,8 @@ async function deletePost(postId) {
       }
     } catch (error) {
       alert("게시글을 삭제할 수 없습니다.");
-    } finally {
-    }
+    } finally {}
   }
-
 }
 
 const convertToDate = (date) => {
@@ -342,50 +334,47 @@ async function getPostById() {
     } else {
       alert("잘못된 접근입니다.");
     }
-  } catch (error) {
-  } finally {
-  }
+  } catch (error) {} finally {}
 }
 
 async function saveModifyPost(post) {
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = token;
-            const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/modify`, {
-                title: post.title,
-                postImg: post.postImg,
-                content: post.content,
-                tags: post.tags,
-                tabRelationId: post.tabRelationId,
-                originId: (post.originId ? post.originId : post.id)
-            });
-        } else {
-            alert("잘못된 접근입니다.");
-        }
-    } catch (error) {
-        console.log("게시글 저장에 실패했습니다.");
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = token;
+      const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/modify`, {
+        title: post.title,
+        postImg: post.postImg,
+        content: post.content,
+        tags: post.tags,
+        tabRelationId: post.tabRelationId,
+        originId: (post.originId ? post.originId : post.id)
+      });
+    } else {
+      alert("잘못된 접근입니다.");
     }
+  } catch (error) {
+    console.log("게시글 저장에 실패했습니다.");
+  }
 }
 
 const generatePDF = () => {
-
   html2pdf().from(createPdfHtml()).set({ filename: `${post.value.title.trim()}.pdf` }).save();
 
   function createPdfHtml() {
     const pdfContent = `
-    <div style="padding:20px">
-    <h1><strong>${post.value.title}</strong></h1>
-    <p>최종 수정일: ${convertToDate(post.value.createdAt)}</p>
-    <div>
-      <p>
-        ${post.value.tags.map(tag => `<b-badge class="custom-badge">#${tag}</b-badge>`).join('&nbsp;')}
-      </p>
-    </div>
-    <hr>
-    <div>${post.value.content}</div>
-    </div>
-  `;
+      <div style="padding:20px">
+        <h1><strong>${post.value.title}</strong></h1>
+        <p>최종 수정일: ${convertToDate(post.value.createdAt)}</p>
+        <div>
+          <p>
+            ${post.value.tags.map(tag => `<b-badge class="custom-badge">#${tag}</b-badge>`).join('&nbsp;')}
+          </p>
+        </div>
+        <hr>
+        <div>${post.value.content}</div>
+      </div>
+    `;
     return pdfContent;
   }
 };
@@ -550,7 +539,7 @@ li {
   color: #042444;
 }
 
-#historyContent{
+#historyContent {
   width: 100%;
 }
 
@@ -566,11 +555,31 @@ li {
 }
 
 #condition:hover {
-  background-color: #f0f0f0;
+  background-color: #ffffff;
 }
 
 #condition option {
   background-color: #ffffff;
   color: #042444;
+}
+
+#comments-section {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fdfdfd;
+  border-radius: 8px;
+}
+
+#comments-section h3 {
+  margin-bottom: 20px;
+}
+
+#comments-section .form-control {
+  margin-bottom: 10px;
+}
+
+#comments-section .btn {
+  background-color: #042444;
+  color: white;
 }
 </style>
