@@ -65,8 +65,8 @@ async function login() {
 
         if (loginResponse.status === 210) {
           // 초기 비밀번호인 경우 비밀번호 변경 페이지로 이동
-          alert('비밀번호 변경이 필요합니다.');
-          router.push({ path: '/my-page/edit-password', query: { initialPassword: true, token } });
+          alert('2차 인증을 등록해주세요.');
+          router.push({ path: '/otp-registration', query: { initialPassword: true, token } });
           return;
         }
         
