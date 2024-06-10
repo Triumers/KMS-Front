@@ -35,6 +35,9 @@
         </li>
       </ul>
     </li>
+    <li class="nav-item">
+      <router-link class="nav-link" to="/search-employee">직원 조회</router-link>
+    </li>
   </div>
 </template>
 
@@ -56,7 +59,7 @@ async function getUserCategory() {
       const token = localStorage.getItem('token');
       if (token) {
           axios.defaults.headers.common['Authorization'] = token;
-          const response = await axios.get(`http://localhost:5000/group/employee`);
+          const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/group/employee`);
           categoryList.value = response.data;
 
           setCategory();

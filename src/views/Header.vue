@@ -2,7 +2,7 @@
   <header class="header">
     <div class="header-left">
       <div class="logo">
-        <img src="@/assets/images/logo_header.png" alt="Logo" @click="navigateTo('/')" />
+        <img src="@/assets/images/logo_header.png" alt="Logo" @click="navigateTo('/wiki/1')" />
       </div>
     </div>
     <div class="header-center">
@@ -16,7 +16,7 @@
       </span>
       <b-form-tags v-if="search.type == 'tag'" class="form-select pt-1 search-input" input-id="tags-separators"
                    v-model="search.tags" separator=" " placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter></b-form-tags>
-      <input v-else type="text" v-model="search.keyword" placeholder="검색어를 입력하세요" class="search-input" />
+      <input v-else type="text" v-model="search.keyword" placeholder="검색어를 입력하세요" class="search-input" @keyup.enter="searchPost" />
       <button class="search-button" @click="searchPost">
         <img src="@/assets/icons/search_icon.png" alt="Search" />
       </button>

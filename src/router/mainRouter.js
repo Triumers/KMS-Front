@@ -49,6 +49,13 @@ import EditUser from '@/components/manager/EditUser.vue';
 import EditUserRole from '@/components/manager/EditUserRole.vue';
 import ResetUserPassword from '@/components/manager/ResetUserPassword.vue';
 import SearchUser from '@/components/manager/SearchUser.vue';
+import ManagePosition from '@/components/manager/ManagePosition.vue';
+import ManageRank from '@/components/manager/ManageRank.vue';
+
+import SearchEmployee from '@/components/employee/SearchEmployee.vue';
+
+import WelcomePage from '@/components/user/Welcome.vue';
+import WelcomeToJoin from '@/components/user/WelcomeToJoin.vue';
 
 import OtpRegistration from '@/components/user/OtpRegistration.vue';
 
@@ -59,6 +66,10 @@ const router = createRouter({
             path: '',
             component: Login,
             redirect: '/login'
+        },
+        {
+            path: '/search-employee',
+            component: SearchEmployee,
         },
         {
             path: '/my-page',
@@ -89,33 +100,53 @@ const router = createRouter({
             component: MyComments
         },
         {
+            path: '/welcome',
+            name: 'WelcomePage',
+            component: WelcomePage,
+        },
+        {
+            path: '/welcome-to-join',
+            name: 'WelcomeToJoin',
+            component: WelcomeToJoin,
+        },
+        {
             path: '/manager',
             component: Manager,
             children: [
                 {
-                path: '',
-                component: SearchUser,
+                    path: '',
+                    component: SearchUser,
                 },
                 {
-                path: 'create',
-                name: 'CreateUser',
-                component: CreateUser,
+                    path: 'create',
+                    name: 'CreateUser',
+                    component: CreateUser,
                 },
                 {
-                path: 'edit/:id',
-                name: 'EditUser',
-                component: EditUser,
+                    path: 'edit/:id',
+                    name: 'EditUser',
+                    component: EditUser,
                 },
                 {
-                path: 'edit-user-role/:id',
-                name: 'EditUserRole',
-                component: EditUserRole,
+                    path: 'edit-user-role/:id',
+                    name: 'EditUserRole',
+                    component: EditUserRole,
                 },
                 {
-                path: 'reset-password/:id',
-                name: 'ResetUserPassword',
-                component: ResetUserPassword,
+                    path: 'reset-password/:id',
+                    name: 'ResetUserPassword',
+                    component: ResetUserPassword,
                 },
+                {
+                    path: 'manage-position',
+                    name: 'ManagePosition',
+                    component: ManagePosition,
+                },
+                {
+                    path: 'manage-rank',
+                    name: 'ManageRank',
+                    component: ManageRank,
+                }
             ],
         },
         {

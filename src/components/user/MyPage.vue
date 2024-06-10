@@ -8,7 +8,7 @@
       <button @click="goToEditInfo" class="button">내 정보 수정</button>
     </div>
     <div class="user-info" v-if="userInfo" style="text-align: center;">
-      <img :src="userInfo.profileImg" alt="프로필 이미지" class="profile-img" />
+      <img :src="profileImg" alt="프로필 이미지" class="profile-img" />
       <div class="info-row">
         <span class="value" style="font-weight: bold;">{{ userInfo.name }}</span>
       </div>
@@ -131,6 +131,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { useStore } from 'vuex';
+import defaultProfileImage from '@/assets/images/profile_image.png'; // 기본 이미지 경로를 import
 
 const router = useRouter();
 const store = useStore();
@@ -163,7 +164,7 @@ onMounted(async () => {
   try {
     store.dispatch('checkUserInfo');
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://localhost:5000/my-page', {
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/my-page', {
       headers: {
         Authorization: token,
       },
@@ -227,7 +228,7 @@ async function saveNewTab() {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = token;
-      const response = await axios.post(`http://localhost:5000/tab/regist/new/${tabForm.value.leader.id}`, requestData);
+      const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/tab/regist/new/${tabForm.value.leader.id}`, requestData);
       
       alert("탭 저장 완료");
       location.reload(true);
@@ -255,7 +256,7 @@ async function searchEmployees() {
     }
 
     const requestBody = { name: search.value };
-    const response = await axios.post('http://localhost:5000/employee/find/name', requestBody, {
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/employee/find/name', requestBody, {
       headers: {
         Authorization: `${token}`,
       },
@@ -268,9 +269,14 @@ async function searchEmployees() {
     }
   }
 }
+
+// 프로필 이미지 URL이 존재하지 않으면 기본 이미지를 반환하는 computed 속성
+const profileImg = computed(() => {
+  return userInfo.value && userInfo.value.profileImg ? userInfo.value.profileImg : defaultProfileImage;
+});
 </script>
   
-  <style scoped>
+<style scoped>
   .container {
     max-width: 800px;
     margin: 0 auto;
@@ -420,4 +426,4 @@ async function searchEmployees() {
 #form-container{
     width: 100%;
 }
-  </style>
+</style>

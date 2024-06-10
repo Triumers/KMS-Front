@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="top">
-      <span class="search-type">
+      <span class="search-type" v-if="studyTab && studyTab.length > 0">
         <select v-model="selectedTab" class="form-select pt-1 search-type"
                 style="width:fit-content; vertical-align: middle; margin-right: 10px;" @change="changeStudy">
           <option v-for="tab in studyTab" :value="tab.tabId">
@@ -9,6 +9,7 @@
           </option>
         </select>
       </span>
+      <span v-else class="no-study-message">스터디가 존재하지 않습니다.</span>
     </div>
     <div>
       <RouterView :key="$route.fullPath" />
@@ -41,7 +42,7 @@ async function getUserCategory() {
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = token;
-      const response = await axios.get(`http://localhost:5000/group/employee`);
+      const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/group/employee`);
       categoryList.value = response.data;
       setCategory();
     } else {
@@ -54,6 +55,7 @@ async function getUserCategory() {
 
 function setCategory() {
   studyTab.value = categoryList.value.filter(category => category.topTabName === "스터디").map(category => category);
+  console.log(studyTab.value);
   selectedTab.value = studyTab.value[0].tabId;
 }
 </script>
@@ -63,5 +65,14 @@ function setCategory() {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
+}
+
+.no-study-message {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+    margin-top: 20px;
 }
 </style>

@@ -27,7 +27,7 @@
   async function updateMemberPermission() {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/manager/edit/role', {
+      await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/manager/edit/role', {
         email: memberId,
         role: role.value,
       }, {

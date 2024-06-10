@@ -7,7 +7,7 @@
         <p class="total-count">전체 {{ totalCount }}개</p>
       </div>
       <div class="post-list" ref="postList">
-        <div v-for="post in likedPosts" :key="post.id" class="post-item" @click="goToPostDetail(post.id)">
+        <div v-for="post in likedPosts" :key="post.id" class="post-item" @click="goToPostDetail((post.originId != 'null' ? post.originId : post.id))">
           <div class="post-title">{{ post.title }}</div>
         </div>
       </div>
@@ -39,7 +39,7 @@
   
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/my-page/like-post', {
+      const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/my-page/like-post', {
         headers: {
           Authorization: token,
         },
@@ -49,6 +49,7 @@
         },
       });
   
+      console.log(response.data);
       likedPosts.value = [...likedPosts.value, ...response.data.docsInfoList];
       currentPage.value++;
     } catch (error) {
@@ -67,6 +68,7 @@
   }
   
   function goToPostDetail(postId) {
+    console.log(postId);
     router.push(`/wiki/detail/${postId}`);
   }
   </script>

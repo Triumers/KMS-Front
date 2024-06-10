@@ -8,7 +8,8 @@
         </div>
         <div class="form-group">
           <label for="password">비밀번호:</label>
-          <input type="password" id="password" v-model="password" required />
+          <input type="password" id="password" v-model="password" />
+          <p class="initial-password-info">비밀번호를 따로 입력하지 않을 시 초기 비밀번호는 "welcome"으로 설정됩니다.</p>
         </div>
         <div class="form-group">
           <label for="name">이름:</label>
@@ -119,196 +120,202 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
-  import { useRouter } from 'vue-router';
-  import axios from 'axios';
-  
-  const router = useRouter();
-  const email = ref('');
-  const password = ref('');
-  const name = ref('');
-  const role = ref('ROLE_NORMAL');
-  const teamSearch = ref('');
-  const positionSearch = ref('');
-  const rankSearch = ref('');
-  const selectedTeam = ref(null);
-  const selectedPosition = ref(null);
-  const selectedRank = ref(null);
-  const teams = ref([]);
-  const positions = ref([]);
-  const ranks = ref([]);
-  const showTeamResults = ref(false);
-  const showPositionResults = ref(false);
-  const showRankResults = ref(false);
-  
-  const filteredTeams = computed(() => {
-    if (!teamSearch.value) {
-      return teams.value;
-    }
-    return teams.value.filter(team =>
-      team.name.toLowerCase().includes(teamSearch.value.toLowerCase())
-    );
-  });
-  
-  const filteredPositions = computed(() => {
-    if (!positionSearch.value) {
-      return positions.value;
-    }
-    return positions.value.filter(position =>
-      position.name.toLowerCase().includes(positionSearch.value.toLowerCase())
-    );
-  });
-  
-  const filteredRanks = computed(() => {
-    if (!rankSearch.value) {
-      return ranks.value;
-    }
-    return ranks.value.filter(rank =>
-      rank.name.toLowerCase().includes(rankSearch.value.toLowerCase())
-    );
-  });
-  
-  const isFormValid = computed(() => {
-    return selectedTeam.value && selectedPosition.value && selectedRank.value;
-  });
-  
-  async function fetchTeams() {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/organization/find/team/all', {
-        headers: {
-          Authorization: token,
-        },
-      });
-      teams.value = response.data;
-    } catch (error) {
-      console.error('Failed to fetch teams:', error);
-      // 팀 정보를 불러오는 데 실패해도 경고 메시지를 표시하지 않습니다.
-    }
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+const router = useRouter();
+const email = ref('');
+const password = ref('');
+const name = ref('');
+const role = ref('ROLE_NORMAL');
+const teamSearch = ref('');
+const positionSearch = ref('');
+const rankSearch = ref('');
+const selectedTeam = ref(null);
+const selectedPosition = ref(null);
+const selectedRank = ref(null);
+const teams = ref([]);
+const positions = ref([]);
+const ranks = ref([]);
+const showTeamResults = ref(false);
+const showPositionResults = ref(false);
+const showRankResults = ref(false);
+
+const filteredTeams = computed(() => {
+  if (!teamSearch.value) {
+    return teams.value;
   }
-  
-  async function fetchPositions() {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/duty/find/position/all', {
-        headers: {
-          Authorization: token,
-        },
-      });
-      positions.value = response.data.position;
-    } catch (error) {
-      console.error('Failed to fetch positions:', error);
-      alert('직책 정보를 불러오는데 실패했습니다.');
-    }
+  return teams.value.filter(team =>
+    team.name.toLowerCase().includes(teamSearch.value.toLowerCase())
+  );
+});
+
+const filteredPositions = computed(() => {
+  if (!positionSearch.value) {
+    return positions.value;
   }
-  
-  async function fetchRanks() {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/duty/find/rank/all', {
-        headers: {
-          Authorization: token,
-        },
-      });
-      ranks.value = response.data.rank;
-    } catch (error) {
-      console.error('Failed to fetch ranks:', error);
-      alert('직급 정보를 불러오는데 실패했습니다.');
-    }
+  return positions.value.filter(position =>
+    position.name.toLowerCase().includes(positionSearch.value.toLowerCase())
+  );
+});
+
+const filteredRanks = computed(() => {
+  if (!rankSearch.value) {
+    return ranks.value;
   }
-  
-  async function searchTeams() {
-    if (teamSearch.value === '') {
-      await fetchTeams();
-      showTeamResults.value = false;
-      return;
-    }
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/organization/find/team/name', {
-        name: teamSearch.value,
-      }, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      teams.value = response.data;
-      showTeamResults.value = true;
-    } catch (error) {
-      console.error('Failed to search teams:', error);
-    }
-  }
-  
-  async function searchPositions() {
-    if (positionSearch.value === '') {
-      await fetchPositions();
-      showPositionResults.value = false;
-      return;
-    }
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/duty/find/position/${positionSearch.value}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      positions.value = response.data.position;
-      showPositionResults.value = true;
-    } catch (error) {
-      console.error('Failed to search positions:', error);
-    }
-  }
-  
-  async function searchRanks() {
-    if (rankSearch.value === '') {
-      await fetchRanks();
-      showRankResults.value = false;
-      return;
-    }
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/duty/find/rank/${rankSearch.value}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      ranks.value = response.data.rank;
-      showRankResults.value = true;
-    } catch (error) {
-      console.error('Failed to search ranks:', error);
-    }
-  }
-  
-  function selectTeam(team) {
-    selectedTeam.value = team;
-    teamSearch.value = team.name;
-    showTeamResults.value = false;
-  }
-  
-  function selectPosition(position) {
-    selectedPosition.value = position;
-    positionSearch.value = position.name;
-    showPositionResults.value = false;
-  }
-  
-  function selectRank(rank) {
-    selectedRank.value = rank;
-    rankSearch.value = rank.name;
-    showRankResults.value = false;
-  }
-  
-  async function createMember() {
+  return ranks.value.filter(rank =>
+    rank.name.toLowerCase().includes(rankSearch.value.toLowerCase())
+  );
+});
+
+const isFormValid = computed(() => {
+  return selectedTeam.value && selectedPosition.value && selectedRank.value;
+});
+
+async function fetchTeams() {
   try {
     const token = localStorage.getItem('token');
-    await axios.post('http://localhost:5000/manager/signup', {
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/organization/find/team/all', {
+      headers: {
+        Authorization: token,
+      },
+    });
+    teams.value = response.data;
+  } catch (error) {
+    console.error('Failed to fetch teams:', error);
+  }
+}
+
+async function fetchPositions() {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/position/all', {
+      headers: {
+        Authorization: token,
+      },
+    });
+    positions.value = response.data.position;
+  } catch (error) {
+    console.error('Failed to fetch positions:', error);
+    alert('직책 정보를 불러오는데 실패했습니다.');
+  }
+}
+
+async function fetchRanks() {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/rank/all', {
+      headers: {
+        Authorization: token,
+      },
+    });
+    ranks.value = response.data.rank;
+  } catch (error) {
+    console.error('Failed to fetch ranks:', error);
+    alert('직급 정보를 불러오는데 실패했습니다.');
+  }
+}
+
+async function searchTeams() {
+  if (teamSearch.value === '') {
+    await fetchTeams();
+    showTeamResults.value = false;
+    return;
+  }
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/organization/find/team/name', {
+      name: teamSearch.value,
+    }, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    teams.value = response.data;
+    showTeamResults.value = true;
+  } catch (error) {
+    console.error('Failed to search teams:', error);
+  }
+}
+
+async function searchPositions() {
+  if (positionSearch.value === '') {
+    await fetchPositions();
+    showPositionResults.value = false;
+    return;
+  }
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/position/${positionSearch.value}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    positions.value = response.data.position;
+    showPositionResults.value = true;
+  } catch (error) {
+    console.error('Failed to search positions:', error);
+  }
+}
+
+async function searchRanks() {
+  if (rankSearch.value === '') {
+    await fetchRanks();
+    showRankResults.value = false;
+    return;
+  }
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/rank/${rankSearch.value}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    ranks.value = response.data.rank;
+    showRankResults.value = true;
+  } catch (error) {
+    console.error('Failed to search ranks:', error);
+  }
+}
+
+function selectTeam(team) {
+  selectedTeam.value = team;
+  teamSearch.value = team.name;
+  showTeamResults.value = false;
+}
+
+function selectPosition(position) {
+  selectedPosition.value = position;
+  positionSearch.value = position.name;
+  showPositionResults.value = false;
+}
+
+function selectRank(rank) {
+  selectedRank.value = rank;
+  rankSearch.value = rank.name;
+  showRankResults.value = false;
+}
+
+async function createMember() {
+  try {
+    const token = localStorage.getItem('token');
+    const memberData = {
       email: email.value,
-      password: password.value,
       name: name.value,
       role: role.value,
       teamId: selectedTeam.value.id,
       positionId: selectedPosition.value.id,
       rankId: selectedRank.value.id,
-    }, {
+    };
+    
+    if (password.value) {
+      memberData.password = password.value;
+    } else {
+      memberData.password = "welcome";
+    }
+    
+    await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/manager/signup', memberData, {
       headers: {
         Authorization: token,
       },
@@ -319,20 +326,15 @@
   } catch (error) {
     console.error('Failed to create member:', error);
     if (error.response && error.response.status === 400) {
-      // 서버에서 400 Bad Request 응답을 반환한 경우
-      // 이는 요청 데이터에 문제가 있었음을 의미합니다.
       alert('회원 생성 요청이 잘못되었습니다. 입력 데이터를 확인하세요.');
     } else if (error.response && error.response.status === 500) {
-      // 서버에서 500 Internal Server Error 응답을 반환한 경우
-      // 서버 측 오류입니다.
       alert('서버 오류로 인해 회원 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.');
     } else {
-      // 기타 오류
       alert('회원 생성에 실패했습니다. 다시 시도해주세요.');
     }
   }
 }
-  </script>
+</script>
   
   
   <style scoped>
@@ -437,5 +439,11 @@
   padding: 8px;
   background-color: #f0f0f0;
   border-radius: 4px;
+}
+
+.initial-password-info {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
 }
   </style>
