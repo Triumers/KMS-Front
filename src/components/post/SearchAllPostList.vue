@@ -14,7 +14,7 @@
                         <div id="top-info">
                             <div>
                                 <b-avatar variant="light" size="3.5rem" id="profile-img"
-                                    :src="post.author.profileImg ? post.author.profileImg : '/src/assets/images/profile_image.png'"></b-avatar>
+                                    :src="post.author.profileImg ? post.author.profileImg : defaultProfileImg"></b-avatar>
                             </div>
                             <div id="author-date">
                                 <h5 class="author"> {{ post.author.name }} </h5>
@@ -25,7 +25,7 @@
                         <div class="preview-main">
                             <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
                             <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
-                            <b-card-img :src="post.postImg ? post.postImg : '/src/assets/images/logo_header.png'"
+                            <b-card-img :src="post.postImg ? post.postImg : defaultPostImg"
                                 style="width: 100%; height: 200px; min-height: 200px;" rounded alt="Image"
                                 bottom></b-card-img>
                         </div>
@@ -72,6 +72,10 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+
+import defaultProfileImg from '@/assets/images/profile_image.png';
+import defaultPostImg from '@/assets/images/logo_header.png';
+
 
 const router = useRouter();
 const currentRoute = useRoute();
