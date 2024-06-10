@@ -50,6 +50,8 @@ import EditUserRole from '@/components/manager/EditUserRole.vue';
 import ResetUserPassword from '@/components/manager/ResetUserPassword.vue';
 import SearchUser from '@/components/manager/SearchUser.vue';
 
+import OtpRegistration from '@/components/user/OtpRegistration.vue';
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -361,6 +363,10 @@ const router = createRouter({
                     component: CreateApprovalView
                 }
             ]
+        },
+        {
+            path: '/otp-registration',
+            component: OtpRegistration
         }
     ]
 });
