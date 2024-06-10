@@ -5,32 +5,39 @@
 
     <hr>
 
-    <div v-if="postList" class="postList-div">
+    <div v-if="postList && postList.length > 0" class="postList-div">
         <div class="row row-cols-1 row-cols-1 row-cols-md-2">
             <div class="col" v-for="post in postList" :key="post.id"
                 @click="postDetail(post.originId ? post.originId : post.id)">
                 <div class="card">
                     <div class="card-body">
                         <div id="top-info">
-                            <b-avatar variant="info" size="4rem" id="profile-img"
-                                :src="post.author.profileImg ? post.author.profileImg : '/src/assets/images/profile_image.png'"></b-avatar>
+                            <div>
+                                <b-avatar variant="light" size="3.5rem" id="profile-img"
+                                    :src="post.author.profileImg ? post.author.profileImg : '/src/assets/images/profile_image.png'"></b-avatar>
+                            </div>
                             <div id="author-date">
                                 <h5 class="author"> {{ post.author.name }} </h5>
                                 <p class="date"><small class="text-muted"> {{ convertToDate(post.createdAt) }}</small>
                                 </p>
                             </div>
                         </div>
-                        <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
-                        <div class="content-preview">{{ post.content }}</div>
-                        <b-card-img :src="post.postImg ? post.postImg : '/src/assets/images/logo_header.png'" style="width: 100%; height: 200px;" rounded alt="Image" bottom></b-card-img>
+                        <div class="preview-main">
+                            <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
+                            <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
+                            <b-card-img :src="post.postImg ? post.postImg : '/src/assets/images/logo_header.png'"
+                                style="width: 100%; height: 200px; min-height: 200px;" rounded alt="Image"
+                                bottom></b-card-img>
+                        </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <p class="like">
-                                <span class="material-icons">favorite</span>
-                                {{ post.likeList.length }}
+                                <span class="material-icons" @click="likePost(post.originId ? post.originId : post.id)"
+                                    :style="{ color: post.isLike ? '#042444' : '#EFEFEF' }">favorite</span>
+                                &nbsp;<span>{{ post.likeList.length }} </span>
                             </p>
                             <p class="tags">
                                 <span class="tag" v-for="tag in post.tags" :key="tag.id">
-                                    <b-badge>#{{ tag }}</b-badge>
+                                    <b-badge class="custom-badge" variant="custom-badge">#{{ tag }}</b-badge>
                                 </span>&nbsp;
                             </p>
                         </div>
@@ -90,12 +97,19 @@ onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);
 });
 
+let timerId = null;
 async function handleScroll() {
-    if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 1) {
-        search.value.page += 1;
-        await getPostList();
-    }
+    if (timerId) return; // 이미 타이머가 설정된 경우 함수 종료
+
+    timerId = setTimeout(async () => {
+        if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 1) {
+            search.value.page += 1;
+            await getPostList();
+        }
+        timerId = null;
+    }, 300);
 }
+
 
 watch(() => currentRoute.query, async () => {
   search.value.type = currentRoute.query.type;
@@ -107,6 +121,12 @@ const postDetail = (postId) => {
     router.push({
         path: `${currentRoute.path}/detail/${postId}`
     });
+};
+
+const stripHtmlTags = (html) => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || "";
 };
 
 async function searchPost() {
@@ -179,33 +199,5 @@ function scrollToTop() {
 </script>
 
 <style>
-.content-preview {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    /* 두 줄을 표시하고 넘어가면 말줄임표 표시 */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: 50px;
-}
-
-#profile-img {
-    float: left;
-}
-
-.tag {
-    margin-left: 5px;
-}
-
-#top {
-    display: flex;
-    justify-content: space-between;
-}
-#top-btn {
-  font-size: 50px;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  color: #042444;
-}
+@import url('@/styles/post/PostList.css');
 </style>
