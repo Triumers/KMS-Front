@@ -15,7 +15,7 @@
           </div>
           <ul class="dropdown-menu">
             <li v-for="like in post.likeList">
-              <b-avatar variant="light" :src="like.profileImg ? like.profileImg : '/src/assets/images/profile_image.png'"></b-avatar>
+              <b-avatar variant="light" :src="like.profileImg ? like.profileImg : defaultProfileImg"></b-avatar>
               &nbsp;{{ like.name }}&nbsp;
             </li>
           </ul>
@@ -78,7 +78,7 @@
           </div>
           <div class="show" id="authorList">
             <p class="author" v-for="participant in post.participants" :key="participant.id">
-              <b-avatar variant="light" :src="participant.profileImg ? participant.profileImg : ''"></b-avatar>
+              <b-avatar variant="light" :src="participant.profileImg ? participant.profileImg : defaultProfileImg"></b-avatar>
               &nbsp;{{ participant.name }}&nbsp;
             </p>
           </div>
@@ -131,7 +131,7 @@
                         <p>
                         <h5>
                           <b-avatar variant="light"
-                            :src="history.author.profileImg ? history.author.profileImg : '@/assets/images/profile_image.png'"></b-avatar>
+                            :src="history.author.profileImg ? history.author.profileImg : defaultProfileImg"></b-avatar>
                           <span> &nbsp;{{ history.author.name }}&nbsp; </span>
                         </h5>
                         </p>
@@ -165,6 +165,8 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import html2pdf from 'html2pdf.js';
+
+import defaultProfileImg from '@/assets/images/profile_image.png';
 
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 import CommentList from '@/components/comment/CommentList.vue'; // 댓글 목록 컴포넌트 임포트
