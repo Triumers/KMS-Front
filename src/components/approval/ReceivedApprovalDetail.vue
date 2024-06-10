@@ -126,7 +126,7 @@
       return;
     }
  
-    const response = await axios.get(`http://localhost:5000/approval/received/${requestApprovalId}`, {
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/approval/received/${requestApprovalId}`, {
       headers: {
         Authorization: `${token}`,
       },
@@ -157,7 +157,7 @@
     }
  
     const requestApprovalId = route.params.requestApprovalId;
-    await axios.post(`http://localhost:5000/approval/received/${requestApprovalId}/approve`, null, {
+    await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/approval/received/${requestApprovalId}/approve`, null, {
       headers: {
         Authorization: `${token}`,
       },
@@ -184,7 +184,7 @@
     }
  
     const requestApprovalId = route.params.requestApprovalId;
-    await axios.post(`http://localhost:5000/approval/received/${requestApprovalId}/reject`, null, {
+    await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/approval/received/${requestApprovalId}/reject`, null, {
       headers: {
         Authorization: `${token}`,
       },
@@ -216,7 +216,7 @@
     }
  
     const requestBody = { name: searchQuery.value };
-    const response = await axios.post(`http://localhost:5000/employee/find/name`, requestBody, {
+    const response = await axios.post(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/employee/find/name`, requestBody, {
       headers: {
         Authorization: `${token}`,
       },
@@ -250,7 +250,7 @@
 
     const requestApprovalId = route.params.requestApprovalId;
     await axios.post(
-      `http://localhost:5000/approval/received/${requestApprovalId}/addApprover`,
+      `http://triumers-back.ap-northeast-2.elasticbeanstalk.com/approval/received/${requestApprovalId}/addApprover`,
       {
         newApproverId: selectedEmployee.value.id,
       },

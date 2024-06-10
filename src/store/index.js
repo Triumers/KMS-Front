@@ -26,6 +26,8 @@ const store = createStore({
       localStorage.removeItem('userRole');
       commit('setLoggedIn', false);
       commit('setUserRole', '');
+      commit('setRole', '');
+      router.push('/login'); // 로그아웃 시 로그인 페이지로 리다이렉트
     },
     checkUserInfo({ commit }) {
       const token = localStorage.getItem('token');

@@ -54,6 +54,9 @@ import ManageRank from '@/components/manager/ManageRank.vue';
 
 import SearchEmployee from '@/components/employee/SearchEmployee.vue';
 
+import WelcomePage from '@/components/user/Welcome.vue';
+import WelcomeToJoin from '@/components/user/WelcomeToJoin.vue';
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -93,6 +96,16 @@ const router = createRouter({
         {
             path: '/my-page/comments',
             component: MyComments
+        },
+        {
+            path: '/welcome',
+            name: 'WelcomePage',
+            component: WelcomePage,
+        },
+        {
+            path: '/welcome-to-join',
+            name: 'WelcomeToJoin',
+            component: WelcomeToJoin,
         },
         {
             path: '/manager',

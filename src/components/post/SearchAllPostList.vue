@@ -159,7 +159,7 @@ try {
     const token = localStorage.getItem('token');
     if (token) {
         axios.defaults.headers.common['Authorization'] = token;
-        const response = await axios.post('http://localhost:5000/post/tab/all', {
+        const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/post/tab/all', {
             categoryId: null,
             title: search.value.title,
             content: search.value.content,

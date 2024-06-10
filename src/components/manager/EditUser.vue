@@ -191,7 +191,7 @@ const isFormValid = computed(() => {
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get(`http://localhost:5000/employee/find/id/${memberId}`, {
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/employee/find/id/${memberId}`, {
       headers: {
         Authorization: token,
       },
@@ -220,7 +220,7 @@ onMounted(async () => {
 async function fetchTeams() {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://localhost:5000/organization/find/team/all', {
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/organization/find/team/all', {
       headers: {
         Authorization: token,
       },
@@ -235,7 +235,7 @@ async function fetchTeams() {
 async function fetchPositions() {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://localhost:5000/duty/find/position/all', {
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/position/all', {
       headers: {
         Authorization: token,
       },
@@ -250,7 +250,7 @@ async function fetchPositions() {
 async function fetchRanks() {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://localhost:5000/duty/find/rank/all', {
+    const response = await axios.get('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/rank/all', {
       headers: {
         Authorization: token,
       },
@@ -270,7 +270,7 @@ async function searchTeams() {
   }
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post('http://localhost:5000/organization/find/team/name', {
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/organization/find/team/name', {
       name: teamSearch.value,
     }, {
       headers: {
@@ -292,7 +292,7 @@ async function searchPositions() {
   }
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get(`http://localhost:5000/duty/find/position/${positionSearch.value}`, {
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/position/${positionSearch.value}`, {
       headers: {
         Authorization: token,
       },
@@ -312,7 +312,7 @@ async function searchRanks() {
   }
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get(`http://localhost:5000/duty/find/rank/${rankSearch.value}`, {
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/duty/find/rank/${rankSearch.value}`, {
       headers: {
         Authorization: token,
       },
@@ -362,7 +362,7 @@ async function updateMember() {
     formData.append('positionId', selectedPosition.value.id);
     formData.append('rankId', selectedRank.value.id);
 
-    const response = await axios.post('http://localhost:5000/manager/edit/info', formData, {
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/manager/edit/info', formData, {
       headers: {
         Authorization: token,
         'Content-Type': 'multipart/form-data',
