@@ -47,7 +47,7 @@
         </div>
     </div>
     <div v-else-if="!isLoading && (!postList || postList.length <= 0)" id="no-content">
-        <p>검색결과가 없습니다.</p>
+        <p>검색 결과가 없습니다.</p>
     </div>
 
     <!-- spinner -->
