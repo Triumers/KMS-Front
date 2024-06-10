@@ -67,7 +67,7 @@ async function updateMyInfo() {
       const formData = new FormData();
       formData.append('file', selectedProfileImg.value);
       
-      const uploadResponse = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/s3/upload', formData, {
+      const uploadResponse = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/s3/upload-image', formData, {
         headers: {
           Authorization: token,
           'Content-Type': 'multipart/form-data',
