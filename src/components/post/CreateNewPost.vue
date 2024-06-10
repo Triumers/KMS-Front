@@ -51,7 +51,7 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div v-html="postForm.content">
+                                    <div v-html="marked(postForm.content)">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -68,7 +68,7 @@
                             v-model="postForm.content" no-resize @contextmenu.prevent="openFileDialog"
                             @keydown.stop></b-form-textarea>
                         <label for="content-text">
-                            내용 (html 형식으로 작성)
+                            내용 (마크다운 형식으로 작성)
                         </label>
                         <input type="file" ref="fileInput" @change="uploadFile" style="display: none;" />
                     </div>
@@ -99,6 +99,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+import { marked } from 'marked';
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -117,6 +118,12 @@ const postForm = ref({
     tabId: tabId,
     originId: originId
 })
+
+const renderer = new marked.Renderer();
+renderer.image = (href, title, text) => {
+  return `<img src="${href}" alt="${text}" class="img-fluid">`;
+};
+marked.setOptions({ renderer });
 
 onMounted(async () => {
     if (originId != null) {
@@ -156,7 +163,7 @@ async function uploadFile(event) {
 
             const fileUrl = response.data;
             const isImage = file.type.startsWith('image/');
-            const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
+            const urlToInsert = isImage ? `![${file.name}](${fileUrl})` : `[${file.name}](${fileUrl})`;
             if (isImage && postForm.value.postImg == null) {
                 postForm.value.postImg = fileUrl;
             }

@@ -23,30 +23,33 @@
                     data-bs-target="#preview">미리보기</b-button></span>
 
             <!-- 미리보기 모달창 -->
-        <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-            aria-labelledby="previewLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="previewLabel">미리보기</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal fade" id="preview" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" aria-labelledby="previewLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="previewLabel">미리보기</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div v-html="marked(postForm.content)">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modal-body" v-html="postForm.content">
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         </p>
 
         <div id="content" class="form-floating mb-3">
             <b-form-textarea id="content-text" class="form-control" placeholder="내용을 입력해주세요." v-model="postForm.content"
                 no-resize @contextmenu.prevent="openFileDialog" @keydown.stop></b-form-textarea>
             <label for="content-text">
-                내용 (html 형식으로 작성)
+                내용 (마크다운 형식으로 작성)
             </label>
             <input type="file" ref="fileInput" @change="uploadFile" style="display: none;" />
         </div>
@@ -58,6 +61,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+import { marked } from 'marked';
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -79,6 +83,12 @@ const postForm = ref({
 })
 
 const options = ["스터디 모집", "단기 모임"];
+
+const renderer = new marked.Renderer();
+renderer.image = (href, title, text) => {
+  return `<img src="${href}" alt="${text}" class="img-fluid">`;
+};
+marked.setOptions({ renderer });
 
 onMounted(() => {
     if (originId) {
@@ -122,7 +132,7 @@ async function uploadFile(event) {
 
     const fileUrl = response.data;
     const isImage = file.type.startsWith('image/');
-    const urlToInsert = isImage ? `<img src="${fileUrl}" alt="${file.name}" class="img-fluid">` : `<a href="${fileUrl}">${file.name}</a>`;
+    const urlToInsert = isImage ? `![${file.name}](${fileUrl})` : `[${file.name}](${fileUrl})`;
     if(isImage && postForm.value.postImg == null) {
         postForm.value.postImg = fileUrl;
     }

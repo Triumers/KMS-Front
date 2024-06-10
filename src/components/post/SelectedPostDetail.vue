@@ -48,7 +48,7 @@
     </div>
     <hr>
     <div id="post-container">
-      <div id="content" v-html="post.content" class="mb-4"></div>
+      <div id="content" v-html="marked(post.content)" class="mb-4"></div>
       <div id="post-info">
         <div>
           <p><strong>최종 수정일</strong></p>
@@ -119,7 +119,7 @@
                   </div>
                 </div>
                 <hr>
-                <div id="content" v-html="historyPost.content"></div>
+                <div id="content" v-html="marked(historyPost.content)"></div>
               </div>
               <div class="history" id="historyList">
                 <h3>버전 기록</h3>
@@ -165,6 +165,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import html2pdf from 'html2pdf.js';
+import { marked } from 'marked';
 
 import defaultProfileImg from '@/assets/images/profile_image.png';
 
@@ -187,6 +188,13 @@ const post = ref(null);
 
 const selectedLanguage = ref('ko'); // 초기값은 한국어
 const originalPost = ref(null); // 원래 게시글 데이터 저장용
+
+// 커스텀 렌더러 생성
+const renderer = new marked.Renderer();
+renderer.image = (href, title, text) => {
+  return `<img src="${href}" alt="${text}" class="img-fluid"/>`;
+};
+marked.setOptions({ renderer });
 
 onMounted(async () => {
   await getPostById();
