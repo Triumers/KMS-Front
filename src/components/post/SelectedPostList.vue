@@ -122,7 +122,6 @@ onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);
 });
 
-
 let timerId = null;
 async function handleScroll() {
     if (timerId) return; // 이미 타이머가 설정된 경우 함수 종료
