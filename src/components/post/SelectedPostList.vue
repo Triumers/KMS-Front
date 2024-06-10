@@ -16,7 +16,8 @@
             </select>
         </span>
         <b-form-tags v-if="search.type == 'tag'" class="form-select pt-1" input-id="tags-separators"
-            v-model="search.tags" separator=" " placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter @keyup.enter="searchPost"></b-form-tags>
+            v-model="search.tags" separator=" " placeholder="태그 입력 후, 스페이스 바를 눌러주세요." no-add-on-enter
+            @keyup.enter="searchPost"></b-form-tags>
         <b-form-input @keyup.enter="searchPost" v-else type="text" id="search-input" placeholder="검색어를 입력하세요"
             v-model="search.keyword"></b-form-input>
         <button class="search-button" id="search-post" @click="searchPost">
@@ -31,7 +32,7 @@
                     <div class="card-body">
                         <div id="top-info">
                             <div>
-                                <b-avatar variant="info" size="4rem" id="profile-img"
+                                <b-avatar variant="light" size="3.5rem" id="profile-img"
                                     :src="post.author.profileImg ? post.author.profileImg : '/src/assets/images/profile_image.png'"></b-avatar>
                             </div>
                             <div id="author-date">
@@ -44,7 +45,8 @@
                             <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
                             <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
                             <b-card-img :src="post.postImg ? post.postImg : '/src/assets/images/logo_header.png'"
-                                style="width: 100%; height: 200px;" rounded alt="Image" bottom></b-card-img>
+                                style="width: 100%; height: 200px; min-height: 200px;" rounded alt="Image"
+                                bottom></b-card-img>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <p class="like">
@@ -120,12 +122,20 @@ onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);
 });
 
+
+let timerId = null;
 async function handleScroll() {
-    if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 1) {
-        search.value.page += 1;
-        await getPostList();
-    }
+    if (timerId) return; // 이미 타이머가 설정된 경우 함수 종료
+
+    timerId = setTimeout(async () => {
+        if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 1) {
+            search.value.page += 1;
+            await getPostList();
+        }
+        timerId = null;
+    }, 300);
 }
+
 
 const postDetail = (postId) => {
     const segments = currentRoute.path.split('/');
@@ -162,7 +172,7 @@ async function searchPost() {
             break;
     }
     if (search.value.type != "tag") search.value.tags = [];
-    search.value.page = 0; 
+    search.value.page = 0;
     postList.value = [];
     await getPostList();
 }
@@ -182,9 +192,10 @@ async function getTabName(id) {
     }
 }
 
+
 async function getPostList() {
     if (isLoading.value) return;
-        isLoading.value = true;
+    isLoading.value = true;
     try {
         const token = localStorage.getItem('token');
         if (token) {
@@ -207,7 +218,7 @@ async function getPostList() {
         console.log("게시글을 불러올 수 없습니다.");
     } finally {
         isLoading.value = false;
-        if (postList.value.length === 0) {
+        if (!postList.value || postList.value.length <= 0) {
             postList.value = null;
         }
     }
@@ -220,81 +231,13 @@ const convertToDate = (date) => {
 };
 
 function scrollToTop() {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
 }
 </script>
 
 <style>
-.content-preview {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    /* 두 줄을 표시하고 넘어가면 말줄임표 표시 */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: 50px;
-}
-.card-title{
-    min-height: 20px;
-}
-#profile-img {
-    float: left;
-}
-.tag {
-    margin-left: 5px;
-}
-#top {
-    display: flex;
-    justify-content: space-between;
-}
-#no-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-#no-content>p {
-    margin-top: 100px;
-}
-.like{
-    display: flex;
-    align-items: center;
-}
-#author-date{
-    margin-left: 10px;
-}
-#top-info{
-    display: flex;
-    justify-content: left;
-    align-items: center;
-}
-.preview-main, .d-flex{
-    margin-top: 10px;
-}
-.custom-badge {
-    background-color: #042444;
-    color: white;
-}
-.card{
-    margin: 10px;
-}
-.content-preview{
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-.scroll-container {
-    height: 100vh;
-    overflow-y: auto;
-}
-
-#top-btn {
-  font-size: 50px;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  color: #042444;
-}
+@import url('@/styles/post/PostList.css');
 </style>
