@@ -138,7 +138,8 @@ async function setPost() {
         content: post.value.content,
         tags: post.value.tags,
         tabRelationId: post.value.tabRelationId,
-        originId: post.value.originId
+        originId: post.value.originId,
+        postImg: post.value.postImg
     };
 }
 

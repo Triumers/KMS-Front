@@ -104,6 +104,7 @@ async function setPost(){
         content: post.value.content,
         tags: post.value.tags,
         tabRelationId: tabId,
+        postImg: post.value.postImg,
         id: originId
     };
 }
