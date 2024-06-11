@@ -41,7 +41,8 @@
       </ul>
       <div class="comment-pagination">
         <button @click="previousPage" :disabled="currentPage === 1" class="pagination-button">&lt;</button>
-        <span class="pagination-info">{{ currentPage }} / {{ totalPages }}</span>
+        <span class="pagination-info" v-if="totalPages > 0">{{ currentPage }} / {{ totalPages }}</span>
+        <span class="pagination-info" v-else>0 / 0</span>
         <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-button">&gt;</button>
       </div>
     </div>
@@ -68,7 +69,9 @@ const newComment = ref({
   nickname: '익명',
 });
 
-const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
+const totalPages = computed(() => {
+  return totalCount.value > 0 ? Math.ceil(totalCount.value / pageSize.value) : 0;
+});
 
 const isHrManagerOrAdmin = computed(() => {
   return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(store.state.userRole);
