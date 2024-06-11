@@ -20,7 +20,6 @@
     <hr class="comment-separator" />
     <div class="comment-form">
       <h3 class="comment-form-title">댓글 작성</h3>
-      <input type="text" v-model="newComment.nickname" placeholder="닉네임" class="comment-nickname-input" />
       <div class="comment-input-wrapper">
         <textarea v-model="newComment.content" placeholder="댓글을 입력하세요" class="comment-input"></textarea>
         <button @click="saveAnonymousBoardComment" class="submit-button">작성</button>
