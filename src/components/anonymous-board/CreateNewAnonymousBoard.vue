@@ -9,9 +9,6 @@
         <input type="text" id="title" v-model="title" required class="form-input" placeholder="제목을 입력하세요" />
       </div>
       <div class="form-group">
-        <input type="text" id="nickname" v-model="nickname" class="form-input nickname-input" placeholder="익명" />
-      </div>
-      <div class="form-group">
         <textarea id="content" v-model="content" required class="form-textarea" placeholder="내용을 입력하세요"></textarea>
       </div>
     </div>
@@ -20,22 +17,21 @@
 
 <script setup>
 import { ref } from 'vue';
-import axios from 'axios'; // axios 임포트
+import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const title = ref('');
 const content = ref('');
-const nickname = ref('익명');
 
 async function saveAnonymousBoard() {
   try {
-    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/anonymous-board', { // 백엔드 API 엔드포인트로 수정
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/anonymous-board', {
       title: title.value,
       content: content.value,
-      nickname: nickname.value,
+      nickname: '익명', // 고정된 '익명' 값 전송
     });
-    router.push(`/office-life/anonymous-board/${response.data.id}`); // 상세 페이지 URL 수정
+    router.push(`/office-life/anonymous-board/${response.data.id}`);
   } catch (error) {
     console.error('Failed to save anonymous board:', error);
     // 에러 처리 로직 추가
@@ -111,12 +107,6 @@ async function saveAnonymousBoard() {
  .form-input:hover {
   border-color: #888;
 }
- 
- .nickname-input {
-  width: 30%;
-  color: #888;
-  font-size: 16px;
- }
  
  .form-textarea {
   width: 100%;
