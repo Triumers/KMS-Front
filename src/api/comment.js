@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/comments';
+const API_URL = 'http://triumers-back.ap-northeast-2.elasticbeanstalk.com/comments';
 
 // 댓글 생성
 export const addComment = async (comment) => {
