@@ -1,4 +1,5 @@
 <template>
+    <div id="postList-container">
     <div id="top">
         <h3 id="tab-name">{{ tabName }}</h3>
         <p id="write-btn">
@@ -24,7 +25,7 @@
             <img src="@/assets/icons/search_icon.png" alt="Search" />
         </button>
     </p>
-    <div v-if="postList && postList.length > 0" class="postList-div">
+    <div v-if="postList && postList.length > 0" class="postList-div" id="postList">
         <div class="row row-cols-1 row-cols-1 row-cols-md-2">
             <div class="col" v-for="post in postList" :key="post.id"
                 @click="postDetail(post.originId ? post.originId : post.id)">
@@ -85,12 +86,14 @@
     </div>
 
     <span class="material-icons" id="top-btn" @click=scrollToTop()>assistant_navigation</span>
+    </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+
 import { marked } from 'marked';
 
 import defaultProfileImg from '@/assets/images/profile_image.png';
@@ -120,6 +123,13 @@ onMounted(async () => {
     await getTabName(tabId);
     await getPostList();
     window.addEventListener('scroll', handleScroll);
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'F4') {
+            zergRush(); // F4를 누르면 zergRush 함수 실행
+        }
+    });
+
 });
 
 onBeforeUnmount(() => {
@@ -242,8 +252,88 @@ function scrollToTop() {
         behavior: 'smooth'
     });
 }
+
+function zergRush() {
+    const searchResults = document.getElementById('postList');
+
+    for (let i = 0; i < 15; i++) {
+        const zergUnit = document.createElement('div');
+        zergUnit.className = 'zerg-unit';
+        zergUnit.style.left = `${10 + Math.random() * 80}%`; // 임의의 가로 위치
+        zergUnit.style.top = `${-10 + Math.random() * 10}%`; // 임의의 세로 위치
+        searchResults.appendChild(zergUnit);
+    }
+
+    setInterval(() => {
+        const zergUnits = document.querySelectorAll('.zerg-unit');
+        const postListItems = document.querySelectorAll('.postList-div .card');
+
+        zergUnits.forEach(zergUnit => {
+            const rect = zergUnit.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            if (rect.bottom >= windowHeight) {
+                zergUnit.remove(); // 바닥에 닿은 저그 유닛 삭제
+            }
+
+            postListItems.forEach(postListItem => {
+                if (isColliding(zergUnit, postListItem)) {
+                    // 충돌한 경우 해당 요소와 하위 요소들을 투명하게 만듦
+                    postListItem.style.opacity = '0';
+                    postListItem.style.transition = 'opacity 1s'; // 무너지는 애니메이션 효과
+                }
+            });
+        });
+    }, 100);
+
+    // 사용자가 저그 유닛을 클릭하여 제거하는 이벤트 처리
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('zerg-unit')) {
+            event.target.remove(); // 클릭된 저그 유닛 삭제
+        }
+    });
+
+    // 충돌 감지 함수
+    function isColliding(element1, element2) {
+        const rect1 = element1.getBoundingClientRect();
+        const rect2 = element2.getBoundingClientRect();
+
+        return !(
+            rect1.top > rect2.bottom ||
+            rect1.right < rect2.left ||
+            rect1.bottom < rect2.top ||
+            rect1.left > rect2.right
+        );
+    }
+}
+    
+    
 </script>
 
 <style>
 @import url('@/styles/post/PostList.css');
+
+.zerg-unit {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border: 3px solid navy;
+  border-radius: 50%;
+  position: absolute;
+  cursor: pointer;
+  animation: zergAnimation 20s linear infinite; /* 애니메이션 적용 */
+}
+
+@keyframes zergAnimation {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(50vh); /* 바닥까지 떨어지는 위치로 변경 */
+  }
+  100% {
+    transform: translateY(100vh); /* 바닥까지 떨어지는 위치로 변경 */
+  }
+}
 </style>
