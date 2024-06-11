@@ -92,7 +92,10 @@ const showSearchResultMessage = ref(false);
 const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
 
 const paginatedReceivedApprovals = computed(() => {
-  return receivedApprovals.value;
+  // 받아온 데이터를 최신순으로 정렬하여 반환
+  return receivedApprovals.value.slice().sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 });
 
 const searchResultMessage = computed(() => {
