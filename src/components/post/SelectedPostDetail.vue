@@ -36,7 +36,10 @@
             <span class="material-icons" style="color: black;">more_horiz</span>
           </template>
           <b-dropdown-item id="export" @click="generatePDF">PDF 내보내기</b-dropdown-item>
-          <b-dropdown-item id="exportLink" @click="exportLink">링크 복사</b-dropdown-item>
+          <b-dropdown-item id="exportLink" @click="exportLink">
+            링크 복사
+            <input type="text" id="urlInput" style="display: none;">
+          </b-dropdown-item>
           <b-dropdown-item v-if="!general" id="modify-btn"
             @click="modifyPost(post.originId ? post.originId : post.id)">수정</b-dropdown-item>
           <b-dropdown-item v-else-if="general && isAuthorized" id="modify-btn"
@@ -221,6 +224,7 @@ const handleTranslation = async () => {
 const exportLink = () => {
   const currentURL = window.location.href;
 
+  // https일 경우에만 작동 
   navigator.clipboard.writeText(currentURL)
     .then(() => {
       alert('링크가 성공적으로 복사되었습니다.');
@@ -382,9 +386,10 @@ const generatePDF = () => {
           </p>
         </div>
         <hr>
-        <div>${post.value.content}</div>
+        <div>${marked(post.value.content.replace(/!\[.*?\]\(.*?\)/g, ''))}</div>
       </div>
     `;
+
     return pdfContent;
   }
 };

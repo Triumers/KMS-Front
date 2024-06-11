@@ -72,6 +72,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
+import { marked } from 'marked';
 
 import defaultProfileImg from '@/assets/images/profile_image.png';
 import defaultPostImg from '@/assets/images/logo_header.png';
