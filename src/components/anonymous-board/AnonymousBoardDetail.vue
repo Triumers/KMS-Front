@@ -33,6 +33,7 @@
           <div class="comment-info">
             <span class="comment-author">{{ comment.nickname }}</span>
             <span class="comment-date">{{ formatDateTime(comment.createdDate) }}</span>
+            <button v-if="isHrManagerOrAdmin" @click="deleteAnonymousBoardComment(comment.id)" class="delete-comment-button">x</button>
           </div>
           <p class="comment-content">{{ comment.content }}</p>
           <hr class="comments-separator" />
@@ -117,6 +118,17 @@ async function deleteAnonymousBoard() {
     console.error('Failed to delete anonymous board:', error);
   }
 }
+
+async function deleteAnonymousBoardComment(commentId) {
+  try {
+    await axios.delete(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/anonymous-board/${route.params.id}/comments/${commentId}`);
+    anonymousBoardCommentList.value = anonymousBoardCommentList.value.filter(comment => comment.id !== commentId);
+    totalCount.value--;
+  } catch (error) {
+    console.error('Failed to delete anonymous board comment:', error);
+  }
+}
+
 
 function formatDateTime(dateTimeString) {
   const dateTime = new Date(dateTimeString);
@@ -310,20 +322,23 @@ function goToBoardList() {
   }
   
   .comment-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    color: #888;
-    font-size: 14px;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  color: #888;
+  font-size: 14px;
+}
   
-  .comment-author {
-    font-weight: bold;
-  }
-  
-  .comment-date {
-    font-style: italic;
-  }
+.comment-author {
+  font-weight: bold;
+}
+
+.comment-date {
+  font-style: italic;
+  margin-left: auto;
+  margin-right: 10px;
+}
   
   .comment-content {
     font-size: 16px;
@@ -387,4 +402,18 @@ function goToBoardList() {
   background-color: #0c5195;
 }
 
+.delete-comment-button {
+  padding: 2px 6px;
+  background-color: #c9170b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+
+.delete-comment-button:hover {
+  background-color: #d32f2f;
+}
   </style>
