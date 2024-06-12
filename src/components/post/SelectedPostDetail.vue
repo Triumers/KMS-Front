@@ -101,11 +101,12 @@
     @close-quiz="closeQuiz"
   />
   <CreateQuiz
-    :isCreateQuizModalVisible="isCreateQuizModalVisible"
-    :postId="Number(postId)"
-    :tabId="post.tabRelationId"
-    @close-create-quiz="closeCreateQuiz"
-  />
+  :isCreateQuizModalVisible="isCreateQuizModalVisible"
+  :postId="Number(postId)"
+  :tabId="post.tabRelationId"
+  @close-create-quiz="closeCreateQuiz"
+  @quizCreated="handleQuizCreated"
+/>
   </div>
 
     <!-- 히스토리 모달창 -->
@@ -246,6 +247,11 @@ const handleTranslation = async () => {
       console.error('Failed to translate post:', error);
     }
   }
+};
+
+const handleQuizCreated = (quizId) => {
+  isQuizAvailable.value = true;
+  selectedQuizId.value = quizId;
 };
 
 const exportLink = () => {

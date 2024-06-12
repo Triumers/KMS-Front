@@ -71,7 +71,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['close-create-quiz']);
+const emit = defineEmits(['close-create-quiz', 'quizCreated']);
 
 const questions = ref([
   {
@@ -98,6 +98,7 @@ const submitQuiz = async () => {
     console.log('퀴즈 제출 성공:', response.data);
     alert('퀴즈가 성공적으로 생성되었습니다.');
     emit('close-create-quiz');
+    emit('quizCreated', response.data.id); 
   } catch (error) {
     console.error('퀴즈 제출 실패:', error);
     alert('퀴즈 생성 중 오류가 발생했습니다.');
