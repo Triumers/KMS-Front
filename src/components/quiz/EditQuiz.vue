@@ -6,6 +6,14 @@
         <button @click="closeModal" class="close-btn">&times;</button>
       </div>
       <div class="quiz-body">
+        <div class="original-quiz" v-if="originalQuizData">
+          <h3>원래 퀴즈</h3>
+          <p><strong>문제:</strong> {{ originalQuizData.content }}</p>
+          <p><strong>답안:</strong> {{ originalQuizData.answer }}</p>
+          <p><strong>참조 내용:</strong> {{ originalQuizData.commentary }}</p>
+          <p><strong>활성화:</strong> {{ originalQuizData.status ? '예' : '아니오' }}</p>
+        </div>
+        <hr>
         <form @submit.prevent="submitQuiz">
           <div class="form-group">
             <label for="quizContent">문제</label>
@@ -48,6 +56,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close-edit-quiz']);
 
+const originalQuizData = ref(null);
 const quizData = ref({
   content: '',
   answer: '',
@@ -66,7 +75,8 @@ const closeModal = () => {
 const fetchQuizData = async () => {
   try {
     const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/quiz/contents?id=${props.quizId}`);
-    quizData.value = response.data;
+    originalQuizData.value = response.data;
+    quizData.value = { ...response.data };
   } catch (error) {
     console.error('퀴즈 데이터 가져오기 실패:', error);
   }
@@ -135,6 +145,10 @@ const submitQuiz = async () => {
 
 .quiz-body {
   margin-top: 20px;
+}
+
+.original-quiz {
+  margin-bottom: 20px;
 }
 
 .form-group {
