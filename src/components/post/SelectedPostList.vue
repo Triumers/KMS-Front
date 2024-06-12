@@ -2,8 +2,8 @@
     <div id="postList-container">
       <div id="top">
         <h3 id="tab-name">{{ tabName }}</h3>
-        <p id="write-btn">
-          <b-button variant="light" @click="createNew()">글쓰기 버튼</b-button>
+        <p id="write-btn" v-if="isAuthorized">
+          <b-button variant="light" @click="createNew()">글 작성</b-button>
         </p>
       </div>
       <hr>
@@ -89,7 +89,7 @@
   </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
@@ -116,6 +116,14 @@ const search = ref({
     tags: [],
     page: 0,
     size: 10
+});
+
+const isAuthorized = computed(() => {
+  if (currentRoute.path.includes('office-life/3')) {
+    const userRole = localStorage.getItem('userRole');
+    return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(userRole);
+  }
+  return true;
 });
 
 onMounted(async () => {

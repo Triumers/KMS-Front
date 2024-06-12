@@ -1,5 +1,5 @@
 <template>
-    <div id="container">
+    <div id="container" v-if="isAuthorized">
         <form @submit.prevent="submitPost" @keydown.enter.prevent>
             <div id="top">
                 <h3 id="top-title"><strong>게시글 작성</strong> </h3>
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import { marked } from 'marked';
@@ -118,6 +118,14 @@ const postForm = ref({
     tabId: tabId,
     originId: originId
 })
+
+const isAuthorized = computed(() => {
+  if (currentRoute.path.includes('office-life/3')) {
+    const userRole = localStorage.getItem('userRole');
+    return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(userRole);
+  }
+  return true;
+});
 
 const renderer = new marked.Renderer();
 renderer.image = (href, title, text) => {
