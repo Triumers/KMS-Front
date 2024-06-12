@@ -1,78 +1,155 @@
 <template>
-    <div class="edit-quiz">
-      <h2>퀴즈 수정</h2>
-      <form @submit.prevent="submitQuiz">
-        <div class="form-group">
-          <label for="quizTitle">퀴즈 제목</label>
-          <input type="text" id="quizTitle" v-model="quizTitle" required />
-        </div>
-        <div class="form-group">
-          <label for="questions">문제</label>
-          <div v-for="(question, qIndex) in questions" :key="qIndex" class="question">
-            <input type="text" v-model="question.text" placeholder="문제를 입력하세요" required />
-            <input type="text" v-model="question.answer" placeholder="답안을 입력하세요" required />
-            <input type="text" v-model="question.reference" placeholder="참조 내용을 입력하세요" />
+  <div class="quiz-modal" v-if="isEditQuizModalVisible">
+    <div class="quiz-modal-content">
+      <div class="quiz-header">
+        <h2>퀴즈 수정</h2>
+        <button @click="closeModal" class="close-btn">&times;</button>
+      </div>
+      <div class="quiz-body">
+        <form @submit.prevent="submitQuiz">
+          <div class="form-group">
+            <label for="quizContent">문제</label>
+            <input type="text" id="quizContent" v-model="quizData.content" placeholder="문제를 입력하세요" required />
+          </div>
+          <div class="form-group">
+            <label for="quizAnswer">답안</label>
+            <input type="text" id="quizAnswer" v-model="quizData.answer" placeholder="답안을 입력하세요" required />
+          </div>
+          <div class="form-group">
+            <label for="quizCommentary">참조 내용</label>
+            <input type="text" id="quizCommentary" v-model="quizData.commentary" placeholder="참조 내용을 입력하세요" />
+          </div>
+          <div class="form-group">
             <label>
-              <input type="checkbox" v-model="question.active" /> 활성화
+              <input type="checkbox" v-model="quizData.status" /> 활성화
             </label>
           </div>
-        </div>
-        <button type="submit">퀴즈 수정</button>
-      </form>
+          <button type="submit" class="submit-btn">퀴즈 수정</button>
+        </form>
+      </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        quizId: null,
-        quizTitle: '',
-        questions: []
-      };
-    },
-    created() {
-      this.quizId = this.$route.params.id;
-      // 여기에서 API 호출로 기존 퀴즈 데이터를 가져와서 설정합니다.
-      // 예시:
-      // axios.get(`/api/quiz/${this.quizId}`).then(response => {
-      //   this.quizTitle = response.data.title;
-      //   this.questions = response.data.questions;
-      // });
-    },
-    methods: {
-      submitQuiz() {
-        const quizData = {
-          title: this.quizTitle,
-          questions: this.questions
-        };
-        // API 호출로 수정된 퀴즈 데이터를 제출합니다.
-        console.log('퀴즈 수정 제출:', quizData);
-      }
-    }
-  };
-  </script>
-  
-  <style scoped>
-  .edit-quiz {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+const props = defineProps({
+  quizId: {
+    type: Number,
+    required: true,
+  },
+  isEditQuizModalVisible: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+const emit = defineEmits(['close-edit-quiz']);
+
+const quizData = ref({
+  content: '',
+  answer: '',
+  commentary: '',
+  status: true,
+});
+
+onMounted(() => {
+  fetchQuizData();
+});
+
+const closeModal = () => {
+  emit('close-edit-quiz');
+};
+
+const fetchQuizData = async () => {
+  try {
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/quiz/contents?id=${props.quizId}`);
+    quizData.value = response.data;
+  } catch (error) {
+    console.error('퀴즈 데이터 가져오기 실패:', error);
   }
-  
-  .form-group {
-    margin-bottom: 20px;
+};
+
+const submitQuiz = async () => {
+  try {
+    const response = await axios.put(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/quiz/edit`, quizData.value);
+    console.log('퀴즈 수정 완료:', response.data);
+    alert('퀴즈가 성공적으로 수정되었습니다.');
+    closeModal();
+  } catch (error) {
+    console.error('퀴즈 수정 실패:', error);
+    alert('퀴즈 수정 중 오류가 발생했습니다.');
   }
-  
-  .question {
-    margin-bottom: 10px;
-  }
-  
-  button {
-    margin-top: 5px;
-  }
-  </style>
-  
+};
+</script>
+
+<style scoped>
+.quiz-modal {
+  position: fixed;
+  top: 15%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.quiz-modal-content {
+  background: white;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  padding: 10px 20px;
+  background-color: #042444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.quiz-body {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+</style>

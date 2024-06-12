@@ -93,8 +93,11 @@
 
     <!-- 퀴즈 모달창 -->
     <div id="quiz-container">
+      <div class="quiz-buttons">
     <button v-if="isQuizAvailable" @click="showQuizModal" class="open-quiz-btn">Show Quiz</button>
     <button v-else @click="openCreateQuizModal" class="create-quiz-btn">Create Quiz</button>
+    <button v-if="isQuizAvailable && isAuthorizedToEditQuiz" @click="openEditQuizModal" class="edit-quiz-btn">Edit Quiz</button>
+  </div>
     <TakeQuiz
     :isQuizModalVisible="isQuizModalVisible"
     :quiz="quiz"
@@ -107,6 +110,8 @@
   @close-create-quiz="closeCreateQuiz"
   @quizCreated="handleQuizCreated"
 />
+
+<EditQuiz :isEditQuizModalVisible="isEditQuizModalVisible" :quizId="selectedQuizId" @close-edit-quiz="closeEditQuiz" />
   </div>
 
     <!-- 히스토리 모달창 -->
@@ -188,6 +193,7 @@ import defaultProfileImg from '@/assets/images/profile_image.png';
 
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
 import CreateQuiz from '@/components/quiz/CreateQuiz.vue';
+import EditQuiz from '@/components/quiz/EditQuiz.vue';
 import CommentList from '@/components/comment/CommentList.vue'; // 댓글 목록 컴포넌트 임포트
 
 const router = useRouter();
@@ -212,6 +218,7 @@ const selectedQuizId = ref(null);
 const quiz = ref(null);
 const isQuizModalVisible = ref(false);
 const isCreateQuizModalVisible = ref(false);
+const isEditQuizModalVisible = ref(false);
 
 const likeCnt = ref(0);
 
@@ -219,6 +226,19 @@ const post = ref(null);
 
 const selectedLanguage = ref('ko'); // 초기값은 한국어
 const originalPost = ref(null); // 원래 게시글 데이터 저장용
+
+const isAuthorizedToEditQuiz = computed(() => {
+  const userRole = localStorage.getItem('userRole');
+  return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(userRole);
+});
+
+const openEditQuizModal = () => {
+  isEditQuizModalVisible.value = true;
+};
+
+const closeEditQuiz = () => {
+  isEditQuizModalVisible.value = false;
+};
 
 // 커스텀 렌더러 생성
 const renderer = new marked.Renderer();
@@ -661,7 +681,8 @@ li {
 }
 
 .open-quiz-btn,
-.create-quiz-btn {
+.create-quiz-btn,
+.edit-quiz-btn {
   padding: 10px 20px;
   background-color: #042444;
   color: white;
@@ -672,7 +693,13 @@ li {
 }
 
 .open-quiz-btn:hover,
-.create-quiz-btn:hover {
+.create-quiz-btn:hover,
+.edit-quiz-btn:hover {
   background-color: #021a2f;
+}
+
+.quiz-buttons {
+  display: flex;
+  gap: 10px;
 }
 </style>
