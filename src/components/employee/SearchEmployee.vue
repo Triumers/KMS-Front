@@ -30,11 +30,11 @@
         class="employee-item"
       >
         <div class="employee-name">{{ employee.name }}</div>
-        <div class="employee-email">{{ employee.email }}</div>
         <div class="employee-team">{{ employee.team.name }}</div>
         <div class="employee-position">{{ employee.position.name }}</div>
         <div class="employee-rank">{{ employee.rank.name }}</div>
         <div class="employee-phone-number">{{ employee.phoneNumber }}</div>
+        <div class="employee-email">{{ employee.email }}</div>
       </div>
     </div>
   </div>
