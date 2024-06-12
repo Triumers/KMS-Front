@@ -54,7 +54,7 @@
       },
       async checkIpAddress() {
         try {
-          const response = await axios.get('/ip-address-check');
+          const response = await axios.get('/is-in-house');
           this.ipAddress = response.data;
           this.error = ''; // Clear any previous errors
         } catch (error) {
