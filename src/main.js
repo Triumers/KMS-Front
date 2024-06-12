@@ -6,6 +6,7 @@ import './assets/main.css';
 // npm install html2pdf.js
 // npm install vuex
 // npm install marked
+// npm install jwt-decode
 
 import { createApp } from 'vue';
 import { createStore } from 'vuex'
