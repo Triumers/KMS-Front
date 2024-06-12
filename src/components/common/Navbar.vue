@@ -13,10 +13,10 @@
       </a>
       <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
         <li>
-          <router-link class="dropdown-item" :to="'/group/study/' + (studyTabIds && studyTabIds.length > 0 ? studyTabIds[0] : '')">Study</router-link>
+          <router-link class="dropdown-item" :to="'/group/study/' + (studyTabIds && studyTabIds.length > 0 ? studyTabIds[0] : '')">스터디</router-link>
         </li>
         <li>
-          <router-link class="dropdown-item" to="/group/organization/2">Organization</router-link>
+          <router-link class="dropdown-item" to="/group/organization/2">모집</router-link>
         </li>
       </ul>
     </li>
@@ -32,10 +32,10 @@
         <li>
           <router-link class="dropdown-item" to="/office-life/anonymous-board/list">익명게시판</router-link>
         </li>
+        <li>
+          <router-link class="dropdown-item" to="/search-employee">직원 조회</router-link>
+        </li>
       </ul>
-    </li>
-    <li class="nav-item">
-      <router-link class="nav-link" to="/search-employee">직원 조회</router-link>
     </li>
   </div>
 </template>
