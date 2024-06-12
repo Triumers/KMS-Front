@@ -47,10 +47,19 @@
       </div>
     </div>
   </div>
+  <div v-if="showDeleteConfirmation" class="confirmation-modal">
+  <div class="confirmation-content">
+    <p>{{ confirmationMessage }}</p>
+    <div class="confirmation-buttons">
+      <button @click="confirmDelete">예</button>
+      <button @click="cancelDelete">아니오</button>
+    </div>
+  </div>
+</div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
@@ -76,6 +85,10 @@ const totalPages = computed(() => {
 const isHrManagerOrAdmin = computed(() => {
   return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(store.state.userRole);
 });
+
+const showDeleteConfirmation = ref(false);
+const confirmationMessage = ref('');
+const deletingItemId = ref(null);
 
 onMounted(() => {
   fetchAnonymousBoardById();
@@ -114,6 +127,31 @@ async function saveAnonymousBoardComment() {
 }
 
 async function deleteAnonymousBoard() {
+  showDeleteConfirmationModal('게시글을 삭제하시겠습니까?', anonymousBoard.value.id);
+}
+
+async function deleteAnonymousBoardComment(commentId) {
+  showDeleteConfirmationModal('댓글을 삭제하시겠습니까?', commentId);
+}
+
+function showDeleteConfirmationModal(message, itemId) {
+  confirmationMessage.value = message;
+  deletingItemId.value = itemId;
+  showDeleteConfirmation.value = true;
+}
+
+function confirmDelete() {
+  if (deletingItemId.value) {
+    if (deletingItemId.value === anonymousBoard.value.id) {
+      deleteConfirmedAnonymousBoard();
+    } else {
+      deleteConfirmedAnonymousBoardComment(deletingItemId.value);
+    }
+  }
+  cancelDelete();
+}
+
+async function deleteConfirmedAnonymousBoard() {
   try {
     await axios.delete(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/anonymous-board/${route.params.id}`);
     router.push('/office-life/anonymous-board/list');
@@ -122,7 +160,7 @@ async function deleteAnonymousBoard() {
   }
 }
 
-async function deleteAnonymousBoardComment(commentId) {
+async function deleteConfirmedAnonymousBoardComment(commentId) {
   try {
     await axios.delete(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/anonymous-board/${route.params.id}/comments/${commentId}`);
     anonymousBoardCommentList.value = anonymousBoardCommentList.value.filter(comment => comment.id !== commentId);
@@ -132,6 +170,11 @@ async function deleteAnonymousBoardComment(commentId) {
   }
 }
 
+function cancelDelete() {
+  showDeleteConfirmation.value = false;
+  confirmationMessage.value = '';
+  deletingItemId.value = null;
+}
 
 function formatDateTime(dateTimeString) {
   const dateTime = new Date(dateTimeString);
@@ -418,5 +461,47 @@ function goToBoardList() {
 
 .delete-comment-button:hover {
   background-color: #d32f2f;
+}
+
+.confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.confirmation-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.confirmation-buttons {
+  margin-top: 20px;
+}
+
+.confirmation-buttons button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confirmation-buttons button:first-child {
+  background-color: #c9170b;
+  color: white;
+}
+
+.confirmation-buttons button:last-child {
+  background-color: #042444;
+  color: white;
 }
   </style>
