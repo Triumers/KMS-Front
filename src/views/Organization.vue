@@ -1,6 +1,5 @@
 <template>
     <div>
-      <h1>Organization Page</h1>
       <RouterView/>
     </div>
   </template>
