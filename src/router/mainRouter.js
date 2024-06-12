@@ -59,9 +59,15 @@ import WelcomeToJoin from '@/components/user/WelcomeToJoin.vue';
 
 import OtpRegistration from '@/components/user/OtpRegistration.vue';
 
+import HealthCheck from '@/components/common/HealthCheck.vue';
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
+        {
+            path: '/health-check',
+            component: HealthCheck
+        },
         {
             path: '',
             component: Login,
