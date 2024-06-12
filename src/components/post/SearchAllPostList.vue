@@ -1,72 +1,71 @@
 <template>
     <div id="top">
-        <h3 id="tab-name">검색 결과</h3>
+      <h3 id="tab-name">검색 결과</h3>
     </div>
-
+  
     <hr>
-
+  
     <div v-if="postList && postList.length > 0" class="postList-div">
-        <div class="row row-cols-1 row-cols-1 row-cols-md-2">
-            <div class="col" v-for="post in postList" :key="post.id"
-                @click="postDetail(post.originId ? post.originId : post.id)">
-                <div class="card">
-                    <div class="card-body">
-                        <div id="top-info">
-                            <div>
-                                <b-avatar variant="light" size="3.5rem" id="profile-img"
-                                    :src="post.author.profileImg ? post.author.profileImg : defaultProfileImg"></b-avatar>
-                            </div>
-                            <div id="author-date">
-                                <h5 class="author"> {{ post.author.name }} </h5>
-                                <p class="date"><small class="text-muted"> {{ convertToDate(post.createdAt) }}</small>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="preview-main">
-                            <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
-                            <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
-                            <b-card-img :src="post.postImg ? post.postImg : defaultPostImg"
-                                style="width: 100%; height: 200px; min-height: 200px;" rounded alt="Image"
-                                bottom></b-card-img>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <p class="like">
-                                <span class="material-icons" @click="likePost(post.originId ? post.originId : post.id)"
-                                    :style="{ color: post.isLike ? '#042444' : '#EFEFEF' }">favorite</span>
-                                &nbsp;<span>{{ post.likeList.length }} </span>
-                            </p>
-                            <p class="tags">
-                                <span class="tag" v-for="tag in post.tags" :key="tag.id">
-                                    <b-badge class="custom-badge" variant="custom-badge">#{{ tag }}</b-badge>
-                                </span>&nbsp;
-                            </p>
-                        </div>
-                    </div>
+      <div class="row row-cols-1 row-cols-1 row-cols-md-2">
+        <div class="col" v-for="post in postList" :key="post.id"
+          @click="postDetail(post.originId ? post.originId : post.id)">
+          <div class="card">
+            <div class="card-body">
+              <div id="top-info">
+                <div>
+                  <b-avatar variant="light" size="3.5rem" id="profile-img"
+                    :src="post.author.profileImg ? post.author.profileImg : defaultProfileImg"></b-avatar>
                 </div>
+                <div id="author-date">
+                  <h5 class="author"> {{ post.author.name }} </h5>
+                  <p class="date"><small class="text-muted"> {{ convertToDate(post.createdAt) }}</small>
+                  </p>
+                </div>
+              </div>
+              <div class="preview-main">
+                <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
+                <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
+                <b-card-img v-if="post.postImg" :src="post.postImg"
+                class="card-img" alt="Image" bottom></b-card-img>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <p class="like">
+                  <span class="material-icons" @click="likePost(post.originId ? post.originId : post.id)"
+                    :style="{ color: post.isLike ? '#042444' : '#EFEFEF' }">favorite</span>
+                  &nbsp;<span>{{ post.likeList.length }} </span>
+                </p>
+                <p class="tags">
+                  <span class="tag" v-for="tag in post.tags" :key="tag.id">
+                    <b-badge class="custom-badge" variant="custom-badge">#{{ tag }}</b-badge>
+                  </span>&nbsp;
+                </p>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
     <div v-else-if="!isLoading && (!postList || postList.length <= 0)" id="no-content">
-        <p>검색 결과가 없습니다.</p>
+      <p>검색 결과가 없습니다.</p>
     </div>
-
+  
     <!-- spinner -->
     <div class="text-center" v-if="isLoading" style="margin: 10px;">
-        <span class="spinner-grow spinner-grow-sm" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </span>
-        &nbsp;
-        <span class="spinner-grow spinner-grow-sm" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </span>
-        &nbsp;
-        <span class="spinner-grow spinner-grow-sm" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </span>
+      <span class="spinner-grow spinner-grow-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </span>
+      &nbsp;
+      <span class="spinner-grow spinner-grow-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </span>
+      &nbsp;
+      <span class="spinner-grow spinner-grow-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </span>
     </div>
-
-    <span class="material-icons" id="top-btn" @click=scrollToTop()>assistant_navigation</span>
-</template>
+  
+    <span class="material-icons" id="top-btn" @click="scrollToTop()">assistant_navigation</span>
+  </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
