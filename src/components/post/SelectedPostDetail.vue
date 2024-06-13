@@ -96,7 +96,7 @@
       <div class="quiz-buttons">
     <button v-if="isQuizAvailable" @click="showQuizModal" class="open-quiz-btn">Show Quiz</button>
     <button v-else @click="openCreateQuizModal" class="create-quiz-btn">Create Quiz</button>
-    <button v-if="isQuizAvailable && isAuthorizedToEditQuiz" @click="openEditQuizModal" class="edit-quiz-btn">Edit Quiz</button>
+    <!-- <button v-if="isQuizAvailable && isAuthorizedToEditQuiz" @click="openEditQuizModal" class="edit-quiz-btn">Edit Quiz</button> -->
   </div>
     <TakeQuiz
     :isQuizModalVisible="isQuizModalVisible"
