@@ -44,7 +44,7 @@
                 </div>
                 <div class="preview-main">
                   <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
-                  <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
+                  <div :class="{'no-postImg': !post.postImg, 'content-preview': true}">{{ stripHtmlTags(post.content) }}</div>
                   <b-card-img v-if="post.postImg" :src="post.postImg"
                      class="card-img" alt="Image" bottom></b-card-img>
                 </div>
@@ -319,28 +319,4 @@ function zergRush() {
 
 <style>
 @import url('@/styles/post/PostList.css');
-
-.zerg-unit {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background-color: white;
-  border: 3px solid navy;
-  border-radius: 50%;
-  position: absolute;
-  cursor: pointer;
-  animation: zergAnimation 20s linear infinite; /* 애니메이션 적용 */
-}
-
-@keyframes zergAnimation {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(50vh); /* 바닥까지 떨어지는 위치로 변경 */
-  }
-  100% {
-    transform: translateY(100vh); /* 바닥까지 떨어지는 위치로 변경 */
-  }
-}
 </style>
