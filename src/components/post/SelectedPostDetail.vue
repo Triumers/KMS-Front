@@ -260,7 +260,7 @@ const handleTranslation = async () => {
     post.value = { ...originalPost.value };
   } else {
     try {
-      const response = await axios.get(`/translate/${postId}/${selectedLanguage.value}`);
+      const response = await axios.get(`/translate/${post.value.id}/${selectedLanguage.value}`);
       post.value.title = response.data.title;
       post.value.content = response.data.content;
     } catch (error) {
