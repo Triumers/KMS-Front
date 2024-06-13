@@ -18,7 +18,10 @@
           <button @click="submitQuestion" class="submit-btn">Submit</button>
           <div v-if="showResult" class="quiz-results">
             <p v-if="isCorrect" class="correct">정답입니다!</p>
-            <p v-else class="incorrect">틀렸습니다. 정답은 {{ quiz.answer }}입니다.</p>
+            <div v-else class="incorrect">
+              <p>틀렸습니다. 정답은 {{ quiz.answer }}입니다.</p>
+              <p v-if="quiz.commentary">해설: {{ quiz.commentary }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -54,7 +57,6 @@ const submitQuestion = async () => {
       answer: answer.value,
       employeeId: 1,
     });
-
     isCorrect.value = answer.value.trim().toLowerCase() === props.quiz.answer.trim().toLowerCase();
     showResult.value = true;
   } catch (error) {
@@ -140,5 +142,9 @@ const submitQuestion = async () => {
 
 .incorrect {
   color: red;
+}
+
+.incorrect p {
+  margin-bottom: 5px;
 }
 </style>
