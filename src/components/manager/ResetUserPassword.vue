@@ -2,6 +2,11 @@
   <div class="container">
     <h2>회원 비밀번호 초기화</h2>
     <p>회원의 비밀번호를 초기화하시겠습니까?</p>
+    <div class="form-group">
+      <label for="password">비밀번호:</label>
+      <input type="password" id="password" v-model="password" />
+      <p class="initial-password-info">비밀번호를 따로 입력하지 않을 시 초기 비밀번호는 "welcome"으로 설정됩니다.</p>
+    </div>
     <button class="submit-button" @click="resetMemberPassword">초기화</button>
   </div>
 </template>
@@ -16,6 +21,7 @@ const route = useRoute();
 const memberId = route.params.id;
 
 const memberEmail = ref('');
+const password = ref('');
 
 onMounted(async () => {
 try {
@@ -38,6 +44,7 @@ try {
   const token = localStorage.getItem('token');
   const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/manager/edit/password', {
     email: memberEmail.value,
+    password: password.value,
   }, {
     headers: {
       Authorization: token,
@@ -59,6 +66,24 @@ try {
   margin: 0 auto;
   padding: 20px;
 }
+
+.form-group {
+    margin-bottom: 20px;
+  }
+
+  input[type="password"],
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
 
 .submit-button {
   padding: 10px 20px;
