@@ -127,7 +127,7 @@
               <div class="history" id="historyContent">
                 <h4 id="title"> {{ historyPost.title }} </h4>
                 <div id="date-restore">
-                  <small> {{ convertToDate(historyPost.createdAt) }}</small>
+                  <small class="text-muted"> {{ convertToDate(historyPost.createdAt) }}</small>
                   &nbsp;<b-button size="sm" variant="outline-secondary" @click="restorePost()">버전 복원하기</b-button>
                 </div>
                 <div id="tag-div">
@@ -156,7 +156,7 @@
                           <span> &nbsp;{{ history.author.name }}&nbsp; </span>
                         </h5>
                         </p>
-                        <small>{{ convertToDate(history.createdAt) }}</small>
+                        <small class="text-muted">{{ convertToDate(history.createdAt) }}</small>
                       </div>
                     </b-list-group-item>
                   </template>

@@ -11,7 +11,7 @@
         </select>
       </span>
       <span v-else class="no-study-message">스터디가 존재하지 않습니다.</span>
-      &nbsp;&nbsp;<span id="addEmployeeModal" data-bs-toggle="modal" data-bs-target="#addTab"><small>+ 스터디원 추가</small></span>
+      &nbsp;&nbsp;<span id="addEmployeeModal" data-bs-toggle="modal" data-bs-target="#addTab" class="text-muted"><small>+ 스터디원 추가</small></span>
 
         <div class="addEmployee-modal">
           <div class="modal fade" id="addTab" tabindex="-1" aria-labelledby="addTabLabel" aria-hidden="true">

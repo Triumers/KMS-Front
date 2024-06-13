@@ -3,7 +3,7 @@
         <router-link class="w-tab" active-class="active" :to="`/workspace/${route.params.id}/wiki`">WIKI</router-link>
         &nbsp;
         <router-link class="w-tab" active-class="active" :to="`/workspace/${route.params.id}/docs`">DOCS</router-link>
-        &nbsp;&nbsp;<span data-bs-toggle="modal" data-bs-target="#addTab"><small>+ 팀원 추가</small></span>
+        &nbsp;&nbsp;<span v-if="isAdmin" data-bs-toggle="modal" data-bs-target="#addTab"class="text-muted"><small>+ 팀원 추가</small></span>
 
 
         <div class="addEmployee-modal">
@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { RouterView, useRoute } from "vue-router";
 import axios from 'axios';
 
@@ -71,7 +71,7 @@ const selected = ref(null);
 const addEmployee = ref(null);
 const search = ref('');
 const searchEmployeeList = ref(null);
-
+const isAdmin = computed(() => ['ROLE_ADMIN', 'ROLE_HR_MANAGER', 'ROLE_LEADER'].includes(localStorage.getItem('userRole')));
 
 async function saveNewTab() {
   const requestData = {

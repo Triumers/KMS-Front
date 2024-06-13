@@ -25,7 +25,7 @@
                     </div>
 
                     <p id="content-info">
-                        <small>※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
+                        <small class="text-muted">※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
 
                     <div>
                         <span>
@@ -82,7 +82,7 @@
                             <b-badge class="ai-menu" @click="requestToAI($event)">맞춤법 교정</b-badge>
                         </p>
                         <div id="ai-content" class="card">
-                            <p><span class="material-icons">info</span>&nbsp;<small>응답 메시지 박스 클릭 시, 내용 복사</small>
+                            <p>&nbsp;<small>※ 응답 메시지 박스 클릭 시, 내용 복사</small>
                             </p>
 
                         </div>
@@ -323,6 +323,7 @@ async function getPostById(originId) {
 #content-info {
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
 }
 
 #container {
