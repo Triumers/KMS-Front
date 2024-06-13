@@ -29,7 +29,6 @@
   
   onMounted(async () => {
     await fetchMyPosts();
-    window.addEventListener('scroll', handleScroll);
   });
   
   async function fetchMyPosts() {
@@ -57,13 +56,6 @@
     }
   
     isLoading.value = false;
-  }
-  
-  function handleScroll() {
-    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 100) {
-      fetchMyPosts();
-    }
   }
   
   function goToPostDetail(postId) {

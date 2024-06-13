@@ -29,7 +29,6 @@
   
   onMounted(async () => {
     await fetchLikedPosts();
-    window.addEventListener('scroll', handleScroll);
   });
   
   async function fetchLikedPosts() {
@@ -58,13 +57,6 @@
     }
   
     isLoading.value = false;
-  }
-  
-  function handleScroll() {
-    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 100) {
-      fetchLikedPosts();
-    }
   }
   
   function goToPostDetail(postId) {
