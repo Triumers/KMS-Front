@@ -92,9 +92,27 @@
     <span class="material-icons" id="top-btn" @click="scrollToTop()">assistant_navigation</span>
 
     <!-- 퀴즈 모달창 -->
-    <div v-if="isQuizAvailable" id="quiz-container">
-      <TakeQuiz :quizId="selectedQuizId" />
-    </div>
+    <div id="quiz-container">
+      <div class="quiz-buttons">
+    <button v-if="isQuizAvailable" @click="showQuizModal" class="open-quiz-btn">Show Quiz</button>
+    <button v-else @click="openCreateQuizModal" class="create-quiz-btn">Create Quiz</button>
+    <!-- <button v-if="isQuizAvailable && isAuthorizedToEditQuiz" @click="openEditQuizModal" class="edit-quiz-btn">Edit Quiz</button> -->
+  </div>
+    <TakeQuiz
+    :isQuizModalVisible="isQuizModalVisible"
+    :quiz="quiz"
+    @close-quiz="closeQuiz"
+  />
+  <CreateQuiz
+  :isCreateQuizModalVisible="isCreateQuizModalVisible"
+  :postId="Number(postId)"
+  :tabId="post.tabRelationId"
+  @close-create-quiz="closeCreateQuiz"
+  @quizCreated="handleQuizCreated"
+/>
+
+<EditQuiz :isEditQuizModalVisible="isEditQuizModalVisible" :quizId="selectedQuizId" @close-edit-quiz="closeEditQuiz" />
+  </div>
 
     <!-- 히스토리 모달창 -->
     <div class="modal fade" id="historyModal" aria-hidden="true" aria-labelledby="modalToggleLabel" tabindex="-1">
@@ -164,7 +182,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useStore } from 'vuex';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import html2pdf from 'html2pdf.js';
@@ -173,6 +192,8 @@ import { marked } from 'marked';
 import defaultProfileImg from '@/assets/images/profile_image.png';
 
 import TakeQuiz from '@/components/quiz/TakeQuiz.vue';
+import CreateQuiz from '@/components/quiz/CreateQuiz.vue';
+import EditQuiz from '@/components/quiz/EditQuiz.vue';
 import CommentList from '@/components/comment/CommentList.vue'; // 댓글 목록 컴포넌트 임포트
 
 const router = useRouter();
@@ -180,10 +201,24 @@ const currentRoute = useRoute();
 const postId = currentRoute.params.id;
 const general = ref(currentRoute.path.includes("organization") ? true : false);
 
+const store = useStore();
+const currentUserId = computed(() => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+    return tokenPayload.userId;
+  }
+  return null;
+});
+
 const isAuthorized = ref(false);
 const historyPost = ref(null);
-const selectedQuizId = ref(null);
 const isQuizAvailable = ref(false);
+const selectedQuizId = ref(null);
+const quiz = ref(null);
+const isQuizModalVisible = ref(false);
+const isCreateQuizModalVisible = ref(false);
+const isEditQuizModalVisible = ref(false);
 
 const likeCnt = ref(0);
 
@@ -191,6 +226,19 @@ const post = ref(null);
 
 const selectedLanguage = ref('ko'); // 초기값은 한국어
 const originalPost = ref(null); // 원래 게시글 데이터 저장용
+
+const isAuthorizedToEditQuiz = computed(() => {
+  const userRole = localStorage.getItem('userRole');
+  return ['ROLE_ADMIN', 'ROLE_HR_MANAGER'].includes(userRole);
+});
+
+const openEditQuizModal = () => {
+  isEditQuizModalVisible.value = true;
+};
+
+const closeEditQuiz = () => {
+  isEditQuizModalVisible.value = false;
+};
 
 // 커스텀 렌더러 생성
 const renderer = new marked.Renderer();
@@ -201,7 +249,7 @@ marked.setOptions({ renderer });
 
 onMounted(async () => {
   await getPostById();
-  await checkQuizVisibility();
+  await checkQuizAvailability();
   originalPost.value = { ...post.value }; 
 });
 
@@ -219,6 +267,11 @@ const handleTranslation = async () => {
       console.error('Failed to translate post:', error);
     }
   }
+};
+
+const handleQuizCreated = (quizId) => {
+  isQuizAvailable.value = true;
+  selectedQuizId.value = quizId;
 };
 
 const exportLink = () => {
@@ -394,20 +447,49 @@ const generatePDF = () => {
   }
 };
 
-// Quiz Modal Visibility
-const checkQuizVisibility = async () => {
+const checkQuizAvailability = async () => {
   try {
-    const response = await axios.get(`/quiz/exist?postId=${postId}`);
-    if (response.status == 200) {
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/quiz/exist?postId=${postId}`);
+    if (response.status === 200 && response.data) {
       isQuizAvailable.value = true;
       selectedQuizId.value = response.data.id;
     } else {
       isQuizAvailable.value = false;
     }
   } catch (error) {
-    console.error('Failed to fetch quiz visibility:', error);
+    console.error('Failed to check quiz availability:', error);
     isQuizAvailable.value = false;
   }
+};
+
+const showQuizModal = async () => {
+  try {
+    const response = await axios.get(`http://triumers-back.ap-northeast-2.elasticbeanstalk.com/quiz/contents?id=${selectedQuizId.value}`);
+    if (response.status === 200) {
+      quiz.value = response.data;
+      // 퀴즈 모달 표시
+      isQuizModalVisible.value = true;
+    } else {
+      console.error('퀴즈를 찾을 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('퀴즈 불러오기 실패:', error);
+    if (error.response) {
+      console.error('응답 데이터:', error.response.data);
+    }
+  }
+};
+
+const closeQuiz = () => {
+  isQuizModalVisible.value = false;
+};
+
+const openCreateQuizModal = () => {
+  isCreateQuizModalVisible.value = true;
+};
+
+const closeCreateQuiz = () => {
+  isCreateQuizModalVisible.value = false;
 };
 
 function scrollToTop() {
@@ -596,5 +678,28 @@ li {
 #comments-section .btn {
   background-color: #042444;
   color: white;
+}
+
+.open-quiz-btn,
+.create-quiz-btn,
+.edit-quiz-btn {
+  padding: 10px 20px;
+  background-color: #042444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.open-quiz-btn:hover,
+.create-quiz-btn:hover,
+.edit-quiz-btn:hover {
+  background-color: #021a2f;
+}
+
+.quiz-buttons {
+  display: flex;
+  gap: 10px;
 }
 </style>

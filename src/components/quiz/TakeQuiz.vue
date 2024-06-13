@@ -1,70 +1,67 @@
 <template>
-  <div>
-    <div v-if="isQuizModalVisible" class="quiz-modal">
-      <div class="quiz-modal-content">
-        <div class="quiz-header">
-          <h2>QUIZ</h2>
-          <button @click="closeQuiz" class="close-btn">&times;</button>
-        </div>
-        <div class="quiz-body">
-          <div class="quiz-question" v-if="quiz">
-            <p>{{ quiz.content }}</p>
-            <input type="text" v-model="answer" class="answer-input" placeholder="문제의 답을 입력해주세요." />
-            <button @click="submitQuestion" class="submit-btn">Submit</button>
-            <div v-if="showResult" class="quiz-results">
-              <p v-if="answer === quiz.answer">
-                정답 입니다!
-              </p>
-              <p v-else>
-                틀렸습니다..
-                (답: {{ quiz.answer }})
-              </p>
+  <div class="quiz-modal" v-if="isQuizModalVisible">
+    <div class="quiz-modal-content">
+      <div class="quiz-header">
+        <h2>QUIZ</h2>
+        <button @click="$emit('close-quiz')" class="close-btn">&times;</button>
+      </div>
+      <div class="quiz-body">
+        <div class="quiz-question" v-if="quiz">
+          <p>{{ quiz.content }}</p>
+          <input
+            type="text"
+            v-model="answer"
+            class="answer-input"
+            placeholder="문제의 답을 입력해주세요."
+            @keyup.enter="submitQuestion"
+          />
+          <button @click="submitQuestion" class="submit-btn">Submit</button>
+          <div v-if="showResult" class="quiz-results">
+            <p v-if="isCorrect" class="correct">정답입니다!</p>
+            <div v-else class="incorrect">
+              <p>틀렸습니다. 정답은 {{ quiz.answer }}입니다.</p>
+              <p v-if="quiz.commentary">해설: {{ quiz.commentary }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <button @click="showQuizModal" class="open-quiz-btn">Show Quiz</button>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import { defineProps } from 'vue';
 
 const props = defineProps({
-  quizId: {
-    type: Number,
+  isQuizModalVisible: {
+    type: Boolean,
     required: true,
-  }
+  },
+  quiz: {
+    type: Object,
+    default: null,
+  },
 });
 
-const isQuizModalVisible = ref(false);
-const quiz = ref(null);
+const emit = defineEmits(['close-quiz']);
+
 const answer = ref('');
 const showResult = ref(false);
+const isCorrect = ref(false);
 
-const showQuizModal = async () => {
-  isQuizModalVisible.value = true;
+const submitQuestion = async () => {
   try {
-    const response = await axios.get(`/quiz/contents?id=${props.quizId}`);
-    if (response.status === 200) {
-      quiz.value = response.data;
-    } else {
-      console.error('Can not find quiz...');
-    }
+    const response = await axios.post('http://triumers-back.ap-northeast-2.elasticbeanstalk.com/answer/submit', {
+      quizId: props.quiz.id,
+      answer: answer.value,
+      employeeId: 1,
+    });
+    isCorrect.value = answer.value.trim().toLowerCase() === props.quiz.answer.trim().toLowerCase();
+    showResult.value = true;
   } catch (error) {
-    console.error('Failed to fetch quiz:', error);
+    console.error('답안 제출 실패:', error);
   }
-};
-
-const closeQuiz = () => {
-  isQuizModalVisible.value = false;
-};
-
-const submitQuestion = () => {
-  showResult.value = true;
 };
 </script>
 
@@ -78,6 +75,7 @@ const submitQuestion = () => {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .quiz-modal-content {
@@ -107,7 +105,7 @@ const submitQuestion = () => {
 
 .submit-btn {
   padding: 10px 20px;
-  background-color: #05172a;
+  background-color: #042444;
   color: white;
   border: none;
   border-radius: 4px;
@@ -138,13 +136,15 @@ const submitQuestion = () => {
   border-radius: 4px;
 }
 
-.open-quiz-btn {
-  padding: 10px 20px;
-  background-color: #05172a;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 20px;
+.correct {
+  color: green;
+}
+
+.incorrect {
+  color: red;
+}
+
+.incorrect p {
+  margin-bottom: 5px;
 }
 </style>
