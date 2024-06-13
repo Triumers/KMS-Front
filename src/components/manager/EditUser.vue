@@ -357,7 +357,6 @@
 
     if (response.status >= 200 && response.status < 300) {
       alert('회원 정보가 성공적으로 수정되었습니다.');
-      router.push({ name: 'SearchUser' });
     } else {
       throw new Error('회원 정보 수정에 실패했습니다.');
     }
