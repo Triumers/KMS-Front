@@ -24,7 +24,7 @@
               </div>
               <div class="preview-main">
                 <h5 class="card-title"><strong>{{ post.title }}</strong></h5>
-                <div class="content-preview">{{ stripHtmlTags(post.content) }}</div>
+                <div :class="{'no-postImg': !post.postImg, 'content-preview': true}">{{ stripHtmlTags(post.content) }}</div>
                 <b-card-img v-if="post.postImg" :src="post.postImg"
                 class="card-img" alt="Image" bottom></b-card-img>
               </div>
