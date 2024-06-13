@@ -100,6 +100,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import { marked } from 'marked';
+import { useClipboard } from '@vueuse/core';
 
 const router = useRouter();
 const currentRoute = useRoute();
@@ -245,9 +246,11 @@ async function saveNewPost(url) {
     }
 }
 
+
+const { copy } = useClipboard();
 function responseMsgClick() {
     const divContent = this.textContent;
-    navigator.clipboard.writeText(divContent)
+    copy(divContent)
         .then(() => {
             alert("복사 되었습니다.")
             console.log('복사 완료');

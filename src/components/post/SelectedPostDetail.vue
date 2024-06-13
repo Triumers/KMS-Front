@@ -188,6 +188,7 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import html2pdf from 'html2pdf.js';
 import { marked } from 'marked';
+import { useClipboard } from '@vueuse/core';
 
 import defaultProfileImg from '@/assets/images/profile_image.png';
 
@@ -274,11 +275,12 @@ const handleQuizCreated = (quizId) => {
   selectedQuizId.value = quizId;
 };
 
+const { copy } = useClipboard();
 const exportLink = () => {
   const currentURL = window.location.href;
 
   // https일 경우에만 작동 
-  navigator.clipboard.writeText(currentURL)
+  copy(currentURL)
     .then(() => {
       alert('링크가 성공적으로 복사되었습니다.');
     })
