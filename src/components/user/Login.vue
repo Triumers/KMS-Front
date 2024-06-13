@@ -71,6 +71,7 @@ async function login() {
         }
         
         await router.push('/wiki/1');
+        location.reload();
       } else if (authResponse.status === 202) {
         // MFA 인증 필요
         mfaRequired.value = true;

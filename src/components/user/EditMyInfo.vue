@@ -17,6 +17,7 @@
         <div class="form-group">
           <label for="profileImg">프로필 이미지:</label>
           <input type="file" id="profileImg" @change="handleProfileImgChange" />
+          <p class="text-muted"><small>이미지는 1mb 이하만 업로드 가능합니다.</small></p>
         </div>
       </form>
     </div>

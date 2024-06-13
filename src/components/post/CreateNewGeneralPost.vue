@@ -18,7 +18,7 @@
         </div>
 
         <p id="content-info">
-            <small>※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
+            <small class="text-muted">※ 마우스 오른쪽 버튼 클릭 시, 파일 업로드가 가능합니다.</small>
             <span><b-button variant="outline-secondary" data-bs-toggle="modal"
                     data-bs-target="#preview">미리보기</b-button></span>
 
